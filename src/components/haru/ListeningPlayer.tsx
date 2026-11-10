@@ -52,9 +52,9 @@ function SimilarSentences({ item, audio }: { item: CorpusItemOut; audio: CorpusA
             <li key={row.id} className="flex items-center gap-2.5">
               <button
                 type="button"
-                onClick={() => void audio.play(row.id, row.text_ko)}
+                onClick={() => void audio.play(row.id, row.text_en)}
                 disabled={loading}
-                aria-label={`Nghe câu: ${row.text_ko}`}
+                aria-label={`Nghe câu: ${row.text_en}`}
                 className="hit-area card-soft flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-soft text-blue-deep active:scale-95 disabled:opacity-60"
               >
                 {loading ? (
@@ -67,7 +67,7 @@ function SimilarSentences({ item, audio }: { item: CorpusItemOut; audio: CorpusA
               </button>
               <div className="min-w-0 flex-1">
                 <p lang="ko" className="font-korean break-keep text-[13px] font-semibold leading-5">
-                  {row.text_ko}
+                  {row.text_en}
                 </p>
                 {row.meaning_vi && (
                   <p className="text-[12px] font-medium leading-4 text-ink-2">{row.meaning_vi}</p>
@@ -184,7 +184,7 @@ export function ListeningPlayer({
             )}
             <button
               type="button"
-              onClick={() => void audio.play(item.id, item.text_ko)}
+              onClick={() => void audio.play(item.id, item.text_en)}
               disabled={loading}
               aria-label={playing ? "Nghe lại câu" : "Nghe câu"}
               className="card-soft relative flex h-20 w-20 items-center justify-center rounded-full bg-blue-soft text-blue-deep transition-transform duration-200 active:scale-95 disabled:opacity-60 motion-reduce:transition-none"
@@ -236,7 +236,7 @@ export function ListeningPlayer({
           <div className="overflow-hidden">
             <div className="px-6 pb-4">
               <p lang="ko" className="font-korean break-keep text-lg font-semibold leading-snug">
-                {item.text_ko}
+                {item.text_en}
               </p>
               {item.meaning_vi && (
                 <p className="mt-2 text-[15px] font-semibold leading-6">

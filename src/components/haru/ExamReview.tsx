@@ -252,8 +252,8 @@ function PageLink({ page, className }: { page: number | null; className?: string
 }
 
 const SUGGEST_LABEL: Record<keyof ExamInstructionSuggest, string> = {
-  instruction_ko: "Chỉ dẫn",
-  stem_ko: "Câu hỏi",
+  instruction_en: "Chỉ dẫn",
+  stem_en: "Câu hỏi",
 };
 
 /** An instruction or question line that is one of the standard TOPIK wordings with
@@ -422,7 +422,7 @@ function PassageBlock({
     );
   }
   const p = passage.payload as Partial<ExamPassagePayload>;
-  const body = asString(p.body_ko);
+  const body = asString(p.body_en);
   const confirmed = passage.status === "confirmed";
   const state = passage.status === "rejected" ? "đã từ chối" : confirmed ? null : "chưa xác nhận";
   if (p.withheld === true) {
@@ -472,8 +472,8 @@ export function ExamItemBody({
   const flags = asStrings(p.flags);
   const suggest = p.instruction_suggest ?? null;
   const number = asNumber(p.number);
-  const instruction = asString(p.instruction_ko).trim();
-  const stem = asString(p.stem_ko).trim();
+  const instruction = asString(p.instruction_en).trim();
+  const stem = asString(p.stem_en).trim();
   const options = Array.isArray(p.options)
     ? p.options.map((o) => (typeof o === "string" ? o : ""))
     : [];
@@ -503,7 +503,7 @@ export function ExamItemBody({
       {suggest && (
         <SuggestionBox
           suggest={suggest}
-          current={{ instruction_ko: instruction, stem_ko: stem }}
+          current={{ instruction_en: instruction, stem_en: stem }}
           busy={edits.busy}
           onUse={edits.useStandard}
           onDismiss={edits.keepAsRead}
@@ -600,7 +600,7 @@ export function ExamPassageBody({ item, onPatch, busy }: { item: ImportItemOut }
   const p = item.payload as Partial<ExamPassagePayload>;
   const edits = useCardEdits(item, { onPatch, busy });
   const [open, setOpen] = useState(false);
-  const body = asString(p.body_ko);
+  const body = asString(p.body_en);
   const page = asNumber(p.source_page);
   const flags = asStrings(p.flags);
   return (

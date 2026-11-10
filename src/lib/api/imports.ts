@@ -37,7 +37,7 @@ export interface CreateImportBatchInput {
   titleKo?: string | undefined;
   /** kind === "editorial_article" only: re-scrape+re-analyze a URL that
    * was already ingested before, instead of silently reusing the old
-   * batch/job — e.g. to pick up a pipeline fix (cleaner body_ko, a
+   * batch/job — e.g. to pick up a pipeline fix (cleaner body_en, a
    * corrected outlet-name suggestion) on an article ingested previously. */
   force?: boolean | undefined;
 }
@@ -59,7 +59,7 @@ export async function createImportBatch(
   if (input.sessionLabel) form.set("session_label", input.sessionLabel);
   if (input.sourceUrl) form.set("source_url", input.sourceUrl);
   if (input.sourceName) form.set("source_name", input.sourceName);
-  if (input.titleKo) form.set("title_ko", input.titleKo);
+  if (input.titleKo) form.set("title_en", input.titleKo);
   if (input.force) form.set("force", "true");
 
   const token = tokenStore.get();

@@ -190,12 +190,12 @@ function PassageCard({
   const sounding = audio.state === "loading" || audio.state === "playing";
   // the whole reading plays as one clip; "playing the whole text" is that clip being the active one
   const wholeHere =
-    !isDialogue && sounding && audio.activeText === passage.text_ko && !sequenceHere;
+    !isDialogue && sounding && audio.activeText === passage.text_en && !sequenceHere;
   const busyHere = sequenceHere || wholeHere;
   // the last clip of this text failed (or was said by the device's own voice)
   const ownsActive = isDialogue
     ? passage.lines.some((l) => l.ko === audio.activeText)
-    : audio.activeText === passage.text_ko;
+    : audio.activeText === passage.text_en;
   const showNote = ownsActive && !sounding && (audio.state === "error" || audio.usedFallback);
 
   function listenAll() {
@@ -211,7 +211,7 @@ function PassageCard({
         passage.lines.map((line) => ({ text: line.ko, voice: line.voice })),
       );
     } else {
-      void audio.play(passage.text_ko, passage.voice);
+      void audio.play(passage.text_en, passage.voice);
     }
   }
 
@@ -240,7 +240,7 @@ function PassageCard({
         )}
       </div>
       <h2 lang="ko" className="mt-2 font-korean text-xl font-semibold leading-7">
-        {passage.title_ko}
+        {passage.title_en}
       </h2>
       <p className="text-xs font-semibold text-ink-2">{passage.title_vi}</p>
       {passage.scene_vi && (
@@ -424,8 +424,8 @@ function Vocabulary({
               </li>
             ))}
             {words.map((w) => (
-              <li key={w.hangul} className="text-xs font-semibold leading-5">
-                <Ko className="font-semibold">{w.hangul}</Ko> — {w.meaning_vi}{" "}
+              <li key={w.headword} className="text-xs font-semibold leading-5">
+                <Ko className="font-semibold">{w.headword}</Ko> — {w.meaning_vi}{" "}
                 <span className="text-[11px] font-semibold text-ink-2">(chưa học)</span>
               </li>
             ))}

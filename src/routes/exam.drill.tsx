@@ -98,29 +98,29 @@ function Question({
         />
       </div>
 
-      {question.instruction_ko && (
+      {question.instruction_en && (
         <p
           lang="ko"
           className="font-korean mt-4 whitespace-pre-wrap text-[13px] font-medium leading-6 text-ink-2"
         >
-          <UnderlineText text={question.instruction_ko} />
+          <UnderlineText text={question.instruction_en} />
         </p>
       )}
 
-      {question.passage_ko && (
+      {question.passage_en && (
         <div className="card-soft mt-4 max-h-64 overflow-y-auto rounded-[20px] bg-card px-4 py-3">
           <p lang="ko" className="font-korean whitespace-pre-wrap text-[15px] leading-7">
-            <UnderlineText text={question.passage_ko} />
+            <UnderlineText text={question.passage_en} />
           </p>
         </div>
       )}
 
-      {question.stem_ko && (
+      {question.stem_en && (
         <p
           lang="ko"
           className="font-korean mt-4 whitespace-pre-wrap text-[17px] font-semibold leading-7"
         >
-          <UnderlineText text={question.stem_ko} />
+          <UnderlineText text={question.stem_en} />
         </p>
       )}
 

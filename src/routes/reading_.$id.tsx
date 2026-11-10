@@ -263,9 +263,9 @@ function ReadingDetailScreen() {
   const [activeVocabId, setActiveVocabId] = useState<number | null>(null);
   const [tappedWord, setTappedWord] = useState<VocabItemOut | null>(null);
 
-  function playVocabAudio(vocabId: number, hangul: string) {
+  function playVocabAudio(vocabId: number, headword: string) {
     setActiveVocabId(vocabId);
-    void vocabAudio.play(vocabId, hangul);
+    void vocabAudio.play(vocabId, headword);
   }
 
   // An article imported before photos existed has none stored yet: the first
@@ -421,7 +421,7 @@ function ReadingDetailScreen() {
       <header>
         <p className="text-[13px] font-semibold text-ink-2">{article.source_name}</p>
         <h1 className="font-korean mt-1 break-keep text-[22px] font-bold leading-snug [overflow-wrap:anywhere]">
-          {article.title_ko || "(Chưa có tiêu đề)"}
+          {article.title_en || "(Chưa có tiêu đề)"}
         </h1>
         <div className="mt-2 flex flex-wrap gap-1.5">
           {article.level_estimate && (
@@ -440,7 +440,7 @@ function ReadingDetailScreen() {
         </div>
       </header>
 
-      {article.body_ko.trim().length > 0 && (
+      {article.body_en.trim().length > 0 && (
         <StudyOverview
           study={article.study ?? null}
           status={article.study_status ?? "none"}
@@ -448,11 +448,11 @@ function ReadingDetailScreen() {
         />
       )}
 
-      {article.body_ko.trim().length > 0 && (
+      {article.body_en.trim().length > 0 && (
         <ArticleAudioPlayer
           articleId={article.id}
           variant={audioVariant}
-          title={article.title_ko}
+          title={article.title_en}
           source={article.source_name}
           follow={follow}
           onFollowChange={setFollow}
@@ -467,9 +467,9 @@ function ReadingDetailScreen() {
           <Newspaper size={16} strokeWidth={2.2} className="text-blue" />
           <h2 className="text-sm font-semibold">Toàn văn bài viết</h2>
         </div>
-        {article.body_ko.trim().length > 0 ? (
+        {article.body_en.trim().length > 0 ? (
           <ArticleReader
-            body={article.body_ko}
+            body={article.body_en}
             vocab={article.vocab}
             images={article.images ?? []}
             sourceUrl={article.source_url}
@@ -744,7 +744,7 @@ function ReadingDetailScreen() {
         <WordSheet
           word={tappedWord}
           onClose={() => setTappedWord(null)}
-          onListen={() => playVocabAudio(tappedWord.id, tappedWord.hangul)}
+          onListen={() => playVocabAudio(tappedWord.id, tappedWord.headword)}
           listening={vocabAudio.state === "loading" && activeVocabId === tappedWord.id}
           footer={
             <ReviewButtons

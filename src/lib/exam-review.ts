@@ -140,11 +140,11 @@ export function takeSecondRead(payload: Payload, group: DiffGroup): Payload | nu
     options[at] = group.full;
     next["options"] = options;
   } else if (group.field === "instruction") {
-    next["instruction_ko"] = group.full;
+    next["instruction_en"] = group.full;
   } else if (group.field === "stem") {
-    next["stem_ko"] = group.full;
+    next["stem_en"] = group.full;
   } else if (group.field === "passage") {
-    next["body_ko"] = group.full;
+    next["body_en"] = group.full;
   } else {
     return null;
   }
@@ -155,12 +155,12 @@ export function takeSecondRead(payload: Payload, group: DiffGroup): Payload | nu
 /** "Dùng chỉ dẫn chuẩn": the standard wording replaces what was read. */
 export function applySuggestion(payload: Payload): Payload {
   const suggest = (payload["instruction_suggest"] ?? {}) as {
-    instruction_ko?: unknown;
-    stem_ko?: unknown;
+    instruction_en?: unknown;
+    stem_en?: unknown;
   };
   const next: Payload = { ...payload };
-  if (typeof suggest.instruction_ko === "string") next["instruction_ko"] = suggest.instruction_ko;
-  if (typeof suggest.stem_ko === "string") next["stem_ko"] = suggest.stem_ko;
+  if (typeof suggest.instruction_en === "string") next["instruction_en"] = suggest.instruction_en;
+  if (typeof suggest.stem_en === "string") next["stem_en"] = suggest.stem_en;
   delete next["instruction_suggest"];
   return dropFlag(next, "instruction_variant");
 }

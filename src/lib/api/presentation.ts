@@ -26,7 +26,7 @@ export interface PresentFrame {
 }
 
 export interface PresentTopic {
-  question_ko: string;
+  question_en: string;
   question_vi: string;
   angle_vi: string;
   words: { ko: string; vi: string }[];
@@ -37,8 +37,8 @@ export interface PresentOutlinePart {
   part: PresentPartKey;
   label_vi: string;
   idea_vi: string;
-  keywords_ko: string[];
-  starter_ko: string;
+  keywords_en: string[];
+  starter_en: string;
   /** Haru proposed the idea: the learner's notes had none for this part. */
   suggested: boolean;
   /** Studied items that fit this part. */
@@ -61,13 +61,13 @@ export interface PresentMetrics {
 }
 
 export interface PresentEval {
-  transcript_ko: string;
+  transcript_en: string;
   off_topic: boolean;
   parts: {
     part: PresentPartKey;
     label_vi: string;
     present: boolean;
-    said_ko: string;
+    said_en: string;
     note_vi: string;
   }[];
   scores: Record<PresentCriterion, number>;
@@ -86,21 +86,21 @@ export interface PresentEval {
     vi: string;
     used: boolean;
     correct: boolean;
-    said_ko: string;
+    said_en: string;
     note_vi: string;
   }[];
   stretch: { ko: string; vi: string; why_vi: string }[];
-  follow_ups: { q_ko: string; q_vi: string; kind: string }[];
+  follow_ups: { q_en: string; q_vi: string; kind: string }[];
 }
 
 export type AnswerCriterion = "directness" | "support" | "language";
 
 export interface PresentAnswer {
-  transcript_ko: string;
+  transcript_en: string;
   scores: Record<AnswerCriterion, number>;
   overall: number;
   note_vi: string;
-  better_ko: string;
+  better_en: string;
   better_vi: string;
   seconds: number;
   pauses: number;
@@ -125,7 +125,7 @@ export interface PresentTarget {
   kind: "grammar" | "word" | "phrase";
   ko: string;
   vi: string;
-  example_ko: string;
+  example_en: string;
   why_vi: string;
 }
 
@@ -159,7 +159,7 @@ export interface PresentIdea {
   stance_vi: string;
   reason_vi: string;
   example_vi: string;
-  hook_ko: string;
+  hook_en: string;
   hook_vi: string;
 }
 
@@ -167,7 +167,7 @@ export interface PresentRow {
   id: string;
   created_at: string;
   mode: PresentMode;
-  title_ko: string;
+  title_en: string;
   band: number;
   tries: number;
   first_overall: number | null;

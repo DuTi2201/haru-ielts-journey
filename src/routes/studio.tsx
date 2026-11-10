@@ -223,17 +223,17 @@ function summarize(item: ImportItemOut): string {
     case "lesson":
       return String(p["title"] ?? "");
     case "editorial_meta":
-      return String(p["title_ko"] ?? "(chưa có tiêu đề)");
+      return String(p["title_en"] ?? "(chưa có tiêu đề)");
     case "vocab_item":
-      return `${p["hangul"] ?? ""} — ${p["meaning_vi"] ?? ""}`;
+      return `${p["headword"] ?? ""} — ${p["meaning_vi"] ?? ""}`;
     case "grammar_point":
       return `${p["pattern"] ?? ""} — ${p["meaning_vi"] ?? ""}`;
     case "corpus_item":
-      return String(p["text_ko"] ?? "");
+      return String(p["text_en"] ?? "");
     case "exam_passage":
-      return String(p["body_ko"] ?? `(đoạn ${p["local_ref"] ?? ""})`);
+      return String(p["body_en"] ?? `(đoạn ${p["local_ref"] ?? ""})`);
     case "exam_item":
-      return `#${p["number"] ?? "?"} ${p["stem_ko"] ?? ""}`;
+      return `#${p["number"] ?? "?"} ${p["stem_en"] ?? ""}`;
     default:
       return item.kind;
   }
@@ -1453,10 +1453,10 @@ function EditorialCandidatesPanel({
               <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-2">
                 {c.source_name}
               </p>
-              <p className="font-korean mt-0.5 text-sm font-semibold leading-5">{c.title_ko}</p>
-              {c.snippet_ko && (
+              <p className="font-korean mt-0.5 text-sm font-semibold leading-5">{c.title_en}</p>
+              {c.snippet_en && (
                 <p className="font-korean mt-1 line-clamp-2 text-xs leading-5 text-ink-2">
-                  {c.snippet_ko}
+                  {c.snippet_en}
                 </p>
               )}
               <div className="mt-2.5 grid grid-cols-2 gap-2">

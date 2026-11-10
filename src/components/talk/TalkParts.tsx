@@ -296,7 +296,7 @@ export function PronItem({
     <li className="rounded-[14px] bg-fill p-3">
       <div className="flex items-start justify-between gap-2">
         <p lang="ko" className="text-[15px] font-semibold leading-6">
-          {item.target_ko}
+          {item.target_en}
         </p>
         <span
           className={cn(
@@ -307,9 +307,9 @@ export function PronItem({
           {item.score}
         </span>
       </div>
-      {item.heard_ko && item.heard_ko !== item.target_ko && (
+      {item.heard_en && item.heard_en !== item.target_en && (
         <p className="text-[12px] font-medium text-ink-2">
-          Haru nghe thành: <span lang="ko">{item.heard_ko}</span>
+          Haru nghe thành: <span lang="ko">{item.heard_en}</span>
         </p>
       )}
       {item.issues.length > 0 && (
@@ -349,11 +349,11 @@ export function PronItem({
           onClick={() => {
             own.current?.pause();
             setPlayingOwn(false);
-            void sample.play(item.target_ko);
+            void sample.play(item.target_en);
           }}
           className="flex min-h-9 items-center gap-1.5 rounded-full border border-line bg-card px-3 text-[12px] font-semibold"
         >
-          {sample.state === "loading" && sample.activeText === item.target_ko ? (
+          {sample.state === "loading" && sample.activeText === item.target_en ? (
             <Loader2 size={14} className="animate-spin" />
           ) : (
             <Volume2 size={14} />

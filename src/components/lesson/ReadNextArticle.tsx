@@ -41,7 +41,7 @@ export function ReadNextArticle({ lessonId }: { lessonId: number }) {
             >
               <span className="min-w-0 flex-1">
                 <span className="block text-[13.5px] font-semibold leading-5">
-                  {a.title_ko ?? a.source_name}
+                  {a.title_en ?? a.source_name}
                 </span>
                 <span className="mt-0.5 block text-[12px] font-medium leading-4 text-ink-2">
                   {a.level_estimate ? `Cấp ${a.level_estimate} · ` : ""}

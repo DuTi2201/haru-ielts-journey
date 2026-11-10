@@ -15,7 +15,7 @@ export interface DebateScenario {
   haru_role_vi: string;
   learner_goal_vi: string;
   /** The motion / Haru's first line; empty for a critique (the claim is the surprise). */
-  opener_ko: string;
+  opener_en: string;
   sides: string[];
 }
 
@@ -69,11 +69,11 @@ export interface DebateReport {
   scores: Record<string, number>;
   score_notes_vi: Record<string, string>;
   overall: number;
-  best_move: { said_ko?: string; why_vi?: string };
+  best_move: { said_en?: string; why_vi?: string };
   missed: {
-    haru_said_ko: string;
-    you_said_ko: string;
-    better_ko: string;
+    haru_said_en: string;
+    you_said_en: string;
+    better_en: string;
     better_vi: string;
     why_vi: string;
   }[];

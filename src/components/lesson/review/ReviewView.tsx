@@ -437,8 +437,8 @@ export function ReviewView({ lesson }: { lesson: LessonOut }) {
               )}
               <span className="text-[13px] font-semibold text-ink-2">Cấp độ {lesson.level}</span>
             </div>
-            {lesson.title_ko && (
-              <Ko className="mt-2 block text-[13px] font-semibold text-ink-2">{lesson.title_ko}</Ko>
+            {lesson.title_en && (
+              <Ko className="mt-2 block text-[13px] font-semibold text-ink-2">{lesson.title_en}</Ko>
             )}
             <h1 className="mt-0.5 text-2xl font-bold leading-tight">
               <span className="min-w-0 break-words">{lesson.title}</span>

@@ -239,7 +239,7 @@ export function CorpusEnrichmentPanel() {
                           lang="ko"
                           className="font-korean break-words text-sm font-semibold leading-5"
                         >
-                          {row.text_ko}
+                          {row.text_en}
                         </p>
                         <p className="truncate text-[12px] font-semibold text-ink-2">
                           {row.film_title}
@@ -250,7 +250,7 @@ export function CorpusEnrichmentPanel() {
                         className={cn(BTN.soft, BTN_SM, "shrink-0")}
                         disabled={restore.isPending}
                         onClick={() => restore.mutate(row.id)}
-                        aria-label={`Hiện lại câu: ${row.text_ko}`}
+                        aria-label={`Hiện lại câu: ${row.text_en}`}
                       >
                         <Undo2 size={14} strokeWidth={2.4} /> Hiện lại
                       </button>

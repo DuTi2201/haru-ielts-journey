@@ -227,9 +227,9 @@ function Picker({
               )}
             >
               <p className="text-[14px] font-bold">{s.title_vi}</p>
-              {s.opener_ko && kind === "debate" && (
+              {s.opener_en && kind === "debate" && (
                 <p className="font-korean mt-0.5 text-[13px] font-semibold text-blue-deep">
-                  {s.opener_ko}
+                  {s.opener_en}
                 </p>
               )}
               {kind !== "debate" && (
@@ -466,7 +466,7 @@ function LiveDebate({ live }: { live: Live }) {
       {sc && (
         <p className="mt-2 rounded-[14px] bg-blue-soft px-3 py-2 text-[12px] font-semibold leading-4 text-blue-deep">
           {sc.kind === "debate"
-            ? `Bạn bên ${info?.side ?? "찬성"}: «${sc.opener_ko}»`
+            ? `Bạn bên ${info?.side ?? "찬성"}: «${sc.opener_en}»`
             : `Mục tiêu: ${sc.learner_goal_vi}`}
         </p>
       )}
@@ -693,10 +693,10 @@ function ReportView({
             </ul>
           </div>
 
-          {r.best_move.said_ko && (
+          {r.best_move.said_en && (
             <div className="rounded-[18px] bg-green-soft p-3.5">
               <p className="text-[12px] font-bold">👍 Câu hay nhất của bạn</p>
-              <p className="font-korean mt-1 text-[14px] font-semibold">“{r.best_move.said_ko}”</p>
+              <p className="font-korean mt-1 text-[14px] font-semibold">“{r.best_move.said_en}”</p>
               {r.best_move.why_vi && (
                 <p className="mt-0.5 text-[12px] font-semibold text-ink-2">{r.best_move.why_vi}</p>
               )}
@@ -710,22 +710,22 @@ function ReportView({
                 {r.missed.map((m, i) => (
                   <li key={i} className="space-y-1.5 rounded-[16px] border border-line bg-card p-3">
                     <p className="text-[12px] font-semibold text-ink-2">
-                      Haru: <span className="font-korean text-ink">{m.haru_said_ko}</span>
+                      Haru: <span className="font-korean text-ink">{m.haru_said_en}</span>
                     </p>
                     <p className="text-[12px] font-semibold text-ink-2">
                       Bạn:{" "}
-                      <span className="font-korean text-ink">{m.you_said_ko || "(im lặng)"}</span>
+                      <span className="font-korean text-ink">{m.you_said_en || "(im lặng)"}</span>
                     </p>
                     <div className="flex items-start gap-2 rounded-[12px] bg-blue-soft p-2.5">
                       <div className="min-w-0 flex-1">
                         <p className="font-korean text-[14px] font-semibold text-blue-deep">
-                          {m.better_ko}
+                          {m.better_en}
                         </p>
                         {m.better_vi && (
                           <p className="text-[12px] font-semibold text-ink-2">{m.better_vi}</p>
                         )}
                       </div>
-                      <SayButton text={m.better_ko} />
+                      <SayButton text={m.better_en} />
                     </div>
                     {m.why_vi && (
                       <p className="text-[12px] font-semibold leading-4">→ {m.why_vi}</p>

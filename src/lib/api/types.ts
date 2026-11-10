@@ -120,8 +120,8 @@ export interface ExamReadDiff {
 /** exam-v3: standard wording offered where an instruction / stem is a standard one with
  * characters missing. Never applied by the system. */
 export interface ExamInstructionSuggest {
-  instruction_ko?: string;
-  stem_ko?: string;
+  instruction_en?: string;
+  stem_en?: string;
 }
 /** payload of an `exam_item` import item (extraction exam-v2). */
 export interface ExamItemPayload {
@@ -129,9 +129,9 @@ export interface ExamItemPayload {
   passage_ref: string | null;
   qtype_code: string | null;
   /** printed once above a group of questions, copied onto each of them */
-  instruction_ko: string | null;
+  instruction_en: string | null;
   group_range: [number, number] | null;
-  stem_ko: string;
+  stem_en: string;
   options: string[];
   /** 1-based, like the key; null until a key is applied */
   answer: number | null;
@@ -147,7 +147,7 @@ export interface ExamItemPayload {
 export interface ExamPassagePayload {
   local_ref: string;
   kind: string | null;
-  body_ko: string | null;
+  body_en: string | null;
   /** the paper prints "저작권 …" instead of the text */
   withheld: boolean;
   source_page: number | null;
@@ -242,21 +242,21 @@ export type VocabPriority = "core" | "recognize";
 export interface VocabItemOut {
   id: number;
   lesson_id: number | null;
-  hangul: string;
+  headword: string;
   pos: string | null;
   meaning_vi: string;
-  definition_ko: string | null;
+  definition_en: string | null;
   level: number;
   hanja: string | null;
   sino_vietnamese: string | null;
-  example_ko: string | null;
-  /** Vietnamese for example_ko (seeded lessons). */
+  example_en: string | null;
+  /** Vietnamese for example_en (seeded lessons). */
   example_vi?: string | null;
   // The chunk layers (lesson-v4). TOPIK tests which words go together, so a
   // card is learned with its set. All absent on cards extracted before v4.
   /** The set it is learned in, e.g. "Động từ đi với thời tiết". */
   family?: string | null;
-  /** The part of `hangul` that must be chosen correctly (오다 in 비가 오다). */
+  /** The part of `headword` that must be chosen correctly (오다 in 비가 오다). */
   node_word?: string | null;
   register?: WordRegister | null;
   /** The exam course this word is part of as well ("kiip-3"). */
@@ -265,7 +265,7 @@ export interface VocabItemOut {
   /** When / with whom, and the slip Vietnamese learners usually make. */
   usage_note_vi?: string | null;
   /** How it is read when that differs from the spelling: "[학쌩]". */
-  pron_ko?: string | null;
+  pron_en?: string | null;
   collocations?: CollocationOut[] | null;
   /** Tempting wrong stand-ins for node_word. */
   distractors?: string[] | null;
@@ -290,7 +290,7 @@ export interface GrammarPointOut {
   meaning_vi: string;
   level: number;
   /** Several examples are one per line; `example_vi` lines up with them. */
-  example_ko: string | null;
+  example_en: string | null;
   example_vi?: string | null;
   /** A caution that belongs to this pattern alone. */
   note_vi?: string | null;
@@ -298,7 +298,7 @@ export interface GrammarPointOut {
    * "V/A + form". Null on rows extracted before this field existed. */
   usage_context_vi: string | null;
   /** How this pattern actually shows up in TOPIK exam questions. */
-  topik_tip_vi: string | null;
+  exam_tip_vi: string | null;
   /** The set of look-alike patterns it is learned with (TOPIK asks "closest in
    * meaning"), and how it differs from each of the others. */
   contrast_group?: string | null;
@@ -383,7 +383,7 @@ export interface CoachOut {
 }
 
 /** One hand-planned sitting of a lesson: what the learner can do after it, its words and cards in
- * teaching order (named by `hangul` / `pattern`) and the exercise ids that close it. */
+ * teaching order (named by `headword` / `pattern`) and the exercise ids that close it. */
 export interface LessonSessionOut {
   title_vi: string;
   can_do_vi: string;
@@ -400,7 +400,7 @@ export interface SituationOut {
   scene_vi: string;
   turns: { who: "A" | "B"; ko: string; vi: string }[];
   reply: {
-    prompt_ko: string;
+    prompt_en: string;
     prompt_vi: string;
     options: { ko: string; vi: string; ok: boolean; why_vi: string }[];
   };
@@ -432,7 +432,7 @@ export interface LessonOut {
   grammar: GrammarPointOut[];
   // lesson-v5
   slug?: string | null;
-  title_ko?: string | null;
+  title_en?: string | null;
   summary?: string | null;
   track?: LessonTrack | null;
   sort_order?: number;
@@ -466,7 +466,7 @@ export interface LessonSummaryOut {
   is_next: boolean;
   // lesson-v5
   slug?: string | null;
-  title_ko?: string | null;
+  title_en?: string | null;
   summary?: string | null;
   track?: LessonTrack | null;
   sort_order?: number;
@@ -551,7 +551,7 @@ export interface PracticeOption {
 }
 export interface PracticeQuestion {
   id: string;
-  prompt_ko?: string | null;
+  prompt_en?: string | null;
   prompt_vi?: string | null;
   options: PracticeOption[];
   answer: string;
@@ -566,7 +566,7 @@ export interface McqExerciseOut {
   skill: "listening" | "reading";
   type: string;
   title_vi: string;
-  instruction_ko?: string | null;
+  instruction_en?: string | null;
   instruction_vi?: string | null;
   stimulus?: PracticeStimulus | null;
   questions: PracticeQuestion[];
@@ -605,10 +605,10 @@ export interface WriteFillOut {
   number: string;
   title_vi: string;
   points: number;
-  instruction_ko?: string | null;
+  instruction_en?: string | null;
   instruction_vi?: string | null;
   context_vi?: string | null;
-  heading_ko?: string | null;
+  heading_en?: string | null;
   text: string;
   blanks: WriteBlankOut[];
   tips_vi?: string[];
@@ -623,16 +623,16 @@ export interface WriteEssayOut {
   number: string;
   title_vi: string;
   points: number;
-  instruction_ko?: string | null;
+  instruction_en?: string | null;
   instruction_vi?: string | null;
   limits: { min: number; max: number };
   data?: PracticeDataBlock[];
-  prompt_ko?: string | null;
-  bullets_ko?: string[];
+  prompt_en?: string | null;
+  bullets_en?: string[];
   framework_vi?: string[];
   patterns_vi?: string[];
   outline?: { part_vi: string; content_vi: string; chars?: string | null }[];
-  model_answer_ko: string;
+  model_answer_en: string;
   model_note_vi?: string | null;
   common_errors_vi?: string[];
   rubric?: { criterion_vi: string; max: number; note_vi?: string | null }[];
@@ -646,7 +646,7 @@ export interface WriteEssayOut {
 export interface SpeakPracticeOut {
   id: string;
   label_vi: string;
-  prompt_ko?: string | null;
+  prompt_en?: string | null;
   prompt_vi?: string | null;
   hint_vi?: string | null;
   frames?: PracticeScene[];
@@ -661,17 +661,17 @@ export interface SpeakOut {
   max_points: number;
   prep_sec: number;
   answer_sec: number;
-  instruction_ko?: string | null;
-  prompt_ko: string;
+  instruction_en?: string | null;
+  prompt_en: string;
   prompt_vi?: string | null;
   situation_vi?: string | null;
   frames?: PracticeScene[];
   audio?: { kind: "audio"; turns: PracticeTurn[] } | null;
   data?: PracticeDataBlock[];
-  plan?: { when_vi: string; do_vi: string; phrases_ko?: string | null }[];
+  plan?: { when_vi: string; do_vi: string; phrases_en?: string | null }[];
   tips_vi?: string[];
   patterns_vi?: string[];
-  model_answer_ko: string;
+  model_answer_en: string;
   syllables_vi?: string | null;
   common_errors_vi?: string[];
   pronunciation_vi?: string[];
@@ -731,7 +731,7 @@ export interface PracticeOverviewOut {
 export interface PracticeExtensionOut {
   grammar?: { item: string; used_in: string; meaning_vi: string; simpler_vi: string }[];
   vocab_note_vi?: string | null;
-  vocab_ko?: string[];
+  vocab_en?: string[];
 }
 /** A grammar card a practice question is linked to: enough for the box under the answer. */
 export interface LinkedCardOut {
@@ -748,7 +748,7 @@ export interface LinkedCardOut {
   /** The patterns of the earlier cards this one is made of. */
   builds_on?: string[];
   importance?: GrammarImportance | null;
-  example_ko?: string | null;
+  example_en?: string | null;
   example_vi?: string | null;
 }
 export interface LessonPracticeOut {
@@ -1005,7 +1005,7 @@ export interface CorpusItemOut {
   id: string;
   film_id: number;
   film_title: string;
-  text_ko: string;
+  text_en: string;
   kind: string;
   level: number;
   register: string;
@@ -1038,7 +1038,7 @@ export interface CorpusEnrichmentStatusOut {
 export interface HiddenCorpusItemOut {
   id: string;
   film_title: string;
-  text_ko: string;
+  text_en: string;
 }
 export interface CorpusFacetsOut {
   total: number;
@@ -1054,12 +1054,12 @@ export interface CorpusPageOut {
   items: CorpusItemOut[];
 }
 export interface CorpusAudioRequest {
-  text_ko: string;
+  text_en: string;
   voice?: string;
   prompt_version?: string;
 }
 export interface VocabAudioRequest {
-  text_ko: string;
+  text_en: string;
   voice?: string;
   prompt_version?: string;
 }
@@ -1081,7 +1081,7 @@ export interface PodcastRequest {
   /** Lessons only: the lecture of this sitting (buổi, 1-based) alone, not the whole lesson. */
   sitting?: number;
 }
-/** POST /editorials/{id}/audio — reads the article's OWN body_ko text
+/** POST /editorials/{id}/audio — reads the article's OWN body_en text
  * aloud verbatim (no Gemini script-writing step, unlike PodcastRequest).
  * Completely independent study mode from the podcast: this is the real
  * news text, native pacing/pauses, not a teaching script about its
@@ -1144,7 +1144,7 @@ export interface ReviewOnlyOut {
 
 /** A fill-in-the-blank question; the answer is included so it can be marked at once. */
 export interface ClozeOut {
-  prompt_ko: string;
+  prompt_en: string;
   answer: string;
   choices: string[];
 }
@@ -1236,10 +1236,10 @@ export interface ExamDrillQuestion {
   qtype_code: string;
   qtype_name_vi: string;
   /** printed once above a group of questions; null for older questions */
-  instruction_ko?: string | null;
-  stem_ko: string;
+  instruction_en?: string | null;
+  stem_en: string;
   options: string[];
-  passage_ko: string | null;
+  passage_en: string | null;
   paper_label: string;
 }
 export interface ExamDrillOut {
@@ -1267,13 +1267,13 @@ export interface WritingBlankView {
 }
 export interface WritingTargetOut {
   item_id: number;
-  hangul: string;
+  headword: string;
   meaning_vi: string;
 }
 export interface WritingPromptOut {
   text_type: string | null;
-  title_ko: string | null;
-  body_ko: string;
+  title_en: string | null;
+  body_en: string;
   register: string | null;
   blanks: WritingBlankView[];
   targets: WritingTargetOut[];
@@ -1422,7 +1422,7 @@ export interface TodayPlanOut {
 export interface EditorialArticleSummaryOut {
   id: string;
   source_name: string;
-  title_ko: string | null;
+  title_en: string | null;
   level_estimate: number | null;
   topic_tags: string[];
   created_at: string;
@@ -1437,12 +1437,12 @@ export type EditorialPracticeItem =
   | {
       type: "mcq";
       skill: "reading" | "vocab" | "grammar";
-      prompt_ko: string;
+      prompt_en: string;
       options: string[];
       answer_index: number;
       explanation_vi: string;
     }
-  | { type: "apply"; prompt_vi: string; model_ko: string };
+  | { type: "apply"; prompt_vi: string; model_en: string };
 /** One photo from the source article. `after_paragraph` = how many body
  * paragraphs precede it (0 = above the first paragraph). */
 export interface ArticleImageOut {
@@ -1452,7 +1452,7 @@ export interface ArticleImageOut {
 }
 /** Beginner "reading ladder" — generated once per article on the backend
  * (app/services/study_pack.py). `paragraphs[i]` lines up with the i-th
- * newline-separated paragraph of `body_ko`. */
+ * newline-separated paragraph of `body_en`. */
 export interface StudyWordOut {
   surface: string;
   base?: string | null;
@@ -1466,7 +1466,7 @@ export interface StudySentenceOut {
   grammar_notes_vi: string[];
 }
 export interface StudyParagraphOut {
-  easy_ko?: string | null;
+  easy_en?: string | null;
   sentences: StudySentenceOut[];
 }
 export interface StudyKeyTermOut {
@@ -1485,10 +1485,10 @@ export interface EditorialArticleOut {
   id: string;
   source_name: string;
   source_url: string;
-  title_ko: string | null;
+  title_en: string | null;
   level_estimate: number | null;
   topic_tags: string[];
-  body_ko: string;
+  body_en: string;
   vocab: VocabItemOut[];
   grammar: GrammarPointOut[];
   thinking_guide_text: string | null;
@@ -1541,8 +1541,8 @@ export interface EditorialCandidateOut {
   id: string;
   source_name: string;
   source_url: string;
-  title_ko: string;
-  snippet_ko: string | null;
+  title_en: string;
+  snippet_en: string | null;
   topic_tags: string[];
   published_date: string | null;
   status: string;
@@ -1847,7 +1847,7 @@ export interface DailyGrammarOut {
 export interface DailyWordOut {
   vocab_item_id: number | null;
   lesson_id: number | null;
-  hangul: string;
+  headword: string;
   meaning_vi: string | null;
   /** The learner has met this word (it has a study record). */
   known: boolean;
@@ -1856,13 +1856,13 @@ export interface DailyWordOut {
 export interface DailyPassageOut {
   id: string;
   kind: "dialogue" | "reading";
-  title_ko: string;
+  title_en: string;
   title_vi: string;
   scene_vi: string | null;
   speakers: Record<string, string>;
   lines: DailyLineOut[];
   /** The whole text, to be voiced as one clip (a reading). */
-  text_ko: string;
+  text_en: string;
   voice: string;
   glossary: DailyGlossOut[];
   questions: DailyQuestionOut[];
@@ -2716,7 +2716,7 @@ export interface EssayResultOut {
   missing_vi: string[];
   strengths_vi: string[];
   /** The learner's own text with only the mistakes fixed ("" when nothing to fix). */
-  corrected_ko: string;
+  corrected_en: string;
   summary_vi: string;
   length: {
     chars: number;

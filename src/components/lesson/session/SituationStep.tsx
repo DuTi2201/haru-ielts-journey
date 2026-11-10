@@ -80,7 +80,7 @@ export function SituationStep({ situation }: { situation: SituationOut }) {
   const replyOrder = useMemo(() => {
     const n = situation.reply.options.length;
     const ok = situation.reply.options.findIndex((o) => o.ok);
-    const base = situation.reply.prompt_ko.length;
+    const base = situation.reply.prompt_en.length;
     for (let seed = base; seed < base + 12; seed++) {
       const o = scramble(n, seed);
       if (o[0] !== ok) return o;
@@ -267,7 +267,7 @@ export function SituationStep({ situation }: { situation: SituationOut }) {
             hint="Một người nói với bạn. Chọn câu đáp hợp nhất, rồi đọc lý do của cả ba câu."
           />
           <div className="mt-2 rounded-[14px] bg-fill px-3 py-2">
-            <Ko className="text-[17px] font-bold">{situation.reply.prompt_ko}</Ko>
+            <Ko className="text-[17px] font-bold">{situation.reply.prompt_en}</Ko>
             <span className="block text-[12px] leading-4 text-ink-2">
               {situation.reply.prompt_vi}
             </span>

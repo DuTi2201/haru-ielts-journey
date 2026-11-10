@@ -19,7 +19,7 @@ export const requestCorpusAudio = (corpusItemId: string, body: CorpusAudioReques
   });
 
 /** POST /vocab-items/{vocab_item_id}/audio — same content-addressed cache
- * as corpus audio, but for one vocab flashcard's hangul. Covers both the
+ * as corpus audio, but for one vocab flashcard's headword. Covers both the
  * lesson-flashcard screen and an editorial article's vocab list, since
  * both read the exact same VocabItem rows. No login required. */
 export const requestVocabAudio = (vocabItemId: number, body: VocabAudioRequest) =>
@@ -74,11 +74,11 @@ export const requestEditorialPodcast = (articleId: string, body: PodcastRequest 
   });
 
 /** POST /editorials/{article_id}/audio — reads the article's OWN scraped
- * body_ko text aloud verbatim, no Gemini script-writing step. Completely
+ * body_en text aloud verbatim, no Gemini script-writing step. Completely
  * independent feature/cache from requestEditorialPodcast above: a learner
  * hearing the real news article and a learner hearing a teaching script
  * ABOUT its vocab/grammar are two different study modes. Content-addressed
- * server-side off a hash of body_ko itself, so a later text backfill
+ * server-side off a hash of body_en itself, so a later text backfill
  * naturally busts stale audio. No login required. */
 export const requestArticleAudio = (articleId: string, body: ArticleAudioRequest = {}) =>
   apiFetch<JobAccepted>(`/api/v1/editorials/${encodeURIComponent(articleId)}/audio`, {

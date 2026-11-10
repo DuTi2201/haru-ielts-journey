@@ -301,12 +301,12 @@ export function Question({
 
   return (
     <div className="space-y-2.5">
-      {(question.prompt_ko || question.prompt_vi) && (
+      {(question.prompt_en || question.prompt_vi) && (
         <div>
-          {question.prompt_ko && (
+          {question.prompt_en && (
             <p lang="ko" className="font-korean text-[14.5px] font-semibold leading-6">
               {showNumber && <span className="mr-1.5 text-blue-deep">{question.id}.</span>}
-              {renderMarks(question.prompt_ko)}
+              {renderMarks(question.prompt_en)}
             </p>
           )}
           {question.prompt_vi && (
@@ -436,9 +436,9 @@ export function McqExercise({
         <p className="text-[12px] font-semibold uppercase tracking-wide text-blue-deep">
           {exercise.title_vi}
         </p>
-        {exercise.instruction_ko && (
+        {exercise.instruction_en && (
           <p lang="ko" className="font-korean mt-1 text-[13px] font-semibold leading-5">
-            {exercise.instruction_ko}
+            {exercise.instruction_en}
           </p>
         )}
         {exercise.instruction_vi && (

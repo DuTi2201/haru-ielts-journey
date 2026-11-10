@@ -97,7 +97,7 @@ const cardKey = (item: ReviewQueueItem, retry: boolean) =>
   `${item.item_type}:${item.item_id}${retry ? ":again" : ""}`;
 
 function title(item: ReviewQueueItem): string {
-  return item.vocab?.hangul ?? item.grammar?.pattern ?? "";
+  return item.vocab?.headword ?? item.grammar?.pattern ?? "";
 }
 
 function meaning(item: ReviewQueueItem): string {
@@ -157,7 +157,7 @@ function ListenButton({
   return (
     <button
       type="button"
-      onClick={() => void audio.play(vocab.id, vocab.hangul)}
+      onClick={() => void audio.play(vocab.id, vocab.headword)}
       disabled={audio.state === "loading"}
       className="hit-area card-soft flex min-h-9 items-center gap-1.5 rounded-full bg-blue-soft px-3 text-xs font-semibold text-blue-deep active:scale-95 disabled:opacity-60"
     >
@@ -225,9 +225,9 @@ function RecognizeCard({
         {revealed ? (
           <div className="mt-4 animate-in space-y-2 border-t border-line pt-4 duration-300 fade-in motion-reduce:animate-none">
             <p className="text-lg font-semibold text-blue-deep">{meaning(item)}</p>
-            {vocab?.example_ko && (
+            {vocab?.example_en && (
               <p lang="ko" className="font-korean text-[13px] leading-5 text-ink-2">
-                {vocab.example_ko}
+                {vocab.example_en}
               </p>
             )}
             {vocab?.sino_vietnamese && (
@@ -282,7 +282,7 @@ function RecognizeCard({
               {vocab && (
                 <button
                   type="button"
-                  onClick={() => void audio.play(vocab.id, vocab.hangul)}
+                  onClick={() => void audio.play(vocab.id, vocab.headword)}
                   disabled={audio.state === "loading"}
                   aria-label="Nghe phát âm"
                   className="flex h-12 w-14 shrink-0 items-center justify-center rounded-[16px] bg-blue-soft text-blue-deep active:scale-95 disabled:opacity-60"
@@ -391,7 +391,7 @@ function ClozeCard({ item, onResult, onNext }: AnswerProps & { item: ReviewQueue
         </p>
         <p className="mt-1 text-sm font-semibold text-blue-deep">{vocab.meaning_vi}</p>
         <p lang="ko" className="font-korean mt-3 text-3xl font-semibold tracking-tight">
-          {cloze.prompt_ko}
+          {cloze.prompt_en}
         </p>
         <FamilyChip family={vocab.family} className="mt-3" />
       </div>
@@ -452,7 +452,7 @@ function ClozeCard({ item, onResult, onNext }: AnswerProps & { item: ReviewQueue
             </button>
           )}
           <p lang="ko" className="font-korean text-lg font-semibold">
-            {vocab.hangul}
+            {vocab.headword}
           </p>
           <p className="text-xs font-semibold text-ink-2">{vocab.meaning_vi}</p>
           <ChunkDetails item={vocab} />
@@ -937,7 +937,7 @@ function GrammarBack({ grammar }: { grammar: NonNullable<ReviewQueueItem["gramma
     .map((t) => tidyTable(t).trim())
     .filter(Boolean);
   const [first, ...rest] = parts;
-  const examples = (grammar.example_ko ?? "")
+  const examples = (grammar.example_en ?? "")
     .split(/(?<=[.?!])\s+/)
     .map((t) => t.trim())
     .filter(Boolean);
@@ -954,10 +954,10 @@ function GrammarBack({ grammar }: { grammar: NonNullable<ReviewQueueItem["gramma
           ))}
         </ul>
       )}
-      {grammar.topik_tip_vi && (
+      {grammar.exam_tip_vi && (
         <Rich
           as="p"
-          text={`💡 ${grammar.topik_tip_vi}`}
+          text={`💡 ${grammar.exam_tip_vi}`}
           className="rounded-[12px] bg-yellow-soft px-3 py-2 text-[12.5px] font-medium leading-5 text-ink"
         />
       )}

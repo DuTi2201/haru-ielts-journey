@@ -32,7 +32,7 @@ function McqCard({
         {index}. {SKILL[item.skill]}
       </p>
       <p lang="ko" className="mt-1 whitespace-pre-line text-[15px] font-semibold leading-6">
-        {item.prompt_ko}
+        {item.prompt_en}
       </p>
       <div className="mt-2 grid gap-1.5">
         {item.options.map((opt, i) => {
@@ -131,7 +131,7 @@ export function ArticlePractice({ items }: { items: EditorialPracticeItem[] }) {
               lang="ko"
               className="mt-2 whitespace-pre-line rounded-[12px] bg-blue-soft px-3 py-2 text-[14px] leading-6"
             >
-              {apply.model_ko}
+              {apply.model_en}
             </p>
           )}
         </div>

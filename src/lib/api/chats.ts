@@ -3,7 +3,7 @@ import { apiFetch } from "./client";
 /** «Hội thoại»: the lessons' dialogues as chats (GET /me/chats). */
 export interface ChatSummary {
   id: string;
-  title_ko: string;
+  title_en: string;
   title_vi: string;
   scene_vi?: string | null;
   partner: string;
@@ -28,7 +28,7 @@ export interface ChatTurn {
 
 export interface Chat {
   id: string;
-  title_ko: string;
+  title_en: string;
   title_vi: string;
   scene_vi?: string | null;
   partner: string;

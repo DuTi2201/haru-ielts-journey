@@ -70,10 +70,10 @@ export interface Sitting {
   minutes: number;
 }
 
-type V = Pick<VocabItemOut, "id" | "hangul"> &
-  Partial<Pick<VocabItemOut, "example_ko" | "example_vi">>;
+type V = Pick<VocabItemOut, "id" | "headword"> &
+  Partial<Pick<VocabItemOut, "example_en" | "example_vi">>;
 type G = Pick<GrammarPointOut, "id" | "pattern"> &
-  Partial<Pick<GrammarPointOut, "example_ko" | "example_vi">>;
+  Partial<Pick<GrammarPointOut, "example_en" | "example_vi">>;
 type Plan = LessonSessionOut;
 type Item = PracticeItem;
 
@@ -121,8 +121,8 @@ const isQuick = (item: Item) =>
   item.type !== "write_essay" && item.type !== "speak" && questionIdsOf(item).length <= 4;
 
 /** The part of a word to look for in a sentence: a verb or adjective without -다. */
-function stemOf(hangul: string): string | null {
-  const w = hangul.split(/[\s(/]/)[0]?.trim() ?? "";
+function stemOf(headword: string): string | null {
+  const w = headword.split(/[\s(/]/)[0]?.trim() ?? "";
   const stem = w.endsWith("다") && w.length > 2 ? w.slice(0, -1) : w;
   return stem.length >= 2 ? stem : null;
 }
@@ -153,7 +153,7 @@ export function sayLines(v: V[], g: G[]): SayLine[] {
     out.push({ ko: k, vi: (vi ?? "").trim() || null });
   };
   for (const card of g) {
-    const ko = (card.example_ko ?? "")
+    const ko = (card.example_en ?? "")
       .split("\n")
       .map((x) => x.trim())
       .filter(Boolean);
@@ -161,9 +161,9 @@ export function sayLines(v: V[], g: G[]): SayLine[] {
     ko.slice(0, 2).forEach((line, i) => add(line, vi[i]));
   }
   const fromWords = v
-    .filter((w) => (w.example_ko ?? "").trim())
-    .sort((a, b) => (a.example_ko ?? "").length - (b.example_ko ?? "").length);
-  for (const w of fromWords) add(w.example_ko, w.example_vi);
+    .filter((w) => (w.example_en ?? "").trim())
+    .sort((a, b) => (a.example_en ?? "").length - (b.example_en ?? "").length);
+  for (const w of fromWords) add(w.example_en, w.example_vi);
   return out;
 }
 
@@ -182,7 +182,7 @@ export function planSittings(
   const pool = new Map(items.map((it) => [it.id, it]));
   type Draft = { v: V[]; vFrom: number; g: G[]; gFrom: number; plan?: Plan };
   const merged: Draft[] = [];
-  const byHangul = new Map(vocab.map((x) => [x.hangul, x]));
+  const byHangul = new Map(vocab.map((x) => [x.headword, x]));
   const byPattern = new Map(grammar.map((x) => [x.pattern, x]));
   const planned =
     plans.length > 0 &&
@@ -258,7 +258,7 @@ export function planSittings(
     // the check: the author's picks when planned; else quick items on these patterns first, then
     // items that use these words
     const patterns = new Set(d.g.map((x) => x.pattern));
-    const stems = d.v.map((x) => stemOf(x.hangul)).filter((s): s is string => !!s);
+    const stems = d.v.map((x) => stemOf(x.headword)).filter((s): s is string => !!s);
     const picked: Item[] = [];
     let count = 0;
     const take = (pred: (it: Item) => boolean) => {

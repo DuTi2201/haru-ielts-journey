@@ -142,7 +142,7 @@ export function useCorpusAudio() {
       }
       cache.set(corpusItemId, { result: null, el: null });
       try {
-        const accepted = await requestCorpusAudio(corpusItemId, { text_ko: textKo, voice });
+        const accepted = await requestCorpusAudio(corpusItemId, { text_en: textKo, voice });
         if (accepted.status !== "succeeded") return; // still generating: lands in the server cache
         const full = await getJob(accepted.job_id);
         if (!full.result || !cache.has(corpusItemId)) return;
@@ -178,7 +178,7 @@ export function useCorpusAudio() {
       }
       setState("loading");
       try {
-        const accepted = await requestCorpusAudio(corpusItemId, { text_ko: textKo, voice });
+        const accepted = await requestCorpusAudio(corpusItemId, { text_en: textKo, voice });
         if (accepted.status === "succeeded") {
           // Cache hit — the job was already marked succeeded synchronously
           // (no Celery run, so no SSE event will ever fire for it): fetch

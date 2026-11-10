@@ -67,8 +67,8 @@ export interface TalkProfile {
 
 export interface PronunciationItem {
   index: number;
-  heard_ko: string;
-  target_ko: string;
+  heard_en: string;
+  target_en: string;
   score: number;
   issues: PronunciationIssue[];
   good_vi: string;

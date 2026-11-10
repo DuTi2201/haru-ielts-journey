@@ -57,8 +57,8 @@ export function WriteEssay({
   const status = lengthStatus(count, exercise.limits.min, exercise.limits.max);
   const prev = previous[exercise.id];
   // a self-practice prompt ships a framework but no model answer yet
-  const hasModel = exercise.model_answer_ko.trim().length > 0;
-  const modelCount = countWords(exercise.model_answer_ko);
+  const hasModel = exercise.model_answer_en.trim().length > 0;
+  const modelCount = countWords(exercise.model_answer_en);
 
   const rubric = exercise.rubric ?? [];
   const criteria =
@@ -75,9 +75,9 @@ export function WriteEssay({
         <p className="text-[12px] font-semibold uppercase tracking-wide text-blue-deep">
           {exercise.title_vi} · {exercise.points} điểm
         </p>
-        {exercise.instruction_ko && (
+        {exercise.instruction_en && (
           <p lang="ko" className="font-korean mt-1 text-[13px] font-semibold leading-6">
-            {exercise.instruction_ko}
+            {exercise.instruction_en}
           </p>
         )}
         {exercise.instruction_vi && (
@@ -93,16 +93,16 @@ export function WriteEssay({
         </div>
       )}
 
-      {(exercise.prompt_ko || (exercise.bullets_ko && exercise.bullets_ko.length > 0)) && (
+      {(exercise.prompt_en || (exercise.bullets_en && exercise.bullets_en.length > 0)) && (
         <div className="mt-3 rounded-[16px] border border-line bg-card p-3.5">
-          {exercise.prompt_ko && (
+          {exercise.prompt_en && (
             <p lang="ko" className="font-korean text-[15px] font-semibold leading-6">
-              {exercise.prompt_ko}
+              {exercise.prompt_en}
             </p>
           )}
-          {exercise.bullets_ko && exercise.bullets_ko.length > 0 && (
+          {exercise.bullets_en && exercise.bullets_en.length > 0 && (
             <ul className="mt-1.5 space-y-1">
-              {exercise.bullets_ko.map((b) => (
+              {exercise.bullets_en.map((b) => (
                 <li key={b} lang="ko" className="font-korean text-[15px] leading-6">
                   · {b}
                 </li>
@@ -235,7 +235,7 @@ export function WriteEssay({
                 lang="ko"
                 className="font-korean mt-1.5 whitespace-pre-line text-[14.5px] leading-7"
               >
-                {exercise.model_answer_ko}
+                {exercise.model_answer_en}
               </p>
               {exercise.model_note_vi && (
                 <Rich

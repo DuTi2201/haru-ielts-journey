@@ -226,11 +226,11 @@ function EssayResult({ result, stale }: { result: EssayResultOut; stale: boolean
         </div>
       )}
 
-      {result.corrected_ko && (
+      {result.corrected_en && (
         <div className="rounded-[16px] border border-line bg-card p-3.5">
           <h4 className="text-xs font-semibold">Bài của bạn sau khi sửa lỗi</h4>
           <p lang="ko" className="font-korean mt-1.5 whitespace-pre-line text-[14.5px] leading-7">
-            {result.corrected_ko}
+            {result.corrected_en}
           </p>
         </div>
       )}

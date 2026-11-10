@@ -22,7 +22,7 @@ function speakWithBrowser(text: string): boolean {
 }
 
 /** Same shape as useCorpusAudio (src/hooks/use-corpus-audio.ts), but for a
- * vocab flashcard's hangul instead of a /listening sentence — plays it
+ * vocab flashcard's headword instead of a /listening sentence — plays it
  * through the backend TTS pipeline (Google Chirp 3 HD, Gemini as its
  * fallback — app/api/routers/audio.py's vocab_router), reusing the
  * content-addressed cache so replaying a word never re-synthesizes. Falls back to the device's own
@@ -112,7 +112,7 @@ export function useVocabAudio() {
       }
       cache.set(vocabItemId, { result: null, el: null });
       try {
-        const accepted = await requestVocabAudio(vocabItemId, { text_ko: textKo, voice });
+        const accepted = await requestVocabAudio(vocabItemId, { text_en: textKo, voice });
         if (accepted.status !== "succeeded") return; // still generating: lands in the server cache
         const full = await getJob(accepted.job_id);
         if (!full.result || !cache.has(vocabItemId)) return;
@@ -144,7 +144,7 @@ export function useVocabAudio() {
       }
       setState("loading");
       try {
-        const accepted = await requestVocabAudio(vocabItemId, { text_ko: textKo, voice });
+        const accepted = await requestVocabAudio(vocabItemId, { text_en: textKo, voice });
         if (accepted.status === "succeeded") {
           // Cache hit — succeeded synchronously, no SSE event will fire.
           const full = await getJob(accepted.job_id);

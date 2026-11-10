@@ -82,14 +82,14 @@ function BackToProgress() {
 
 /** The paragraph with ㉠ ㉡ drawn as marks, the way the exam prints them. */
 function Paragraph({ prompt }: { prompt: WritingPromptOut }) {
-  const parts = prompt.body_ko.split(/(㉠|㉡)/);
+  const parts = prompt.body_en.split(/(㉠|㉡)/);
   return (
     <div className="card-soft rounded-[20px] bg-card px-4 py-4">
-      {(prompt.text_type || prompt.title_ko) && (
+      {(prompt.text_type || prompt.title_en) && (
         <p lang="ko" className="font-korean text-xs font-semibold text-ink-2">
           {prompt.text_type}
-          {prompt.text_type && prompt.title_ko ? " · " : ""}
-          {prompt.title_ko}
+          {prompt.text_type && prompt.title_en ? " · " : ""}
+          {prompt.title_en}
         </p>
       )}
       <p lang="ko" className="font-korean mt-1.5 whitespace-pre-wrap text-[15px] leading-7">
@@ -122,7 +122,7 @@ function Targets({ prompt }: { prompt: WritingPromptOut }) {
             className="rounded-full bg-blue-soft px-2.5 py-0.5 text-[12px] font-semibold text-blue-deep"
           >
             <span lang="ko" className="font-korean font-semibold">
-              {t.hangul}
+              {t.headword}
             </span>{" "}
             · {t.meaning_vi}
           </li>

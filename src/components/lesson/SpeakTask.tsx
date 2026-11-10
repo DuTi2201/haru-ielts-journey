@@ -196,7 +196,7 @@ export function SpeakTask({
   const recorder = useLocalRecorder();
 
   const variant = exercise.practice?.find((p) => p.id === variantId) ?? null;
-  const prompt = variant?.prompt_ko ?? exercise.prompt_ko;
+  const prompt = variant?.prompt_en ?? exercise.prompt_en;
   const promptVi = variant ? (variant.prompt_vi ?? null) : (exercise.prompt_vi ?? null);
   const frames = variant ? (variant.frames ?? []) : (exercise.frames ?? []);
   const data: PracticeDataBlock[] = variant ? (variant.data ?? []) : (exercise.data ?? []);
@@ -263,9 +263,9 @@ export function SpeakTask({
         <p className="text-[12px] font-semibold uppercase tracking-wide text-blue-deep">
           {exercise.title_vi} · {exercise.max_points} điểm
         </p>
-        {exercise.instruction_ko && (
+        {exercise.instruction_en && (
           <p lang="ko" className="font-korean mt-1 text-[13px] font-semibold leading-5">
-            {exercise.instruction_ko}
+            {exercise.instruction_en}
           </p>
         )}
       </header>
@@ -509,7 +509,7 @@ export function SpeakTask({
                 lang="ko"
                 className="font-korean mt-1.5 whitespace-pre-line text-[14.5px] leading-7"
               >
-                {exercise.model_answer_ko}
+                {exercise.model_answer_en}
               </p>
             </section>
           )}
@@ -524,9 +524,9 @@ export function SpeakTask({
                   >
                     <span className="font-semibold">{p.when_vi}</span>
                     <Rich as="p" text={p.do_vi} className="text-ink-2" />
-                    {p.phrases_ko && (
+                    {p.phrases_en && (
                       <Ko className="block text-[13px] font-semibold leading-6 text-ink">
-                        {p.phrases_ko}
+                        {p.phrases_en}
                       </Ko>
                     )}
                   </li>

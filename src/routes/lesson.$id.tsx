@@ -702,9 +702,9 @@ function LessonView({ lesson }: { lesson: LessonOut }) {
                     </span>
                   )}
                 </div>
-                {lesson.title_ko && (
+                {lesson.title_en && (
                   <Ko className="mt-2 block text-[13px] font-semibold opacity-80">
-                    {lesson.title_ko}
+                    {lesson.title_en}
                   </Ko>
                 )}
                 <h1 className="mt-0.5 text-[22px] font-extrabold leading-tight lg:text-2xl">

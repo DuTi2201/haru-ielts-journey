@@ -127,7 +127,7 @@ function ReadingListScreen() {
                     <div className="min-w-0 flex-1">
                       <p className="text-[12px] font-semibold text-ink-2">{article.source_name}</p>
                       <p className="font-korean mt-0.5 line-clamp-2 break-keep text-sm font-semibold leading-snug">
-                        {article.title_ko || "(Chưa có tiêu đề)"}
+                        {article.title_en || "(Chưa có tiêu đề)"}
                       </p>
                     </div>
                     {article.cover_image_url ? (

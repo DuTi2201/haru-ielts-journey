@@ -26,12 +26,12 @@ export function WordSheet({
     >
       <div
         role="dialog"
-        aria-label={`Nghĩa của từ ${word.hangul}`}
+        aria-label={`Nghĩa của từ ${word.headword}`}
         className="glass-panel-strong pointer-events-auto max-h-[min(58dvh,calc(100dvh-var(--tabbar-h)-var(--player-bar-h,0px)-120px))] animate-in overflow-y-auto overscroll-contain rounded-[22px] p-4 duration-200 fade-in slide-in-from-bottom-3 motion-reduce:animate-none"
       >
         <div className="flex items-start justify-between gap-2">
           <p className="font-korean text-lg font-semibold leading-tight">
-            {word.hangul}{" "}
+            {word.headword}{" "}
             {word.pos && (
               <span className="font-sans text-[12px] font-semibold text-ink-2">({word.pos})</span>
             )}
@@ -61,9 +61,9 @@ export function WordSheet({
           </div>
         </div>
         <p className="mt-1 text-sm font-semibold text-blue-deep">{word.meaning_vi}</p>
-        {word.example_ko && (
+        {word.example_en && (
           <p className="font-korean mt-1.5 break-keep text-xs leading-5 text-ink-2">
-            {word.example_ko}
+            {word.example_en}
           </p>
         )}
         {footer}

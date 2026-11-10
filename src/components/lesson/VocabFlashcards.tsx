@@ -87,7 +87,7 @@ export function VocabFlashcards({
   const prefetchAudio = audio.prefetch;
   useEffect(() => {
     if (!next || !listened.current || audioFailed) return;
-    void prefetchAudio(next.id, next.hangul);
+    void prefetchAudio(next.id, next.headword);
   }, [next, audioFailed, prefetchAudio]);
 
   function saveReview(item: VocabItemOut, correct: boolean) {
@@ -181,7 +181,7 @@ export function VocabFlashcards({
           type="button"
           onClick={() => {
             listened.current = true;
-            void audio.play(current.id, current.hangul);
+            void audio.play(current.id, current.headword);
           }}
           disabled={audio.state === "loading"}
           className="hit-area card-soft flex min-h-9 items-center gap-1.5 rounded-full bg-blue-soft px-3 text-xs font-semibold text-blue-deep active:scale-95 disabled:opacity-60"
@@ -233,13 +233,13 @@ export function VocabFlashcards({
           className="card-soft relative flex min-h-[200px] w-full flex-col items-center justify-center rounded-[24px] bg-card px-6 pb-9 pt-6 text-center transition-transform duration-150 active:scale-[0.98] motion-reduce:transition-none"
         >
           <span lang="ko" className="font-korean text-4xl font-semibold tracking-tight">
-            {current.hangul}
+            {current.headword}
           </span>
-          {current.pron_ko && (
+          {current.pron_en && (
             <span className="mt-1 text-[14px] font-semibold text-ink-2">
               đọc là{" "}
               <span lang="ko" className="font-korean text-blue-deep">
-                {current.pron_ko}
+                {current.pron_en}
               </span>
             </span>
           )}
@@ -265,17 +265,17 @@ export function VocabFlashcards({
                 {/* the picture belongs to the answer side: on the front it would give the word away */}
                 <LessonImage
                   src={current.image_url}
-                  word={current.hangul}
+                  word={current.headword}
                   eager
                   className="mx-auto mb-2 h-32 w-32"
                 />
                 <span className="block text-lg font-semibold text-blue-deep">
                   {current.meaning_vi}
                 </span>
-                {current.example_ko && (
+                {current.example_en && (
                   <span className="block pt-0.5">
                     <span lang="ko" className="font-korean block text-[13px] leading-5 text-ink">
-                      {current.example_ko}
+                      {current.example_en}
                     </span>
                     {current.example_vi && (
                       <span className="block text-xs leading-5 text-ink-2">

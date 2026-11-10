@@ -51,11 +51,11 @@ function ExamQuestion({
   const visual = question.options.some((o) => o.scene || o.chart);
   return (
     <div className="space-y-2.5">
-      {(question.prompt_ko || question.prompt_vi) && (
+      {(question.prompt_en || question.prompt_vi) && (
         <div>
-          {question.prompt_ko && (
+          {question.prompt_en && (
             <p lang="ko" className="font-korean text-[14.5px] font-semibold leading-6">
-              {renderMarks(question.prompt_ko)}
+              {renderMarks(question.prompt_en)}
             </p>
           )}
           {question.prompt_vi && (
@@ -109,9 +109,9 @@ function ExamCard({
           Câu {number}
           {exercise.questions.length > 1 && `–${number + exercise.questions.length - 1}`}
         </p>
-        {exercise.instruction_ko && (
+        {exercise.instruction_en && (
           <p lang="ko" className="font-korean mt-1 text-[13px] font-semibold leading-5">
-            {exercise.instruction_ko}
+            {exercise.instruction_en}
           </p>
         )}
       </header>
@@ -171,9 +171,9 @@ function ReviewedExercise({
       <p className="text-[12px] font-semibold uppercase tracking-wide text-blue-deep">
         Câu {number}
       </p>
-      {exercise.instruction_ko && (
+      {exercise.instruction_en && (
         <p lang="ko" className="font-korean mt-1 text-[13px] font-semibold leading-5">
-          {exercise.instruction_ko}
+          {exercise.instruction_en}
         </p>
       )}
       {exercise.stimulus && (

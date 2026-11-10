@@ -29,7 +29,7 @@ function KnownChip() {
 
 /** "Several examples are one per line, example_vi aligned line by line". */
 function examplePairs(g: GrammarPointOut): { ko: string; vi: string | null }[] {
-  const ko = (g.example_ko ?? "")
+  const ko = (g.example_en ?? "")
     .split("\n")
     .map((s) => s.trim())
     .filter(Boolean);
@@ -427,9 +427,9 @@ export function GrammarCards({
                 <BuiltInto refs={g.built_into} lessonId={g.lesson_id} />
 
                 {g.note_vi && <MistakesBox text={g.note_vi} />}
-                {g.topik_tip_vi && (
+                {g.exam_tip_vi && (
                   <More title="💡 Mẹo cho bài thi IELTS">
-                    <Rich as="p" text={g.topik_tip_vi} className="text-xs leading-5 text-ink-2" />
+                    <Rich as="p" text={g.exam_tip_vi} className="text-xs leading-5 text-ink-2" />
                   </More>
                 )}
 

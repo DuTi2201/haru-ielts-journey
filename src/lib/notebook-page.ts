@@ -67,14 +67,14 @@ export function shortMeaning(vi: string): string {
 
 type SittingSource = {
   vocab: {
-    hangul: string;
+    headword: string;
     meaning_vi: string;
-    pron_ko?: string | null | undefined;
+    pron_en?: string | null | undefined;
     priority?: "core" | "recognize" | null | undefined;
   }[];
   grammar: {
     pattern: string;
-    example_ko?: string | null | undefined;
+    example_en?: string | null | undefined;
     example_vi?: string | null | undefined;
   }[];
 };
@@ -82,12 +82,12 @@ type SittingSource = {
 /** The page for one sitting, from the words and cards it taught. Words marked "core" come first. */
 export function notebookPage(src: SittingSource, canDo?: string): NotebookPage | null {
   const aim = (canDo ?? "").toLowerCase();
-  const examples = src.grammar.map((g) => (g.example_ko ?? "").split("\n")[0]!.trim());
+  const examples = src.grammar.map((g) => (g.example_en ?? "").split("\n")[0]!.trim());
   // What the sitting is for comes first (its can-do names the words), then core words, then the
   // rest; lesson order alone would hand out the first six of an alphabetical list.
   const score = (v: SittingSource["vocab"][number]) =>
-    (aim.includes(v.hangul) || aim.includes(shortMeaning(v.meaning_vi).toLowerCase()) ? 4 : 0) +
-    (examples.some((e) => e.includes(v.hangul)) ? 2 : 0) +
+    (aim.includes(v.headword) || aim.includes(shortMeaning(v.meaning_vi).toLowerCase()) ? 4 : 0) +
+    (examples.some((e) => e.includes(v.headword)) ? 2 : 0) +
     (v.priority === "core" ? 1 : 0);
   const ranked = src.vocab
     .map((v, i) => ({ v, i, sc: score(v) }))
@@ -97,13 +97,13 @@ export function notebookPage(src: SittingSource, canDo?: string): NotebookPage |
   const shorts = ranked.map((v) => shortMeaning(v.meaning_vi));
   // two words that end up with the same margin meaning keep their full meaning
   const words: NoteWord[] = ranked.map((v, i) => ({
-    ko: v.hangul,
+    ko: v.headword,
     vi: shorts.filter((x) => x === shorts[i]).length > 1 ? v.meaning_vi.trim() : shorts[i]!,
-    pron: v.pron_ko ?? undefined,
+    pron: v.pron_en ?? undefined,
   }));
-  const chosen = new Set(ranked.map((v) => v.hangul));
+  const chosen = new Set(ranked.map((v) => v.headword));
   const patterns: NotePattern[] = src.grammar.slice(0, MAX_NOTE_PATTERNS).map((g) => {
-    const lines = (g.example_ko ?? "").split("\n").map((x) => x.trim());
+    const lines = (g.example_en ?? "").split("\n").map((x) => x.trim());
     const at = Math.max(
       0,
       lines.findIndex((l) => [...chosen].some((w) => l.includes(w))),

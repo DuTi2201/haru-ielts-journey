@@ -94,8 +94,8 @@ export function VocabList({
                 const loading = activeId === v.id && audio.state === "loading";
                 const hasMore = !!(
                   v.image_url ||
-                  hasPositionArt(v.hangul) ||
-                  v.example_ko ||
+                  hasPositionArt(v.headword) ||
+                  v.example_en ||
                   v.sino_vietnamese ||
                   v.usage_note_vi ||
                   v.collocations?.length
@@ -115,7 +115,7 @@ export function VocabList({
                       >
                         <LessonImage
                           src={v.image_url}
-                          word={v.hangul}
+                          word={v.headword}
                           className="h-11 w-11 rounded-[10px]"
                         />
                         <span className="min-w-0 flex-1">
@@ -123,10 +123,10 @@ export function VocabList({
                               the word is long), so the word and its meaning keep the whole row */}
                           <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                             <Ko className="break-keep text-[17px] font-semibold leading-6">
-                              {v.hangul}
+                              {v.headword}
                             </Ko>
-                            {v.pron_ko && (
-                              <Ko className="text-[13px] font-semibold text-ink-2">{v.pron_ko}</Ko>
+                            {v.pron_en && (
+                              <Ko className="text-[13px] font-semibold text-ink-2">{v.pron_en}</Ko>
                             )}
                             <ExamChip tag={v.exam} />
                             <PriorityChip priority={v.priority} />
@@ -156,9 +156,9 @@ export function VocabList({
                         type="button"
                         onClick={() => {
                           setActiveId(v.id);
-                          void audio.play(v.id, v.hangul);
+                          void audio.play(v.id, v.headword);
                         }}
-                        aria-label={`Nghe ${v.hangul}`}
+                        aria-label={`Nghe ${v.headword}`}
                         className="flex w-12 shrink-0 items-center justify-center rounded-r-[16px] text-blue-deep active:scale-90"
                       >
                         {loading ? (
@@ -172,12 +172,12 @@ export function VocabList({
                       <div className="space-y-1.5 border-t border-progress px-3.5 pb-3 pt-2.5">
                         <LessonImage
                           src={v.image_url}
-                          word={v.hangul}
+                          word={v.headword}
                           className="mx-auto h-36 w-36 sm:h-40 sm:w-40"
                         />
-                        {v.example_ko && (
+                        {v.example_en && (
                           <div>
-                            <Ko className="block text-[13px] leading-5">{v.example_ko}</Ko>
+                            <Ko className="block text-[13px] leading-5">{v.example_en}</Ko>
                             {v.example_vi && (
                               <span className="block text-xs leading-5 text-ink-2">
                                 {v.example_vi}

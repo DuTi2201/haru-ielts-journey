@@ -50,8 +50,8 @@ export function LockedLessonView({ lesson }: { lesson: LessonOut }) {
                 Xem trước
               </span>
             </div>
-            {lesson.title_ko && (
-              <Ko className="mt-2 block text-[13px] font-semibold text-ink-2">{lesson.title_ko}</Ko>
+            {lesson.title_en && (
+              <Ko className="mt-2 block text-[13px] font-semibold text-ink-2">{lesson.title_en}</Ko>
             )}
             <h1 className="mt-0.5 flex items-start gap-2 text-2xl font-bold leading-tight">
               <BookOpen size={22} strokeWidth={2.2} className="mt-1 shrink-0 text-blue" />
@@ -87,15 +87,15 @@ export function LockedLessonView({ lesson }: { lesson: LessonOut }) {
                 {lesson.vocab.map((v) => (
                   <li key={v.id} className="rounded-[14px] border border-line bg-card px-3.5 py-3">
                     <p className="flex flex-wrap items-baseline gap-x-2">
-                      <Ko className="text-lg font-semibold">{v.hangul}</Ko>
+                      <Ko className="text-lg font-semibold">{v.headword}</Ko>
                       {v.pos && (
                         <span className="text-[12px] font-semibold text-ink-2">{v.pos}</span>
                       )}
                     </p>
                     <p className="text-[13px] font-semibold leading-5">{v.meaning_vi}</p>
-                    {v.example_ko && (
+                    {v.example_en && (
                       <p className="mt-1.5 border-l-2 border-blue pl-2.5">
-                        <Ko className="block text-[13px] leading-6">{v.example_ko}</Ko>
+                        <Ko className="block text-[13px] leading-6">{v.example_en}</Ko>
                         {v.example_vi && (
                           <span className="block text-[11.5px] font-medium leading-5 text-ink-2">
                             {v.example_vi}

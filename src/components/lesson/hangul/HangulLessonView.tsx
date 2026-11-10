@@ -687,9 +687,9 @@ export function HangulLessonView({ lesson }: { lesson: LessonOut }) {
                     5 phần · khoảng 50 phút
                   </span>
                 </div>
-                {lesson.title_ko && (
+                {lesson.title_en && (
                   <Ko className="mt-2 block text-[13px] font-semibold text-ink-2">
-                    {lesson.title_ko}
+                    {lesson.title_en}
                   </Ko>
                 )}
                 <h1 className="mt-0.5 text-2xl font-bold leading-tight">{lesson.title}</h1>

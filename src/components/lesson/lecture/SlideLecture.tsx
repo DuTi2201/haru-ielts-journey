@@ -59,18 +59,18 @@ export interface LecturePictures {
 
 export function lecturePictures(lesson: {
   image_url?: string | null | undefined;
-  title_ko?: string | null | undefined;
-  vocab: { hangul: string; image_url?: string | null | undefined }[];
+  title_en?: string | null | undefined;
+  vocab: { headword: string; image_url?: string | null | undefined }[];
   grammar: { pattern: string; image_url?: string | null | undefined }[];
 }): LecturePictures {
   const vocab: Record<string, string> = {};
-  for (const v of lesson.vocab) if (v.image_url) vocab[v.hangul] = v.image_url;
+  for (const v of lesson.vocab) if (v.image_url) vocab[v.headword] = v.image_url;
   const grammar: Record<string, string> = {};
   for (const g of lesson.grammar) if (g.image_url) grammar[g.pattern] = g.image_url;
   return {
     banner: lesson.image_url ?? null,
-    titleKo: lesson.title_ko ?? null,
-    words: lesson.vocab.slice(0, 4).map((v) => v.hangul),
+    titleKo: lesson.title_en ?? null,
+    words: lesson.vocab.slice(0, 4).map((v) => v.headword),
     vocab,
     grammar,
   };
@@ -392,7 +392,7 @@ function SlideView({
   switch (slide.kind) {
     case "title": {
       const t = splitTitle(String(s["title"]));
-      const ko = t.ko ?? (s["title_ko"] ? String(s["title_ko"]) : (pictures?.titleKo ?? null));
+      const ko = t.ko ?? (s["title_en"] ? String(s["title_en"]) : (pictures?.titleKo ?? null));
       const what =
         t.sitting?.what &&
         !t.sitting.what.toLowerCase().startsWith(t.main.toLowerCase().slice(0, 6))
@@ -481,17 +481,17 @@ function SlideView({
           <div className="my-auto py-4 text-center">
             <WordPicture
               id={typeof s["icon"] === "string" ? s["icon"] : null}
-              src={pictures?.vocab[String(s["hangul"])] ?? null}
-              word={String(s["hangul"])}
+              src={pictures?.vocab[String(s["headword"])] ?? null}
+              word={String(s["headword"])}
             />
             <button
               type="button"
               onClick={again("word")}
-              aria-label={`${String(s["hangul"])}, nghe lại`}
+              aria-label={`${String(s["headword"])}, nghe lại`}
               className="font-korean text-[44px] font-bold leading-tight tracking-tight sm:text-[52px]"
               lang="ko"
             >
-              {String(s["hangul"])}
+              {String(s["headword"])}
             </button>
             <p
               className={cn(
@@ -515,7 +515,7 @@ function SlideView({
       );
     }
     case "review": {
-      const words = (s["words"] as { hangul: string; meaning: string }[]) ?? [];
+      const words = (s["words"] as { headword: string; meaning: string }[]) ?? [];
       const current = state.latest?.startsWith("w") ? Number(state.latest.slice(1)) : -1;
       return (
         <div className="flex flex-1 flex-col">
@@ -770,7 +770,7 @@ function ReviewChip({
   on,
   done,
 }: {
-  w: { hangul: string; meaning: string };
+  w: { headword: string; meaning: string };
   on: boolean;
   done: boolean;
 }) {
@@ -790,7 +790,7 @@ function ReviewChip({
               : "bg-white/16",
         )}
       >
-        <Ko>{w.hangul}</Ko>
+        <Ko>{w.headword}</Ko>
         {open && <span className="ml-1.5 text-[13px] font-semibold opacity-80">· {w.meaning}</span>}
       </button>
     </li>

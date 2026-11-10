@@ -253,7 +253,7 @@ function PresentPage() {
       {view === "rec" && session && (
         <Recorder
           kicker={`Lần ${session.attempts.length + 1} · nói liền một mạch, Haru không ngắt lời`}
-          title={session.topic.question_ko}
+          title={session.topic.question_en}
           target={session.frame.target_seconds}
           maxSeconds={session.frame.max_seconds}
           minSeconds={5}
@@ -265,7 +265,7 @@ function PresentPage() {
       {view === "answer" && session && question && (
         <Recorder
           kicker="Hỏi vặn · trả lời thẳng câu hỏi trước, rồi nói vì sao"
-          title={question.q_ko}
+          title={question.q_en}
           subtitle={question.q_vi}
           maxSeconds={75}
           minSeconds={2}
@@ -497,7 +497,7 @@ function Intro({
                       {r.answers ? ` · ${r.answers} câu hỏi vặn` : ""}
                     </p>
                     <p className="font-korean mt-0.5 truncate text-[14px] font-semibold">
-                      {r.title_ko}
+                      {r.title_en}
                     </p>
                   </div>
                   {!gentle && r.first_overall != null && r.best_overall != null && (
@@ -563,12 +563,12 @@ function TopicCard({ session }: { session: PresentSession }) {
               </>
             )}
           </p>
-          <p className="font-korean mt-1.5 text-[18px] font-bold leading-6">{t.question_ko}</p>
+          <p className="font-korean mt-1.5 text-[18px] font-bold leading-6">{t.question_en}</p>
           {t.question_vi && (
             <p className="mt-1 text-[13px] font-semibold text-ink-2">{t.question_vi}</p>
           )}
         </div>
-        <SayButton text={t.question_ko} label="Nghe đề" />
+        <SayButton text={t.question_en} label="Nghe đề" />
       </div>
       {t.angle_vi && (
         <p className="mt-3 rounded-[12px] bg-fill px-3 py-2 text-[12px] font-semibold leading-4 text-ink-2">
@@ -611,9 +611,9 @@ function PlanCard({ session }: { session: PresentSession }) {
                   <span className="font-korean text-blue-deep">{t.ko}</span>
                   <span className="text-ink-2"> · {t.vi}</span>
                 </p>
-                {t.example_ko && (
+                {t.example_en && (
                   <p className="font-korean mt-0.5 text-[12px] font-medium text-ink-2">
-                    {t.example_ko}
+                    {t.example_en}
                   </p>
                 )}
                 <p className="mt-0.5 text-[11px] font-semibold text-ink-2">{t.why_vi}</p>
@@ -741,9 +741,9 @@ function Prep({
                 {i.example_vi && (
                   <p className="text-[12px] font-semibold text-ink-2">Ví dụ: {i.example_vi}</p>
                 )}
-                {i.hook_ko && (
+                {i.hook_en && (
                   <p className="font-korean mt-1.5 text-[13px] font-semibold">
-                    Mở đầu: {i.hook_ko}
+                    Mở đầu: {i.hook_en}
                     {i.hook_vi && (
                       <span className="font-sans text-[12px] text-ink-2"> ({i.hook_vi})</span>
                     )}
@@ -841,9 +841,9 @@ function OutlineCards({
           </p>
           {!compact && o.idea_vi && <p className="mt-0.5 text-[13px] font-semibold">{o.idea_vi}</p>}
           <p className="font-korean mt-1 text-[14px] font-semibold text-blue-deep">
-            {o.starter_ko}
-            {o.keywords_ko.length > 0 && (
-              <span className="text-ink"> · {o.keywords_ko.join(" · ")}</span>
+            {o.starter_en}
+            {o.keywords_en.length > 0 && (
+              <span className="text-ink"> · {o.keywords_en.join(" · ")}</span>
             )}
           </p>
           {(o.targets ?? []).length > 0 && (
@@ -1186,7 +1186,7 @@ function Result({
 
   return (
     <section className="mt-5 space-y-4">
-      <p className="font-korean text-[15px] font-bold leading-5">{session.topic.question_ko}</p>
+      <p className="font-korean text-[15px] font-bold leading-5">{session.topic.question_en}</p>
 
       {n > 1 && (
         <div
@@ -1321,8 +1321,8 @@ function Result({
               <Tick ok={p.present} />
               <div className="min-w-0">
                 <p className="text-[13px] font-bold">{p.label_vi}</p>
-                {p.said_ko && (
-                  <p className="font-korean mt-0.5 text-[13px] font-semibold">“{p.said_ko}”</p>
+                {p.said_en && (
+                  <p className="font-korean mt-0.5 text-[13px] font-semibold">“{p.said_en}”</p>
                 )}
                 {p.note_vi && (
                   <p className="mt-0.5 text-[12px] font-semibold leading-4 text-ink-2">
@@ -1359,8 +1359,8 @@ function Result({
                       · {t.correct ? "dùng đúng" : t.used ? "dùng chưa đúng" : "chưa dùng"}
                     </span>
                   </p>
-                  {t.said_ko && (
-                    <p className="font-korean mt-0.5 text-[13px] font-semibold">“{t.said_ko}”</p>
+                  {t.said_en && (
+                    <p className="font-korean mt-0.5 text-[13px] font-semibold">“{t.said_en}”</p>
                   )}
                   {t.note_vi && (
                     <p className="mt-0.5 text-[12px] font-semibold leading-4 text-ink-2">
@@ -1493,7 +1493,7 @@ function Result({
       <details className="rounded-[16px] border border-line bg-card p-3">
         <summary className="cursor-pointer text-[13px] font-bold">Haru nghe được gì</summary>
         <p className="font-korean mt-2 text-[14px] font-medium leading-6">
-          {ev.transcript_ko.split(/(\s+)/).map((tok, i) =>
+          {ev.transcript_en.split(/(\s+)/).map((tok, i) =>
             /^(으*음+|어+|으+|엄+|흠+)[.,…~?!]*$/.test(tok) ? (
               <mark key={i} className="rounded bg-yellow-soft px-0.5 text-ink">
                 {tok}
@@ -1597,17 +1597,17 @@ function FollowUps({
         {attempt.eval.follow_ups.map((q, i) => {
           const ans = attempt.answers?.[String(i)];
           return (
-            <li key={q.q_ko} className="rounded-[16px] border border-line bg-card p-3">
+            <li key={q.q_en} className="rounded-[16px] border border-line bg-card p-3">
               <div className="flex items-start gap-2">
                 <div className="min-w-0 flex-1">
-                  <p className="font-korean text-[15px] font-semibold leading-6">{q.q_ko}</p>
+                  <p className="font-korean text-[15px] font-semibold leading-6">{q.q_en}</p>
                   {q.q_vi && <p className="text-[12px] font-semibold text-ink-2">{q.q_vi}</p>}
                 </div>
-                <SayButton text={q.q_ko} label="Nghe câu hỏi" />
+                <SayButton text={q.q_en} label="Nghe câu hỏi" />
               </div>
               {ans && (
                 <div className="mt-2 space-y-1.5 rounded-[12px] bg-fill p-2.5">
-                  <p className="font-korean text-[13px] font-medium">“{ans.transcript_ko}”</p>
+                  <p className="font-korean text-[13px] font-medium">“{ans.transcript_en}”</p>
                   <div className="flex flex-wrap gap-1.5">
                     {ANSWER_ORDER.map((k) => (
                       <span
@@ -1629,15 +1629,15 @@ function FollowUps({
                   {ans.note_vi && (
                     <p className="text-[12px] font-semibold leading-4 text-ink-2">{ans.note_vi}</p>
                   )}
-                  {ans.better_ko && (
+                  {ans.better_en && (
                     <div className="flex items-start gap-2">
                       <p className="min-w-0 flex-1 text-[13px] font-semibold">
-                        <span className="font-korean">{ans.better_ko}</span>
+                        <span className="font-korean">{ans.better_en}</span>
                         {ans.better_vi && (
                           <span className="block text-[12px] text-ink-2">{ans.better_vi}</span>
                         )}
                       </p>
-                      <SayButton text={ans.better_ko} label="Nghe câu trả lời mẫu" />
+                      <SayButton text={ans.better_en} label="Nghe câu trả lời mẫu" />
                     </div>
                   )}
                 </div>

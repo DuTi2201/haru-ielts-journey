@@ -76,7 +76,7 @@ interface VocabMatcher {
 }
 
 /** Index of every known vocab word/phrase so each can be tapped inline.
- * Matches the LONGEST hangul first so e.g. "인구 감소" isn't shadowed by a
+ * Matches the LONGEST headword first so e.g. "인구 감소" isn't shadowed by a
  * shorter "인구" also in the list; a word already consumed by an earlier
  * match is skipped (non-overlapping).
  *
@@ -91,7 +91,7 @@ interface VocabMatcher {
 function buildVocabMatcher(vocab: VocabItemOut[]): VocabMatcher | null {
   const byHangul = new Map<string, VocabItemOut>();
   for (const v of vocab) {
-    const key = v.hangul.trim();
+    const key = v.headword.trim();
     if (!key) continue;
     if (!byHangul.has(key)) byHangul.set(key, v);
     if (key.length > 3 && key.endsWith("다")) {
@@ -569,7 +569,7 @@ export function ArticleReader({
         style={{ fontSize: `${fontPx}px`, lineHeight: 1.95 }}
       >
         {paragraphs.map((text, i) => {
-          const easyText = pack?.paragraphs[i]?.easy_ko?.trim() || null;
+          const easyText = pack?.paragraphs[i]?.easy_en?.trim() || null;
           const easyShown = effective === "easy" && easyText !== null;
           const vi = paragraphVi(i);
           return (

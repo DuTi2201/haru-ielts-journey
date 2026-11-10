@@ -153,8 +153,8 @@ function Round({
 
   // Warm up this sentence and the next, so tapping play answers at once.
   useEffect(() => {
-    if (current) void prefetch(current.id, current.text_ko);
-    if (next) void prefetch(next.id, next.text_ko);
+    if (current) void prefetch(current.id, current.text_en);
+    if (next) void prefetch(next.id, next.text_en);
   }, [current, next, prefetch]);
 
   // A new round must not keep talking over the old one.

@@ -93,9 +93,9 @@ export function WriteFill({
         <p className="text-[12px] font-semibold uppercase tracking-wide text-blue-deep">
           {exercise.title_vi} · {exercise.points} điểm
         </p>
-        {exercise.instruction_ko && (
+        {exercise.instruction_en && (
           <p lang="ko" className="font-korean mt-1 text-[13px] font-semibold leading-5">
-            {exercise.instruction_ko}
+            {exercise.instruction_en}
           </p>
         )}
         {exercise.instruction_vi && (
@@ -109,12 +109,12 @@ export function WriteFill({
       </header>
 
       <div className="mt-3 rounded-[16px] border border-line bg-card p-3.5">
-        {exercise.heading_ko && (
+        {exercise.heading_en && (
           <p
             lang="ko"
             className="font-korean mb-1.5 border-b border-progress pb-1.5 text-[13px] font-semibold"
           >
-            {exercise.heading_ko}
+            {exercise.heading_en}
           </p>
         )}
         <p lang="ko" className="font-korean whitespace-pre-line text-[14.5px] leading-8">

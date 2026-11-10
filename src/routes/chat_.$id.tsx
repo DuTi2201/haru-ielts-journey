@@ -108,7 +108,7 @@ function ChatPlay({ chat }: { chat: Chat }) {
   const shown = chat.turns.slice(0, Math.min(at + (asking ? 0 : 1), chat.turns.length));
 
   return (
-    <Frame title={chat.title_vi} sub={chat.title_ko}>
+    <Frame title={chat.title_vi} sub={chat.title_en}>
       {chat.scene_vi && (
         <p className="mt-2 rounded-[14px] bg-fill px-3 py-2 text-[12.5px] font-medium leading-5 text-ink-2">
           {chat.scene_vi} Bạn là <b className="text-ink">{chat.me}</b>.

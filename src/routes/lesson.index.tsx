@@ -103,9 +103,9 @@ function ContinueCard({ lesson }: { lesson: LessonSummaryOut }) {
             <p className="text-[11px] font-bold uppercase tracking-[0.16em] opacity-75">
               {started ? "Học tiếp" : "Bài tiếp theo"}
             </p>
-            {lesson.title_ko && (
+            {lesson.title_en && (
               <Ko className="mt-1.5 block text-[13px] font-semibold opacity-80">
-                {lesson.title_ko}
+                {lesson.title_en}
               </Ko>
             )}
             <p className="mt-0.5 text-[20px] font-extrabold leading-snug">{lesson.title}</p>
