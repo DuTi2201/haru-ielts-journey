@@ -29,15 +29,15 @@ import { MISTAKE_BOOK_KEY } from "@/lib/lesson-meta";
 export const Route = createFileRoute("/speaking")({
   head: () => ({
     meta: [
-      { title: "Luyện tập — Haru" },
+      { title: "Luyện tập — Haru English" },
       {
         name: "description",
-        content: "Chọn hình thức luyện tập trong ứng dụng học tiếng Hàn Haru.",
+        content: "Chọn hình thức luyện tập trong ứng dụng học tiếng Anh IELTS Haru.",
       },
-      { property: "og:title", content: "Luyện tập — Haru" },
+      { property: "og:title", content: "Luyện tập — Haru English" },
       {
         property: "og:description",
-        content: "Chọn hình thức luyện tập trong ứng dụng học tiếng Hàn Haru.",
+        content: "Chọn hình thức luyện tập trong ứng dụng học tiếng Anh IELTS Haru.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -47,12 +47,6 @@ export const Route = createFileRoute("/speaking")({
 });
 
 function PracticeHub() {
-  // Luyện nghe, Đọc xã luận and Đề thi thật are closed to learners for now (their copyright is not
-  // settled): they are not offered, rather than opening onto "Chưa mở cho người học"
-  const auth = useAuth();
-  const { catalog } = useCatalog();
-  const role = auth.profile?.role;
-  const open = !catalog?.private_sources || role === "editor" || role === "admin";
   return (
     <main className="relative mx-auto min-h-dvh max-w-[390px] overflow-hidden bg-paper px-6 pb-[calc(var(--tabbar-h)+2rem)] pt-[max(28px,env(safe-area-inset-top))] text-ink">
       <div className="relative z-10">
@@ -63,54 +57,25 @@ function PracticeHub() {
 
         <StudyingNow />
 
-        <h2 className="mt-7 text-[15px] font-bold">Chọn kỹ năng</h2>
-        {/* one row a skill, its variants as small links inside the row: four choices to scan
-            instead of seven tiles */}
+        <h2 className="mt-7 text-[15px] font-bold">Chọn mục ôn luyện</h2>
         <ul className="mt-3 space-y-2.5">
           <SkillRow
-            to="/chat"
-            icon={MessagesSquare}
-            title="Hội thoại"
-            hint="Nhân vật nói, bạn chọn câu đáp. Vài phút một bài, theo bài đã học."
+            to="/review"
+            icon={Layers}
+            title="Ôn tập thẻ từ & ngữ pháp"
+            hint="Ôn lại từ vựng, cụm động từ và mẫu ngữ pháp đến hạn theo lịch lặp lại ngắt quãng."
           />
           <SkillRow
-            to="/talk"
-            icon={Mic}
-            title="Nói"
-            hint="Trò chuyện bằng giọng nói theo bài đang học. Không có micro thì gõ phím."
-            more={[
-              { to: "/talk/present", label: "Trình bày" },
-              { to: "/talk/debate", label: "Tranh luận" },
-            ]}
+            to="/mistakes"
+            icon={BookX}
+            title="Sổ lỗi sai"
+            hint="Xem lại những câu trả lời sai trong bài học kèm giải thích chi tiết."
           />
           <SkillRow
-            to="/writing/drill"
-            icon={PenLine}
-            title="Viết 51–52"
-            hint="Điền câu vào chỗ trống từ các cụm bạn đang học."
-          />
-          {open && (
-            <SkillRow
-              to="/listening"
-              icon={Ear}
-              title="Nghe & đọc"
-              hint="Câu mẫu từ phim giọng Seoul; xã luận cho câu 54."
-              more={[{ to: "/reading", label: "Đọc xã luận" }]}
-            />
-          )}
-          {open && (
-            <SkillRow
-              to="/exam/real"
-              icon={ClipboardCheck}
-              title="Đề thi thật"
-              hint="Từng câu TOPIK II theo dạng và trình độ, có giải thích."
-            />
-          )}
-          <SkillRow
-            to="/vocab-bank"
-            icon={Library}
-            title="Kho từ TOPIK"
-            hint="Từ trung, cao cấp theo chủ đề, thêm vào ôn tập mỗi ngày."
+            to="/lesson"
+            icon={BookOpen}
+            title="Bài học Destination B1"
+            hint="42 bài học ngữ pháp & từ vựng nền tảng IELTS Academic 6.5 kèm bài đọc, viết, nghe, nói."
           />
         </ul>
 
@@ -127,15 +92,9 @@ function PracticeHub() {
 }
 
 type HubPath =
-  | "/chat"
-  | "/talk"
-  | "/talk/present"
-  | "/talk/debate"
-  | "/writing/drill"
-  | "/listening"
-  | "/reading"
-  | "/exam/real"
-  | "/vocab-bank";
+  | "/review"
+  | "/mistakes"
+  | "/lesson";
 
 function SkillRow({
   to,
@@ -211,17 +170,13 @@ function StudyingNow() {
   const chats = useQuery({
     queryKey: CHATS_KEY,
     queryFn: listChats,
-    enabled: on,
+    enabled: false,
     staleTime: 60_000,
   });
   if (!on) return null;
 
   const lessonTask = plan.data?.tasks.find((t) => t.kind === "vocab_review" && t.lesson_id);
   const review = plan.data?.tasks.find((t) => t.kind === "review" && t.status !== "done");
-  // the dialogue of the lesson being studied, else the next one open
-  const chat =
-    chats.data?.find((c) => c.open && c.lesson_id === lessonTask?.lesson_id) ??
-    chats.data?.find((c) => c.open && !c.done);
   const toRead =
     mistakes.data?.lessons.reduce(
       (n, l) => n + l.mistakes.filter((m) => !m.understood).length,
@@ -239,50 +194,14 @@ function StudyingNow() {
         <section className="rounded-[20px] bg-blue p-4 text-primary-foreground shadow-elev-2">
           <p className="text-[12px] font-semibold opacity-85">Đang học</p>
           <p className="mt-0.5 text-[16px] font-bold leading-snug">{lessonTask.title}</p>
-          {chat && (
-            <Link
-              to="/chat/$id"
-              params={{ id: chat.id }}
-              onClick={() => tap()}
-              className="mt-3 flex min-h-11 items-center gap-2 rounded-[14px] bg-white/15 px-3 text-[13px] font-semibold active:scale-[0.98]"
-            >
-              <MessagesSquare size={15} strokeWidth={2.4} aria-hidden="true" />
-              <span className="min-w-0 flex-1 truncate">Hội thoại: {chat.title_vi}</span>
-              <ChevronRight size={15} aria-hidden="true" />
-            </Link>
-          )}
-          <div className="mt-2 grid grid-cols-3 gap-2">
-            {[
-              {
-                to: "/talk" as const,
-                search: { lesson: lessonTask.lesson_id },
-                icon: Mic,
-                label: "Nói",
-              },
-              {
-                to: "/talk/present" as const,
-                search: { lesson: lessonTask.lesson_id },
-                icon: Presentation,
-                label: "Trình bày",
-              },
-            ].map((a) => (
-              <Link
-                key={a.label}
-                to={a.to}
-                search={a.search}
-                onClick={() => tap()}
-                className="flex min-h-11 items-center justify-center gap-1.5 rounded-[14px] bg-white/15 text-[13px] font-semibold active:scale-[0.97]"
-              >
-                <a.icon size={15} strokeWidth={2.4} aria-hidden="true" /> {a.label}
-              </Link>
-            ))}
+          <div className="mt-3">
             <Link
               to="/lesson/$id"
               params={{ id: String(lessonTask.lesson_id) }}
               onClick={() => tap()}
               className="flex min-h-11 items-center justify-center gap-1.5 rounded-[14px] bg-white text-[13px] font-semibold text-blue-deep active:scale-[0.97]"
             >
-              <BookOpen size={15} strokeWidth={2.4} aria-hidden="true" /> Mở bài
+              <BookOpen size={15} strokeWidth={2.4} aria-hidden="true" /> Mở bài đang học
             </Link>
           </div>
         </section>

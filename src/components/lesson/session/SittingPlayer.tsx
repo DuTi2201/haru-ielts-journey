@@ -523,7 +523,7 @@ function CanDoCard({ plan, done = false }: { plan: SittingPlan; done?: boolean }
             {plan.topik && (
               <div>
                 <dt className="text-[11px] font-bold uppercase tracking-wide text-ink-2">
-                  Trong đề TOPIK
+                  Trong bài thi IELTS
                 </dt>
                 <dd className="mt-0.5 text-ink">{plan.topik}</dd>
               </div>
@@ -619,36 +619,10 @@ function ProductCard({
 /** After a sitting: practice tied to this lesson — its dialogue as a chat, a talk with Haru about
  * it, a writing drill from its phrases, the cards due. Which ones depends on the stage. */
 function PracticeAfter({ lesson, profile }: { lesson: LessonOut; profile: StageProfile }) {
-  const auth = useAuth();
-  const chats = useQuery({
-    queryKey: CHATS_KEY,
-    queryFn: listChats,
-    enabled: auth.isAuthenticated && profile.practice.includes("chat"),
-    staleTime: 60_000,
-  });
-  const chat = chats.data?.find((c) => c.lesson_id === lesson.id && c.open);
   const links: ReactNode[] = [];
   const cls =
     "flex min-h-12 items-center gap-3 rounded-[16px] border border-line bg-card px-3.5 text-left text-[13px] font-semibold shadow-elev-1 active:scale-[0.98]";
   for (const kind of profile.practice) {
-    if (kind === "chat" && chat)
-      links.push(
-        <Link
-          key="chat"
-          to="/chat/$id"
-          params={{ id: chat.id }}
-          onClick={() => tap()}
-          className={cls}
-        >
-          <MessagesSquare size={18} className="shrink-0 text-blue" aria-hidden="true" />
-          <span className="min-w-0 flex-1">
-            Hội thoại của bài: {chat.title_vi}
-            <span className="block text-[11.5px] font-medium text-ink-2">
-              Chọn câu đáp · ~3 phút
-            </span>
-          </span>
-        </Link>,
-      );
     if (kind === "talk")
       links.push(
         <Link
@@ -664,16 +638,6 @@ function PracticeAfter({ lesson, profile }: { lesson: LessonOut; profile: StageP
             <span className="block text-[11.5px] font-medium text-ink-2">
               Dùng từ và mẫu vừa học
             </span>
-          </span>
-        </Link>,
-      );
-    if (kind === "write")
-      links.push(
-        <Link key="write" to="/writing/drill" onClick={() => tap()} className={cls}>
-          <PenLine size={18} className="shrink-0 text-blue" aria-hidden="true" />
-          <span className="min-w-0 flex-1">
-            Viết 51–52 từ các cụm đang học
-            <span className="block text-[11.5px] font-medium text-ink-2">Haru soạn đề và chấm</span>
           </span>
         </Link>,
       );

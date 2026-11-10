@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { AlertCircle, Check, CheckCircle2, Circle, Eye, EyeOff } from "lucide-react";
 
 import type { CapstoneDetectorOut, ExerciseResultOut, WriteEssayOut } from "@/lib/api/types";
-import { countChars, lengthStatus, selfPassed } from "@/lib/lesson-grade";
+import { countWords, lengthStatus, selfPassed } from "@/lib/lesson-grade";
 import { readLocal, writeLocal } from "@/lib/lesson-local";
 import { detect } from "@/lib/review";
 import { cn } from "@/lib/utils";
@@ -53,12 +53,12 @@ export function WriteEssay({
     onTextChange?.(text);
   }, [text, onTextChange]);
 
-  const count = countChars(text);
+  const count = countWords(text);
   const status = lengthStatus(count, exercise.limits.min, exercise.limits.max);
   const prev = previous[exercise.id];
   // a self-practice prompt ships a framework but no model answer yet
   const hasModel = exercise.model_answer_ko.trim().length > 0;
-  const modelCount = countChars(exercise.model_answer_ko);
+  const modelCount = countWords(exercise.model_answer_ko);
 
   const rubric = exercise.rubric ?? [];
   const criteria =
@@ -145,16 +145,16 @@ export function WriteEssay({
         </label>
         <textarea
           id={`${exercise.id}-essay`}
-          lang="ko"
+          lang="en"
           rows={9}
-          autoCapitalize="off"
-          spellCheck={false}
+          autoCapitalize="sentences"
+          spellCheck={true}
           value={text}
           onChange={(e) => {
             setText(e.target.value);
             writeLocal(draftKey, e.target.value);
           }}
-          placeholder="한국어로 써 보세요…"
+          placeholder="Write your paragraph in English…"
           className="font-korean mt-1 block w-full resize-y rounded-[14px] border border-line bg-card p-3 text-[15px] leading-7 outline-none focus-visible:ring-2 focus-visible:ring-blue/50"
         />
         <p
@@ -169,10 +169,10 @@ export function WriteEssay({
           ) : status === "long" || status === "short" ? (
             <AlertCircle size={14} strokeWidth={2.6} />
           ) : null}
-          <span className="tabular-nums">{count}</span> chữ · yêu cầu {exercise.limits.min}–
+          <span className="tabular-nums">{count}</span> từ · yêu cầu {exercise.limits.min}–
           {exercise.limits.max} · {STATUS_TEXT[status]}
-          {status === "short" && ` ${exercise.limits.min - count} chữ`}
-          {status === "long" && ` ${count - exercise.limits.max} chữ`}
+          {status === "short" && ` ${exercise.limits.min - count} từ`}
+          {status === "long" && ` ${count - exercise.limits.max} từ`}
         </p>
         {detectors.length > 0 && <PatternsUsed detectors={detectors} found={found} />}
         {belowText}
@@ -230,7 +230,7 @@ export function WriteEssay({
               aria-label="Bài mẫu"
               className="rounded-[16px] border border-transparent bg-green-soft p-3.5"
             >
-              <h4 className="text-xs font-semibold">Bài mẫu · {modelCount} chữ</h4>
+              <h4 className="text-xs font-semibold">Bài mẫu · {modelCount} từ</h4>
               <p
                 lang="ko"
                 className="font-korean mt-1.5 whitespace-pre-line text-[14.5px] leading-7"

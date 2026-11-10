@@ -32,8 +32,6 @@ import {
   StepFooter,
 } from "@/components/lesson/LessonShell";
 import { PracticeOnward } from "@/components/lesson/PracticeOnward";
-import { ReadNextArticle } from "@/components/lesson/ReadNextArticle";
-import { BankDeckNext } from "@/components/lesson/BankDeckNext";
 import { PracticePanel } from "@/components/lesson/PracticePanel";
 import { StepNudge } from "@/components/lesson/StepNudge";
 import { SittingPlayer } from "@/components/lesson/session/SittingPlayer";
@@ -76,10 +74,10 @@ import { byPriority, priorityCounts, type PriorityView } from "@/lib/vocab";
 export const Route = createFileRoute("/lesson/$id")({
   head: () => ({
     meta: [
-      { title: "Bài học — Haru" },
-      { name: "description", content: "Bài học trong ứng dụng học tiếng Hàn Haru." },
-      { property: "og:title", content: "Bài học — Haru" },
-      { property: "og:description", content: "Bài học trong ứng dụng học tiếng Hàn Haru." },
+      { title: "Bài học — Haru English" },
+      { name: "description", content: "Bài học trong ứng dụng học tiếng Anh IELTS Haru." },
+      { property: "og:title", content: "Bài học — Haru English" },
+      { property: "og:description", content: "Bài học trong ứng dụng học tiếng Anh IELTS Haru." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -496,7 +494,7 @@ function LessonView({ lesson }: { lesson: LessonOut }) {
   const placement = useQuery({
     queryKey: ["me", "placement"],
     queryFn: getMyPlacement,
-    enabled: auth.isAuthenticated,
+    enabled: false,
     staleTime: 5 * 60_000,
   });
   const placed = useMemo(
@@ -992,8 +990,6 @@ function LessonView({ lesson }: { lesson: LessonOut }) {
                 <div className="mt-4 empty:hidden">
                   <CoachWrapUp coach={lesson.coach} />
                 </div>
-                <ReadNextArticle lessonId={lesson.id} />
-                <BankDeckNext lessonId={lesson.id} />
                 {auth.isAuthenticated && lesson.vocab.length > 0 && (
                   <PracticeOnward lessonId={lesson.id} title={lesson.title} />
                 )}

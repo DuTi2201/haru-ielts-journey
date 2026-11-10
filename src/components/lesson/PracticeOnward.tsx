@@ -1,34 +1,23 @@
 import { Link } from "@tanstack/react-router";
-import { ChevronRight, Layers, Mic, Presentation } from "lucide-react";
+import { BookX, ChevronRight, Layers } from "lucide-react";
 
 import { tap } from "@/lib/feedback";
 
-/* From the lesson to the Luyện tab: the same words and patterns, used out loud. Haru talks or asks
- * a question about THIS lesson (the server checks it is open to the learner), and the day's
- * review brings its cards back before they are forgotten. */
-
-export function PracticeOnward({ lessonId, title }: { lessonId: number; title: string }) {
+export function PracticeOnward({ title }: { lessonId: number; title: string }) {
   const rows = [
-    {
-      to: "/talk" as const,
-      search: { lesson: lessonId },
-      icon: Mic,
-      label: "Nói về bài này với Haru",
-      hint: "Haru hỏi bằng từ và mẫu câu của bài.",
-    },
-    {
-      to: "/talk/present" as const,
-      search: { lesson: lessonId },
-      icon: Presentation,
-      label: "Trình bày một đề của bài",
-      hint: "Nói liền một mạch, Haru chấm và sửa.",
-    },
     {
       to: "/review" as const,
       search: {},
       icon: Layers,
       label: "Ôn thẻ hôm nay",
       hint: "Thẻ của bài quay lại đúng lúc sắp quên.",
+    },
+    {
+      to: "/mistakes" as const,
+      search: {},
+      icon: BookX,
+      label: "Sổ lỗi sai",
+      hint: "Xem lại các câu trả lời sai và giải thích chi tiết.",
     },
   ];
   return (

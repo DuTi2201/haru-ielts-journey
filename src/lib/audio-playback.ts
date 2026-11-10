@@ -77,8 +77,8 @@ export function releaseAudioElement(el: HTMLAudioElement | null): void {
   }
 }
 
-const isKoreanVoice = (v: SpeechSynthesisVoice) =>
-  v.lang.toLowerCase().replace("_", "-").startsWith("ko");
+const isEnglishVoice = (v: SpeechSynthesisVoice) =>
+  v.lang.toLowerCase().replace("_", "-").startsWith("en");
 
 /** Some browsers (Chrome) fill the voice list lazily: asking once early means
  * the list is ready by the time a learner taps. Harmless everywhere else. */
@@ -87,28 +87,24 @@ export function primeSpeechVoices(): void {
     window.speechSynthesis.getVoices();
 }
 
-/** Reads one short Korean text with the device's own ko-KR voice — free,
- * instant, offline, no server round-trip. Used for single sentences (the
- * "Nghe câu" button, the listening drill); a whole article uses the generated
- * audio instead. Must be called from a tap.
- *
- * Returns false when nothing was spoken: no speech synthesis, or — with
- * `requireKoreanVoice` — no Korean voice on this device (a device without one
- * would read Hangul with an English voice, which is worse than asking the
- * server). `onEnd` fires when the utterance finishes OR is interrupted. */
+/** Reads one short English text with the device's own en-GB/en-US voice — free,
+ * instant, offline, no server round-trip. */
 export function speakKorean(
   text: string,
-  rate = 0.85,
+  rate = 0.9,
   opts: { requireKoreanVoice?: boolean; onEnd?: () => void } = {},
 ): boolean {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return false;
   const synth = window.speechSynthesis;
-  const korean = synth.getVoices().find(isKoreanVoice);
-  if (opts.requireKoreanVoice && !korean) return false;
+  const voices = synth.getVoices();
+  const english =
+    voices.find((v) => v.lang.toLowerCase().replace("_", "-").startsWith("en-gb")) ??
+    voices.find(isEnglishVoice);
+  if (opts.requireKoreanVoice && !english) return false;
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "ko-KR";
+  utterance.lang = english?.lang || "en-GB";
   utterance.rate = rate;
-  if (korean) utterance.voice = korean;
+  if (english) utterance.voice = english;
   if (opts.onEnd) {
     utterance.onend = opts.onEnd;
     utterance.onerror = opts.onEnd;

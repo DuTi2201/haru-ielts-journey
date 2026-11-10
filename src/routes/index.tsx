@@ -34,14 +34,14 @@ import { cn } from "@/lib/utils";
 import "@/components/site/skill-demos.css";
 
 const DESCRIPTION =
-  "Haru — ứng dụng học tiếng Hàn cho người Việt: bài học theo chủ đề, ôn tập nhớ lâu, luyện nói với AI, luyện thi TOPIK. Học thử miễn phí.";
+  "Haru English — ứng dụng tự học tiếng Anh IELTS Academic 6.5: 42 bài Destination B1, ôn tập lặp lại ngắt quãng, luyện nghe đọc viết nói mỗi ngày.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Haru — Học tiếng Hàn mỗi ngày, miễn phí để bắt đầu" },
+      { title: "Haru English — Tự học tiếng Anh IELTS mỗi ngày" },
       { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: "Haru — Học tiếng Hàn mỗi ngày" },
+      { property: "og:title", content: "Haru English — Tự học tiếng Anh IELTS mỗi ngày" },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
     ],
@@ -76,22 +76,22 @@ function Landing() {
         <div className="text-center lg:text-left">
           <p className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3 py-1 text-[12px] font-bold text-ink-2 shadow-elev-1">
             <span className="h-2 w-2 rounded-full bg-green" aria-hidden="true" />
-            Làm riêng cho người Việt · Sơ cấp đến TOPIK
+            Lộ trình cá nhân · Destination B1 đến IELTS Academic 6.5
           </p>
           <h1 className="isolate mt-4 text-[34px] font-extrabold leading-[1.12] tracking-tight sm:text-[48px]">
             Mỗi ngày 15 phút, <span className="text-blue">nhớ lâu</span> và{" "}
             <span className="relative whitespace-nowrap">
-              dám nói
+              nắm chắc
               <span
                 className="absolute inset-x-0 bottom-1 -z-10 h-3 rounded-full bg-yellow-soft sm:h-4"
                 aria-hidden="true"
               />
             </span>{" "}
-            tiếng Hàn.
+            tiếng Anh IELTS.
           </h1>
           <p className="mx-auto mt-4 max-w-[520px] text-[16px] font-medium leading-7 text-ink-2 lg:mx-0">
-            Bài học ngắn theo chủ đề, ôn tập ngay trước khi quên, luyện nói 1-1 với Haru như với một
-            người bạn Hàn, và luyện thi TOPIK có AI chấm. Mọi giải thích đều bằng tiếng Việt.
+            42 bài học ngữ pháp & từ vựng nền tảng Destination B1, ôn tập ngay trước khi quên, luyện
+            đọc, nghe chép chính tả, nói và viết có AI chấm. Mọi giải thích đều bằng tiếng Việt.
           </p>
           <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
             <Link
@@ -133,7 +133,7 @@ function Landing() {
             />
             <Mascot mood="wave" interactive className="absolute -top-6 right-4 h-20 w-20" />
             <span className="absolute -left-3 top-4 z-10 rotate-[-6deg] rounded-[14px] bg-card px-3 py-1.5 text-[14px] font-bold shadow-elev-2">
-              안녕하세요!
+              Hello!
             </span>
             <FlashcardDemo />
           </div>

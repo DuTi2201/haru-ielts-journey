@@ -46,10 +46,10 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/today")({
   head: () => ({
     meta: [
-      { title: "Hôm nay — Haru" },
-      { name: "description", content: "Kế hoạch học tiếng Hàn hôm nay trên Haru." },
-      { property: "og:title", content: "Hôm nay — Haru" },
-      { property: "og:description", content: "Kế hoạch học tiếng Hàn hôm nay trên Haru." },
+      { title: "Hôm nay — Haru English" },
+      { name: "description", content: "Kế hoạch học tiếng Anh IELTS hôm nay trên Haru." },
+      { property: "og:title", content: "Hôm nay — Haru English" },
+      { property: "og:description", content: "Kế hoạch học tiếng Anh IELTS hôm nay trên Haru." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

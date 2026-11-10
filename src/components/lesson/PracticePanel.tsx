@@ -357,12 +357,10 @@ export function PracticePanel({
             })}
           </div>
 
-          <Topik2Section lessonId={lessonId} />
-
           <MixReview lessonId={lessonId} onOpenGrammar={onOpenGrammar} />
 
           {data.overview && (data.overview.blocks?.length ?? 0) > 0 && (
-            <Disclosure title="Cấu trúc đề TOPIK II & cách tính điểm" tone="bg-card">
+            <Disclosure title="Cấu trúc bài luyện & cách tính điểm" tone="bg-card">
               <GuideBlocks blocks={data.overview.blocks ?? []} open />
             </Disclosure>
           )}

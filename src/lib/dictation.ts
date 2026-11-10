@@ -45,7 +45,9 @@ export function diffLine(typedText: string, scriptText: string): LineDiff {
   for (let i = n - 1; i >= 0; i--) {
     for (let j = m - 1; j >= 0; j--) {
       table[i * w + j] =
-        a[i] === b[j] ? at(i + 1, j + 1) + 1 : Math.max(at(i + 1, j), at(i, j + 1));
+        a[i]?.toLowerCase() === b[j]?.toLowerCase()
+          ? at(i + 1, j + 1) + 1
+          : Math.max(at(i + 1, j), at(i, j + 1));
     }
   }
   const typedOk = new Array<boolean>(n).fill(false);
@@ -53,7 +55,7 @@ export function diffLine(typedText: string, scriptText: string): LineDiff {
   let i = 0;
   let j = 0;
   while (i < n && j < m) {
-    if (a[i] === b[j]) {
+    if (a[i]?.toLowerCase() === b[j]?.toLowerCase()) {
       typedOk[i] = true;
       scriptOk[j] = true;
       i++;

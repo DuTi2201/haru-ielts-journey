@@ -101,23 +101,6 @@ function AuthForm({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="mt-5">
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={() => setMode("login")}
-          className={`flex-1 rounded-full border border-line py-1.5 text-xs font-semibold ${mode === "login" ? "bg-blue text-primary-foreground" : "bg-card text-ink-2"}`}
-        >
-          Đăng nhập
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("signup")}
-          className={`flex-1 rounded-full border border-line py-1.5 text-xs font-semibold ${mode === "signup" ? "bg-blue text-primary-foreground" : "bg-card text-ink-2"}`}
-        >
-          Tạo tài khoản
-        </button>
-      </div>
-
       <form onSubmit={submit} className="mt-4 space-y-3">
         {mode === "signup" && (
           <input
@@ -282,18 +265,6 @@ function AccountScreen() {
                 className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-[14px] border border-line bg-card py-2.5 text-sm font-semibold shadow-elev-1 transition-transform active:scale-[0.97]"
               >
                 Đơn hàng của tôi
-              </Link>
-            )}
-
-            {auth.profile.role === "admin" && (
-              <Link
-                to="/admin"
-                search={{ tab: "overview" }}
-                onClick={() => tap()}
-                className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-[14px] border border-transparent bg-green-soft py-2.5 text-sm font-semibold text-ink shadow-elev-1 transition-transform active:scale-[0.97] "
-              >
-                <UsersRound size={16} strokeWidth={2.4} aria-hidden="true" /> Quản trị · tài khoản,
-                học viên, thanh toán
               </Link>
             )}
 

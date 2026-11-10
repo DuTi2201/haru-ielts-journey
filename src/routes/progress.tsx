@@ -141,25 +141,14 @@ function PracticeActions({ data }: { data: WeaknessesOut }) {
         </Link>
       )}
       <Link
-        to="/exam/real"
+        to="/lesson"
         onClick={() => tap()}
         className="block transition-transform active:scale-[0.97]"
       >
         <ActionBody
           icon={<ClipboardCheck size={20} strokeWidth={2.2} />}
-          title="Luyện đề thi thật"
-          detail="Nghe, đọc, viết từ đề TOPIK II: chọn câu theo bài bạn đã học, hiểu từng câu."
-        />
-      </Link>
-      <Link
-        to="/writing/drill"
-        onClick={() => tap()}
-        className="block transition-transform active:scale-[0.97]"
-      >
-        <ActionBody
-          icon={<PenLine size={20} strokeWidth={2.2} />}
-          title="Luyện viết câu 51–52"
-          detail="Điền câu vào chỗ trống, soạn từ chính những cụm bạn đang học."
+          title="Luyện tập theo bài học"
+          detail="Nghe, đọc, viết, nói trong 42 bài học Destination B1 kèm giải thích từng câu."
         />
       </Link>
     </section>
@@ -239,22 +228,18 @@ function Report({ data }: { data: WeaknessesOut }) {
         </Section>
       )}
 
-      <Section
-        title="Câu hỏi đề thi thật"
-        hint="Số câu đúng ở từng dạng, không phải điểm thi dự đoán."
-      >
-        {noExam ? (
-          <p className="rounded-[18px] border border-dashed border-line p-4 text-xs font-semibold leading-5 text-ink-2">
-            Bạn chưa làm câu nào. Làm vài câu ở mục “Luyện đề thi thật” để thấy dạng nào còn yếu.
-          </p>
-        ) : (
+      {!noExam && (
+        <Section
+          title="Câu hỏi luyện đề"
+          hint="Số câu đúng ở từng dạng, không phải điểm thi dự đoán."
+        >
           <ul className="divide-y divide-line rounded-[18px] bg-card px-4 card-soft">
             {data.exam.map((row) => (
               <ExamRow key={row.qtype_code} row={row} />
             ))}
           </ul>
-        )}
-      </Section>
+        </Section>
+      )}
     </>
   );
 }
@@ -565,8 +550,6 @@ function ProgressScreen() {
 
         <div className="mt-2 lg:mt-0">
           <Rise i={3}>
-            <TalkProgress />
-            <PresentProgress />
             <CompetencyMap enabled={auth.isAuthenticated} />
           </Rise>
 

@@ -13,16 +13,15 @@ export const CATALOG_KEY = ["billing", "catalog"] as const;
 export const ENTITLEMENTS_KEY = ["billing", "entitlements"] as const;
 export const ORDERS_KEY = ["billing", "orders"] as const;
 
-/** The price list. A failed fetch counts as "nothing is sold", so the app never gets stuck behind
- * a billing screen because of a network blip. */
+/** Single-user private IELTS app: billing and paywalls are disabled. */
 export function useCatalog() {
-  const query = useQuery({
+  const query = useQuery<BillingCatalogOut | null>({
     queryKey: CATALOG_KEY,
-    queryFn: getBillingCatalog,
-    staleTime: 5 * 60_000,
-    retry: 1,
+    queryFn: async () => null,
+    enabled: false,
+    staleTime: Infinity,
   });
-  return { ...query, catalog: query.data ?? null, selling: query.data?.enabled === true };
+  return { ...query, catalog: null, selling: false };
 }
 
 /** "29.000đ" */

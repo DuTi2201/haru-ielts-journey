@@ -151,7 +151,7 @@ export function WriteFill({
               <input
                 id={`${exercise.id}-${b.id}`}
                 type="text"
-                lang="ko"
+                lang="en"
                 autoComplete="off"
                 autoCapitalize="off"
                 spellCheck={false}
@@ -166,19 +166,6 @@ export function WriteFill({
                     (right ? "border-green bg-green-soft" : "border-danger bg-danger-soft"),
                 )}
               />
-              {!checked && (
-                <button
-                  type="button"
-                  onClick={() => setKeypad((k) => (k === b.id ? null : b.id))}
-                  aria-expanded={keypad === b.id}
-                  className="mt-1 inline-flex min-h-8 items-center text-[12px] font-semibold text-blue-deep underline"
-                >
-                  {keypad === b.id ? "Ẩn bàn phím Hàn" : "Chưa có bàn phím Hàn? Gõ ở đây"}
-                </button>
-              )}
-              {!checked && keypad === b.id && (
-                <KoreanKeypad value={values[b.id] ?? ""} onChange={(v) => change(b.id, v)} />
-              )}
               {!checked && prev && (
                 <p className="mt-1 text-[12px] font-semibold text-ink-2">
                   Lần trước: {prev.correct ? "đúng" : "sai"}

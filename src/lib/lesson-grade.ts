@@ -7,6 +7,7 @@
 export function normalizeAnswer(text: string): string {
   return text
     .normalize("NFC")
+    .toLowerCase()
     .replace(/[\s\u00a0]+/g, "")
     .replace(/["'“”‘’「」]/g, "")
     .replace(/[.。,，!?？！]+$/u, "");
@@ -23,6 +24,13 @@ export function matchesAccepted(input: string, accepted: readonly string[]): boo
  * included, line breaks not (a code-point count, so a Hangul syllable is one). */
 export function countChars(text: string): number {
   return [...text.replace(/[\r\n]+/g, "")].length;
+}
+
+/** Words as IELTS counts them in a writing answer. */
+export function countWords(text: string): number {
+  const matches = text.match(/[A-Za-z0-9]+(?:'[A-Za-z0-9]+)*/g);
+  if (matches) return matches.length;
+  return text.trim() ? text.trim().split(/\s+/).length : 0;
 }
 
 export type LengthStatus = "empty" | "short" | "ok" | "long";

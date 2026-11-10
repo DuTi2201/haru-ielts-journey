@@ -428,7 +428,7 @@ export function GrammarCards({
 
                 {g.note_vi && <MistakesBox text={g.note_vi} />}
                 {g.topik_tip_vi && (
-                  <More title="💡 Mẹo cho bài thi TOPIK">
+                  <More title="💡 Mẹo cho bài thi IELTS">
                     <Rich as="p" text={g.topik_tip_vi} className="text-xs leading-5 text-ink-2" />
                   </More>
                 )}

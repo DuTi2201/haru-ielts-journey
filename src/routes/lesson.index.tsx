@@ -44,10 +44,10 @@ import { FeatherGlyph } from "@/components/feathers/Feather";
 export const Route = createFileRoute("/lesson/")({
   head: () => ({
     meta: [
-      { title: "Chọn bài học — Haru" },
-      { name: "description", content: "Chọn bài học tiếng Hàn theo trình độ và chủ đề." },
-      { property: "og:title", content: "Chọn bài học — Haru" },
-      { property: "og:description", content: "Chọn bài học tiếng Hàn theo trình độ và chủ đề." },
+      { title: "Chọn bài học — Haru English" },
+      { name: "description", content: "Chọn bài học tiếng Anh IELTS theo trình độ và chủ đề." },
+      { property: "og:title", content: "Chọn bài học — Haru English" },
+      { property: "og:description", content: "Chọn bài học tiếng Anh IELTS theo trình độ và chủ đề." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -615,13 +615,19 @@ function LessonPickerScreen() {
                     </span>
                   </h2>
                   <ul className="mt-3 grid gap-3 lg:grid-cols-2">
-                    {mainGroups
-                      .filter((g) => g.track === s.track)
-                      .map((g, n) => (
-                        <Rise as="li" key={g.topic} i={Math.min(n + 2, 10)}>
-                          <TopicCard group={g} />
-                        </Rise>
-                      ))}
+                    {mainGroups.length <= 1
+                      ? s.items.map((lesson, n) => (
+                          <Rise as="li" key={lesson.id} i={Math.min(n + 2, 10)}>
+                            <LessonCard lesson={lesson} number={n + 1} />
+                          </Rise>
+                        ))
+                      : mainGroups
+                          .filter((g) => g.track === s.track)
+                          .map((g, n) => (
+                            <Rise as="li" key={g.topic} i={Math.min(n + 2, 10)}>
+                              <TopicCard group={g} />
+                            </Rise>
+                          ))}
                   </ul>
                 </section>
               ))}

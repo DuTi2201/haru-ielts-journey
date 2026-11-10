@@ -20,11 +20,11 @@ import { SelfScore } from "./SelfScore";
 
 type Phase = "idle" | "prep" | "answer" | "done";
 
-/** The three things TOPIK Speaking is marked on, each 0–4, scaled to the task's points. */
+/** The three things Speaking is marked on, each 0–4, scaled to the task's points. */
 const SPEAK_CRITERIA = [
-  { label: "과제 수행·내용", note: "Hoàn thành yêu cầu, đủ ý", max: 4 },
-  { label: "언어 구사력", note: "Từ vựng, ngữ pháp, đúng cấp độ lời nói", max: 4 },
-  { label: "발음·전달력", note: "Phát âm, nhịp điệu, dễ hiểu", max: 4 },
+  { label: "Fluency & Coherence", note: "Hoàn thành yêu cầu, đủ ý, mạch lạc", max: 4 },
+  { label: "Lexical & Grammatical Range", note: "Từ vựng, ngữ pháp đúng chủ đề bài học", max: 4 },
+  { label: "Pronunciation", note: "Phát âm, trọng âm, ngữ điệu dễ hiểu", max: 4 },
 ];
 
 /** Counts down `seconds` from the moment `start` is called, from the clock rather

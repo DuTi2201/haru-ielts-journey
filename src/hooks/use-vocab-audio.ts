@@ -14,7 +14,7 @@ const PREFETCH_LIMIT = 4;
 function speakWithBrowser(text: string): boolean {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return false;
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "ko-KR";
+  utterance.lang = "en-GB";
   utterance.rate = 0.9;
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(utterance);
