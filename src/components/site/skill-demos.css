@@ -1,0 +1,37 @@
+/* Skill demos on the landing page (SkillDemos.tsx): each new line rises into place. */
+@layer components {
+  @media (prefers-reduced-motion: no-preference) {
+    .sd-rise {
+      animation: sd-rise 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+  }
+  @keyframes sd-rise {
+    from {
+      opacity: 0;
+      translate: 0 8px;
+    }
+  }
+}
+
+/* Trang chủ: điện thoại minh hoạ nổi nhẹ theo nhịp thở; từ khoá đáng đọc lướt được tô nền. */
+@layer components {
+  .lp-key {
+    border-radius: 6px;
+    padding: 0 3px;
+    background: var(--color-yellow-soft);
+    color: var(--color-ink);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .lp-float {
+      animation: lp-float 4s ease-in-out infinite;
+    }
+    .lp-float-late {
+      animation: lp-float 4s ease-in-out 1.6s infinite;
+    }
+  }
+  @keyframes lp-float {
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+}

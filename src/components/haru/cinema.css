@@ -1,0 +1,210 @@
+/* The "stage" look of the learning screens (components/haru/cinema.tsx): a deep indigo hero lit by
+ * slow-moving colour, a sheen that sweeps across it, rings that draw themselves, content that rises
+ * into place. Colours come from the theme tokens only. Nothing moves for someone who asked for less
+ * motion: the content is simply there. */
+
+@layer components {
+  .cine-stage {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: var(--primary-foreground);
+    background:
+      radial-gradient(
+        120% 90% at 100% 0%,
+        color-mix(in oklch, var(--purple) 55%, transparent),
+        transparent 60%
+      ),
+      radial-gradient(
+        90% 80% at 0% 100%,
+        color-mix(in oklch, var(--blue) 70%, transparent),
+        transparent 65%
+      ),
+      linear-gradient(150deg, var(--blue-deep), color-mix(in oklch, var(--blue-deep) 70%, black));
+    box-shadow:
+      0 24px 60px -24px color-mix(in oklch, var(--blue-deep) 70%, transparent),
+      inset 0 1px 0 rgb(255 255 255 / 0.18);
+  }
+  :is(.dark *) .cine-stage {
+    background:
+      radial-gradient(
+        120% 90% at 100% 0%,
+        color-mix(in oklch, var(--purple) 40%, transparent),
+        transparent 60%
+      ),
+      radial-gradient(
+        90% 80% at 0% 100%,
+        color-mix(in oklch, var(--blue) 45%, transparent),
+        transparent 65%
+      ),
+      linear-gradient(150deg, oklch(0.3 0.12 278), oklch(0.18 0.06 280));
+    color: oklch(0.98 0 0);
+  }
+
+  .cine-blob {
+    position: absolute;
+    z-index: -1;
+    border-radius: 50%;
+    filter: blur(28px);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .cine-grain {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.12;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  .cine-sheen {
+    position: absolute;
+    inset: -40% auto -40% -60%;
+    width: 45%;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.14), transparent);
+    transform: skewX(-18deg);
+    opacity: 0;
+  }
+
+  .cine-ring-track {
+    stroke: color-mix(in oklch, currentColor 18%, transparent);
+  }
+  .cine-ring-value {
+    transition: stroke-dashoffset 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .cine-rise {
+    animation-fill-mode: both;
+  }
+
+  .cine-glow {
+    box-shadow:
+      0 0 0 2px color-mix(in oklch, var(--blue) 55%, transparent),
+      0 12px 32px -12px color-mix(in oklch, var(--blue) 60%, transparent);
+  }
+
+  .cine-flame {
+    transform-origin: 50% 90%;
+  }
+
+  .cine-bubble {
+    position: relative;
+  }
+  .cine-caret::after {
+    content: "";
+    display: inline-block;
+    width: 0.5ch;
+    height: 1em;
+    margin-left: 1px;
+    vertical-align: -0.12em;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .cine-blob {
+      animation: cine-drift 18s ease-in-out infinite alternate;
+    }
+    .cine-blob:nth-child(2) {
+      animation-duration: 23s;
+      animation-delay: -6s;
+    }
+    .cine-blob:nth-child(3) {
+      animation-duration: 29s;
+      animation-delay: -12s;
+    }
+    .cine-sheen {
+      animation: cine-sheen 7s ease-in-out 1.2s infinite;
+    }
+    .cine-rise {
+      animation: cine-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i, 0) * 70ms) both;
+    }
+    .cine-flame {
+      animation: cine-flicker 1.6s ease-in-out infinite;
+    }
+    .cine-glow {
+      animation: cine-pulse 2.6s ease-in-out infinite;
+    }
+    .cine-caret::after {
+      animation: cine-caret 0.9s steps(1) infinite;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cine-ring-value {
+      transition: none;
+    }
+  }
+
+  @keyframes cine-drift {
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(12%, -8%) scale(1.15);
+    }
+    100% {
+      transform: translate(-10%, 10%) scale(0.95);
+    }
+  }
+  @keyframes cine-sheen {
+    0% {
+      opacity: 0;
+      left: -60%;
+    }
+    12% {
+      opacity: 1;
+    }
+    40%,
+    100% {
+      opacity: 0;
+      left: 130%;
+    }
+  }
+  @keyframes cine-rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.985);
+      filter: blur(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+  }
+  @keyframes cine-flicker {
+    0%,
+    100% {
+      transform: scale(1) rotate(0);
+    }
+    30% {
+      transform: scale(1.08, 1.14) rotate(-3deg);
+    }
+    60% {
+      transform: scale(0.96, 1.04) rotate(2deg);
+    }
+  }
+  @keyframes cine-pulse {
+    0%,
+    100% {
+      box-shadow:
+        0 0 0 2px color-mix(in oklch, var(--blue) 55%, transparent),
+        0 12px 32px -12px color-mix(in oklch, var(--blue) 60%, transparent);
+    }
+    50% {
+      box-shadow:
+        0 0 0 4px color-mix(in oklch, var(--blue) 30%, transparent),
+        0 16px 40px -10px color-mix(in oklch, var(--blue) 70%, transparent);
+    }
+  }
+  @keyframes cine-caret {
+    50% {
+      opacity: 0;
+    }
+  }
+}

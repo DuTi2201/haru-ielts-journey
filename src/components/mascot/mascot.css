@@ -1,0 +1,422 @@
+/* Haru's mascot (components/mascot/Mascot.tsx): a light behind it, its body moving, and a few
+ * effects drawn in CSS around it. Every size is relative to the box, so the same mood reads the
+ * same at 40px and at 200px. Nothing moves for someone who asked for less motion. */
+
+/* in the components layer, so a utility class on <Mascot> (absolute, size, margins) wins */
+@layer components {
+  .mascot {
+    --glow: var(--blue);
+    position: relative;
+    display: inline-flex;
+    align-items: flex-end;
+    justify-content: center;
+    isolation: isolate;
+    container-type: size;
+  }
+
+  .mascot-glow {
+    position: absolute;
+    inset: 6% 2% 0;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in oklch, var(--glow) 34%, transparent) 0%,
+      color-mix(in oklch, var(--glow) 14%, transparent) 55%,
+      transparent 100%
+    );
+    filter: blur(2px);
+  }
+
+  .mascot-body {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform-origin: 50% 100%;
+  }
+
+  .mascot-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: 50% 100%;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+
+  .mascot-blink {
+    opacity: 0;
+  }
+
+  /* the second drawing of a mood: shown in turn with the first, like a sticker */
+  .mascot-frame-b {
+    opacity: 0;
+  }
+
+  .mascot[data-interactive] {
+    cursor: pointer;
+    outline: none;
+    border-radius: 24px;
+  }
+  .mascot[data-interactive]:focus-visible {
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--blue) 45%, transparent);
+  }
+
+  /* dark screens: the navy outline would sink into the background */
+  :is(.dark *) .mascot-img {
+    filter: drop-shadow(0 0 1px rgb(255 255 255 / 0.55))
+      drop-shadow(0 0 4px rgb(255 255 255 / 0.12));
+  }
+
+  /* --------------------------------------------------------------- effects */
+  .mascot-fx {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .mascot-star {
+    position: absolute;
+    width: 14%;
+    aspect-ratio: 1;
+    background: var(--yellow-strong);
+    clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+    opacity: 0;
+  }
+
+  .mascot-ring {
+    position: absolute;
+    top: 6%;
+    right: 4%;
+    width: 34%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px solid color-mix(in oklch, var(--glow) 70%, transparent);
+    opacity: 0;
+  }
+
+  .mascot-rays {
+    position: absolute;
+    inset: -12% -12% 10%;
+    z-index: -1;
+    border-radius: 50%;
+    background: repeating-conic-gradient(
+      from 0deg,
+      color-mix(in oklch, var(--yellow-strong) 30%, transparent) 0deg 8deg,
+      transparent 8deg 24deg
+    );
+    mask: radial-gradient(closest-side, black 30%, transparent 100%);
+    -webkit-mask: radial-gradient(closest-side, black 30%, transparent 100%);
+  }
+
+  .mascot-bit {
+    position: absolute;
+    top: 0;
+    width: 5%;
+    aspect-ratio: 1 / 1.6;
+    border-radius: 2px;
+    opacity: 0;
+  }
+
+  .mascot-drop {
+    position: absolute;
+    top: 4%;
+    width: 4%;
+    aspect-ratio: 1 / 1.5;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: color-mix(in oklch, var(--blue) 55%, transparent);
+    opacity: 0;
+  }
+
+  .mascot-z {
+    position: absolute;
+    top: 8%;
+    right: 6%;
+    font-weight: 800;
+    font-size: 20cqmin;
+    line-height: 1;
+    color: var(--purple);
+    opacity: 0;
+  }
+
+  /* entering a new mood: a small pop */
+  .mascot-enter {
+    animation: mascot-pop 320ms cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .mascot-glow {
+      animation: mascot-glow 3.2s ease-in-out infinite;
+    }
+    .mascot[data-motion="bob"] .mascot-body {
+      animation: mascot-bob 3.2s ease-in-out infinite;
+    }
+    .mascot[data-motion="hop"] .mascot-body {
+      animation: mascot-hop 1.5s cubic-bezier(0.3, 0, 0.3, 1) infinite;
+    }
+    .mascot[data-motion="sway"] .mascot-body {
+      animation: mascot-sway 4.2s ease-in-out infinite;
+    }
+    .mascot[data-motion="groove"] .mascot-body {
+      animation: mascot-groove 1.1s ease-in-out infinite;
+    }
+    .mascot[data-motion="tilt"] .mascot-body {
+      animation: mascot-tilt 3.6s ease-in-out infinite;
+    }
+    .mascot[data-motion="breathe"] .mascot-body {
+      animation: mascot-breathe 4.6s ease-in-out infinite;
+    }
+    .mascot[data-motion="scribble"] .mascot-body {
+      animation: mascot-scribble 0.9s ease-in-out infinite;
+    }
+    .mascot-frame-a {
+      animation: mascot-frame-a var(--beat) steps(1, end) infinite;
+    }
+    .mascot-frame-b {
+      animation: mascot-frame-b var(--beat) steps(1, end) infinite;
+    }
+    .mascot[data-interactive]:hover .mascot-body {
+      translate: 0 -3%;
+    }
+    .mascot-blink {
+      animation: mascot-blink 4.8s steps(1, end) infinite;
+    }
+    .mascot-star {
+      animation: mascot-twinkle 2.2s ease-in-out infinite;
+    }
+    .mascot-ring {
+      animation: mascot-ring 1.8s ease-out infinite;
+    }
+    .mascot-rays {
+      animation: mascot-spin 24s linear infinite;
+    }
+    .mascot-bit {
+      animation: mascot-confetti 2.6s ease-in infinite;
+    }
+    .mascot-drop {
+      animation: mascot-drop 2.8s ease-in infinite;
+    }
+    .mascot-z {
+      animation: mascot-z 3.4s ease-out infinite;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mascot-enter {
+      animation: none;
+    }
+    .mascot-star,
+    .mascot-bit,
+    .mascot-drop,
+    .mascot-z,
+    .mascot-ring {
+      display: none;
+    }
+  }
+
+  @keyframes mascot-frame-a {
+    0%,
+    49.9% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes mascot-frame-b {
+    0%,
+    49.9% {
+      opacity: 0;
+    }
+    50%,
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes mascot-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.9) translateY(4%);
+    }
+  }
+  @keyframes mascot-glow {
+    0%,
+    100% {
+      opacity: 0.75;
+      transform: scale(0.96);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+  }
+  @keyframes mascot-bob {
+    0%,
+    100% {
+      transform: translateY(0) scaleY(1);
+    }
+    50% {
+      transform: translateY(-2.5%) scaleY(1.015);
+    }
+  }
+  @keyframes mascot-hop {
+    0%,
+    100% {
+      transform: translateY(0) scale(1, 1);
+    }
+    12% {
+      transform: translateY(0) scale(1.05, 0.94);
+    }
+    38% {
+      transform: translateY(-11%) scale(0.97, 1.04) rotate(-2deg);
+    }
+    60% {
+      transform: translateY(0) scale(1.04, 0.96);
+    }
+    72% {
+      transform: translateY(0) scale(1, 1);
+    }
+  }
+  @keyframes mascot-sway {
+    0%,
+    100% {
+      transform: rotate(-1.8deg);
+    }
+    50% {
+      transform: rotate(1.8deg) translateY(-1%);
+    }
+  }
+  @keyframes mascot-groove {
+    0%,
+    100% {
+      transform: rotate(-3deg) translateY(0);
+    }
+    25% {
+      transform: rotate(0deg) translateY(-3%);
+    }
+    50% {
+      transform: rotate(3deg) translateY(0);
+    }
+    75% {
+      transform: rotate(0deg) translateY(-3%);
+    }
+  }
+  @keyframes mascot-tilt {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    40%,
+    70% {
+      transform: rotate(-4deg) translateY(-1%);
+    }
+  }
+  @keyframes mascot-breathe {
+    0%,
+    100% {
+      transform: scale(1, 1);
+    }
+    50% {
+      transform: scale(1.02, 1.035);
+    }
+  }
+  @keyframes mascot-scribble {
+    0%,
+    100% {
+      transform: translateX(0) rotate(0);
+    }
+    25% {
+      transform: translateX(0.8%) rotate(0.6deg);
+    }
+    75% {
+      transform: translateX(-0.8%) rotate(-0.6deg);
+    }
+  }
+  @keyframes mascot-blink {
+    0%,
+    93% {
+      opacity: 0;
+    }
+    94%,
+    97% {
+      opacity: 1;
+    }
+    98%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes mascot-twinkle {
+    0%,
+    100% {
+      opacity: 0;
+      transform: scale(0.3) rotate(0deg);
+    }
+    45% {
+      opacity: 1;
+      transform: scale(1) rotate(45deg);
+    }
+  }
+  @keyframes mascot-ring {
+    from {
+      opacity: 0.9;
+      transform: scale(0.4);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.6);
+    }
+  }
+  @keyframes mascot-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes mascot-confetti {
+    0% {
+      opacity: 0;
+      transform: translateY(-10%) rotate(0deg);
+    }
+    15% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(700%) rotate(320deg);
+    }
+  }
+  @keyframes mascot-drop {
+    0% {
+      opacity: 0;
+      transform: translateY(0);
+    }
+    20% {
+      opacity: 0.9;
+    }
+    70% {
+      opacity: 0.6;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(420%);
+    }
+  }
+  @keyframes mascot-z {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) scale(0.6);
+    }
+    30% {
+      opacity: 0.9;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(40%, -120%) scale(1.2);
+    }
+  }
+}

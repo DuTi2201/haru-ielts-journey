@@ -1,0 +1,631 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system definition: Apple Human Interface Guidelines.
+ *
+ * Haru follows the same foundations as the "Claude Design System" (Apple HIG:
+ * Clarity, Deference, Depth, Liquid Glass materials). The page is the system
+ * GROUPED background, content sits on white (dark: #1c1c1e) cards, depth comes
+ * from layer colour and soft multi-layer shadows instead of outlines, and only
+ * the floating controls (tab bar, sheets, mini player, toasts) are glass.
+ *
+ * The @theme inline block maps CSS custom properties to Tailwind utility
+ * classes (e.g. --color-primary -> bg-primary, text-primary).
+ *
+ * The :root and .dark blocks define the actual colour values using oklch.
+ * All colors MUST use oklch format. .dark is switched on <html> by the inline
+ * script in routes/__root.tsx from prefers-color-scheme; prefers-contrast: more
+ * has its own overrides at the bottom of the token blocks.
+ *
+ * To add a new semantic color:
+ * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ *
+ * Legacy names are kept so every component keeps working: --paper is the page
+ * (grouped) background, --card the card surface, --ink / --ink-2 the primary /
+ * secondary label, --blue the Apple-style tint (indigo), --blue-deep the tint as
+ * TEXT, the *-soft tokens the 12% tinted fills. Text on a tinted fill uses
+ * the matching strong colour or --ink; --ink-2 stays >= 4.5:1 on every surface.
+ */
+
+@theme inline {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Be Vietnam Pro", system-ui,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-korean:
+    -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic",
+    system-ui, sans-serif;
+  --font-korean-serif: "Noto Serif KR", "Apple Myungjo", serif;
+  /* the storybook titles of Hành trình Thiên Nga (a Garamond with Vietnamese) */
+  --font-display: "Cormorant Garamond", "Iowan Old Style", "Palatino", Georgia, serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-paper: var(--paper);
+  --color-blue: var(--blue);
+  --color-blue-deep: var(--blue-deep);
+  --color-blue-soft: var(--blue-soft);
+  --color-yellow-soft: var(--yellow-soft);
+  --color-yellow-strong: var(--yellow-strong);
+  --color-yellow: var(--yellow-strong);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-green: var(--green);
+  --color-green-soft: var(--green-soft);
+  --color-purple: var(--purple);
+  --color-purple-soft: var(--purple-soft);
+  --color-teal: var(--teal);
+  --color-teal-soft: var(--teal-soft);
+  --color-progress: var(--progress);
+  --color-hanji-mark: var(--hanji-mark);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fill: var(--fill);
+  --color-glass: var(--glass);
+  --color-glass-edge: var(--glass-edge);
+  --color-glass-card: var(--glass-card);
+  --color-glass-row: var(--glass-row);
+  --color-scrim: var(--scrim);
+  --shadow-elev-1: var(--elev-1);
+  --shadow-elev-2: var(--elev-2);
+  --shadow-elev-3: var(--elev-3);
+}
+
+/* Apple Dynamic Type sizes (HIG, Large / default): footnote 13, subheadline 15,
+   body 17, title 3 / 2 / 1 = 20 / 22 / 28, large title 34. Nothing below 11px. */
+@theme {
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.125rem;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.375rem;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.5625rem;
+  --text-xl: 1.375rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl: 1.75rem;
+  --text-2xl--line-height: 2.125rem;
+  --text-3xl: 2.125rem;
+  --text-3xl--line-height: 2.5625rem;
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  color-scheme: light;
+  --radius: 1rem;
+  /* floating tab bar: 62px tall, 10px above the iPhone home-indicator inset; sheets sit above it */
+  --tabbar-h: calc(78px + env(safe-area-inset-bottom, 0px));
+  --paper: oklch(0.963 0.007 286.3);
+  --ink: oklch(0.232 0.004 286.1);
+  --ink-2: oklch(0.488 0.011 286);
+  --blue: oklch(0.529 0.191 278.3);
+  --blue-deep: oklch(0.459 0.194 276.6);
+  --blue-soft: oklch(0.529 0.191 278.3 / 0.12);
+  --yellow-soft: oklch(0.865 0.177 90.4 / 0.22);
+  --yellow-strong: oklch(0.865 0.177 90.4);
+  --danger: oklch(0.513 0.194 29.1);
+  --danger-soft: oklch(0.513 0.194 29.1 / 0.12);
+  --green: oklch(0.484 0.125 147.9);
+  --green-soft: oklch(0.484 0.125 147.9 / 0.12);
+  --purple: oklch(0.489 0.167 311.9);
+  --purple-soft: oklch(0.489 0.167 311.9 / 0.12);
+  --teal: oklch(0.493 0.081 207.4);
+  --teal-soft: oklch(0.493 0.081 207.4 / 0.12);
+  --progress: oklch(0.575 0.012 286 / 0.2);
+  --hanji-mark: oklch(0.529 0.191 278.3 / 0.07);
+  --line: oklch(0.359 0.012 285.8 / 0.14);
+  --line-strong: oklch(0.359 0.012 285.8 / 0.3);
+  --fill: oklch(0.575 0.012 286 / 0.12);
+  --glass: oklch(0.971 0.003 286.4 / 0.72);
+  --glass-strong: oklch(0.986 0.003 286.4 / 0.88);
+  --glass-solid: oklch(0.986 0.003 286.4 / 0.98);
+  --glass-edge: oklch(0.359 0.012 285.8 / 0.12);
+  --glass-shine: oklch(1 0 0 / 0.65);
+  --glass-shadow: oklch(0 0 0 / 0.12);
+  --shimmer-shine: oklch(1 0 0 / 0.6);
+  --glass-card: oklch(1 0 0 / 0.72);
+  --glass-row: oklch(1 0 0 / 0.6);
+  --liquid-shine: oklch(1 0 0 / 0.3);
+  --scrim: oklch(0 0 0 / 0.32);
+  --elev-1: 0 1px 2px oklch(0 0 0 / 0.04), 0 4px 16px oklch(0 0 0 / 0.05);
+  --elev-2: 0 1px 2px oklch(0 0 0 / 0.06), 0 8px 24px oklch(0 0 0 / 0.08);
+  --elev-3: 0 2px 6px oklch(0 0 0 / 0.08), 0 16px 40px oklch(0 0 0 / 0.14);
+  --rim: inset 0 1px 0 0 oklch(1 0 0 / 0.65);
+  --focus-ring: 0 0 0 2px #f2f2f7, 0 0 0 4px #5856d6;
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--ink);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--ink);
+  --primary: var(--blue);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: var(--fill);
+  --secondary-foreground: var(--ink);
+  --muted: var(--fill);
+  --muted-foreground: var(--ink-2);
+  --accent: var(--fill);
+  --accent-foreground: var(--ink);
+  --destructive: var(--danger);
+  --destructive-foreground: oklch(1 0 0);
+  --border: var(--line);
+  --input: var(--line-strong);
+  --ring: var(--blue);
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--blue);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: var(--fill);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--blue);
+  --chart-1: var(--blue);
+  --chart-2: var(--teal);
+  --chart-3: oklch(0.575 0.138 56.4);
+  --chart-4: var(--purple);
+  --chart-5: var(--danger);
+}
+
+.dark {
+  color-scheme: dark;
+  --paper: oklch(0 0 0);
+  --ink: oklch(0.971 0.003 286.4);
+  --ink-2: oklch(0.753 0.008 286.2);
+  --blue: oklch(0.648 0.192 280.6);
+  --blue-deep: oklch(0.764 0.125 284.1);
+  --blue-soft: oklch(0.648 0.192 280.6 / 0.2);
+  --yellow-soft: oklch(0.885 0.181 94.8 / 0.18);
+  --yellow-strong: oklch(0.885 0.181 94.8);
+  --danger: oklch(0.691 0.199 26.8);
+  --danger-soft: oklch(0.691 0.199 26.8 / 0.16);
+  --green: oklch(0.756 0.208 147);
+  --green-soft: oklch(0.756 0.208 147 / 0.16);
+  --purple: oklch(0.734 0.151 309.3);
+  --purple-soft: oklch(0.734 0.151 309.3 / 0.18);
+  --teal: oklch(0.828 0.121 222.2);
+  --teal-soft: oklch(0.828 0.121 222.2 / 0.16);
+  --progress: oklch(0.575 0.012 286 / 0.36);
+  --hanji-mark: oklch(0.648 0.192 280.6 / 0.12);
+  --line: oklch(0.447 0.006 286.1 / 0.5);
+  --line-strong: oklch(0.447 0.006 286.1 / 0.8);
+  --fill: oklch(0.575 0.012 286 / 0.24);
+  --glass: oklch(0.236 0.004 286.1 / 0.75);
+  --glass-strong: oklch(0.294 0.004 286.2 / 0.88);
+  --glass-solid: oklch(0.294 0.004 286.2 / 0.98);
+  --glass-edge: oklch(1 0 0 / 0.12);
+  --glass-shine: oklch(1 0 0 / 0.14);
+  --glass-shadow: oklch(0 0 0 / 0.5);
+  --shimmer-shine: oklch(1 0 0 / 0.08);
+  --glass-card: oklch(0.227 0.004 286.1 / 0.72);
+  --glass-row: oklch(1 0 0 / 0.06);
+  --liquid-shine: oklch(1 0 0 / 0.2);
+  --scrim: oklch(0 0 0 / 0.56);
+  --elev-1: 0 1px 2px oklch(0 0 0 / 0.4), 0 4px 16px oklch(0 0 0 / 0.35);
+  --elev-2: 0 1px 2px oklch(0 0 0 / 0.4), 0 8px 24px oklch(0 0 0 / 0.5);
+  --elev-3: 0 2px 6px oklch(0 0 0 / 0.5), 0 16px 40px oklch(0 0 0 / 0.6);
+  --rim: inset 0 1px 0 0 oklch(1 0 0 / 0.14);
+  --focus-ring: 0 0 0 2px #000000, 0 0 0 4px #7d7aff;
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: oklch(0.227 0.004 286.1);
+  --card-foreground: var(--ink);
+  --popover: oklch(0.227 0.004 286.1);
+  --popover-foreground: var(--ink);
+  --primary: var(--blue);
+  --primary-foreground: oklch(0 0 0);
+  --secondary: var(--fill);
+  --secondary-foreground: var(--ink);
+  --muted: var(--fill);
+  --muted-foreground: var(--ink-2);
+  --accent: var(--fill);
+  --accent-foreground: var(--ink);
+  --destructive: var(--danger);
+  --destructive-foreground: oklch(0 0 0);
+  --border: var(--line);
+  --input: var(--line-strong);
+  --ring: var(--blue);
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--blue);
+  --sidebar-primary-foreground: oklch(0 0 0);
+  --sidebar-accent: var(--fill);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--blue);
+  --chart-1: var(--blue);
+  --chart-2: var(--teal);
+  --chart-3: oklch(0.782 0.171 67.2);
+  --chart-4: var(--purple);
+  --chart-5: var(--danger);
+}
+
+/* Increase Contrast (HIG): stronger secondary text, visible separators, opaque glass. */
+@media (prefers-contrast: more) {
+  :root {
+    --ink-2: oklch(0.359 0.012 285.8);
+    --line: oklch(0.359 0.012 285.8 / 0.58);
+    --line-strong: oklch(0.359 0.012 285.8 / 0.78);
+    --blue: oklch(0.459 0.194 276.6);
+    --glass: oklch(0.963 0.007 286.3);
+    --glass-strong: oklch(1 0 0);
+    --glass-edge: oklch(0 0 0 / 0.62);
+  }
+  .dark {
+    --ink-2: oklch(0.943 0.013 286.1 / 0.94);
+    --line: oklch(0.943 0.013 286.1 / 0.42);
+    --line-strong: oklch(0.943 0.013 286.1 / 0.6);
+    --blue: oklch(0.764 0.125 284.1);
+    --glass: oklch(0.227 0.004 286.1);
+    --glass-strong: oklch(0.294 0.004 286.2);
+    --glass-edge: oklch(1 0 0 / 0.7);
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    letter-spacing: 0;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* never let one wide element widen the page on a phone (clip, unlike hidden, keeps
+       position: sticky working) */
+    overflow-x: clip;
+  }
+
+  /* Controls answer a touch at once (no 300 ms double-tap wait), move on the spring
+     curve, and show a keyboard focus ring (specificity 0: any utility still wins). */
+  :where(button, [role="button"], a[href], summary, select, label[for]) {
+    touch-action: manipulation;
+  }
+  :where(button:not(:disabled), [role="button"], [role="tab"], summary) {
+    cursor: pointer;
+  }
+  :where(button, [role="button"], [role="tab"], a[href]) {
+    transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+    transition-duration: 150ms;
+    transition-timing-function: var(--ease-spring);
+  }
+  :where(
+    a[href],
+    button,
+    input,
+    textarea,
+    select,
+    summary,
+    [role="button"],
+    [role="tab"],
+    [tabindex]
+  ):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background-color: var(--blue-soft);
+  }
+
+  /* A screen fades in instead of cutting. Opacity only: a transform on <main> would
+     become the containing block of the fixed tab bar inside it. */
+  main {
+    animation: haru-fade 0.28s ease-out both;
+  }
+}
+
+@keyframes haru-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * Glass (Liquid Glass, web approximation) for FLOATING layers only: tab bar,
+ * sheets, mini player, toasts. Never on content cards, never glass on glass.
+ * `glass-panel-strong` is the thick material for dense text (word lists, grammar
+ * notes) where legibility beats see-through.
+ */
+@utility glass-panel {
+  background-color: var(--glass-bg, var(--glass));
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--rim), var(--elev-3);
+}
+
+@utility glass-panel-strong {
+  --glass-bg: var(--glass-strong);
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--rim), var(--elev-3);
+}
+
+/* No backdrop-filter support, or the user asked for less transparency: fall
+   back to a near-solid surface so text never sits on a busy background. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-panel,
+  .glass-panel-strong {
+    background-color: var(--glass-solid);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-panel,
+  .glass-panel-strong {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: var(--glass-solid);
+  }
+  /* Studio: plain opaque surfaces on a plain page. */
+  .glass-card,
+  .glass-row {
+    background-color: var(--card);
+  }
+  .mesh-backdrop::before {
+    background: var(--paper);
+  }
+}
+
+/* Loading placeholder with a soft light sweep (calmer than animate-pulse).
+   Under prefers-reduced-motion the global rule below freezes it. */
+@keyframes haru-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@utility shimmer {
+  background-color: var(--progress);
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    var(--shimmer-shine) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: haru-shimmer 1.6s linear infinite;
+}
+
+/* Raised CONTENT card (flashcards, grammar): a hairline edge and the layer-1
+   shadow, all from tokens. No blur: there is nothing behind a card to blur. */
+@utility card-soft {
+  border: 1px solid var(--line);
+  box-shadow: var(--elev-1);
+}
+
+/* Soft ring that ripples out of the play button while a sentence is read. It
+   grows only ~60% (the stock `animate-ping` doubles) so it stays inside its
+   card. Ends invisible under prefers-reduced-motion (see the global rule). */
+@keyframes haru-ring {
+  from {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@utility pulse-ring {
+  animation: haru-ring 1.8s ease-out infinite;
+}
+
+/* Little "now playing" equaliser bars. Under prefers-reduced-motion the global
+   rule below stops the animation on its last frame (short, static bars). */
+@keyframes haru-eq {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@utility eq-bar {
+  transform-origin: bottom;
+  animation: haru-eq 0.9s ease-in-out infinite;
+}
+
+/* Studio (editor console) surfaces. A panel is translucent with a hairline
+   edge, a soft shadow and a top highlight; rows inside it only get a lighter
+   fill (never a second blur). All colours come from the --glass* tokens. */
+@utility glass-card {
+  background-color: var(--glass-card);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--rim), var(--elev-1);
+}
+
+@utility glass-row {
+  background-color: var(--glass-row);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--rim);
+}
+
+/* Pure-CSS mesh: a few soft colour pools from the tint tokens on one fixed,
+   non-interactive layer behind the page. No image, no filter, painted once. */
+@utility mesh-backdrop {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        60% 42% at 10% 6%,
+        color-mix(in oklab, var(--blue) 16%, transparent),
+        transparent 72%
+      ),
+      radial-gradient(
+        50% 38% at 94% 20%,
+        color-mix(in oklab, var(--yellow-strong) 20%, transparent),
+        transparent 72%
+      ),
+      radial-gradient(
+        56% 44% at 84% 94%,
+        color-mix(in oklab, var(--teal) 16%, transparent),
+        transparent 72%
+      ),
+      radial-gradient(
+        46% 38% at 4% 82%,
+        color-mix(in oklab, var(--purple) 12%, transparent),
+        transparent 72%
+      ),
+      var(--paper);
+  }
+}
+
+/* Pressable surface: a soft inner light and a small drop; pressing scales it
+   down on the spring curve (HIG: scale 0.96-0.97, never a hard offset). */
+@utility btn-lift {
+  box-shadow: var(--rim), var(--elev-1);
+  transition:
+    transform 0.15s var(--ease-spring),
+    box-shadow 0.15s var(--ease-spring),
+    background-color 0.15s ease,
+    opacity 0.15s ease;
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  &:disabled {
+    box-shadow: none;
+  }
+}
+
+/* Progress: a rounded fill of the tint with a soft glossy top edge. Width is set
+   inline by the caller and glides on the spring curve. */
+@utility liquid-fill {
+  background-color: var(--liquid-color, var(--blue));
+  background-image: linear-gradient(to bottom, var(--liquid-shine), transparent 65%);
+  box-shadow: inset 0 1px 0 0 var(--glass-shine);
+  transition: width 0.6s var(--ease-spring);
+}
+
+/* When the job has not reported a percentage yet: a blob that slides across
+   the track (transform only, so it stays on the compositor). */
+@keyframes haru-liquid-slide {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(260%);
+  }
+}
+
+@utility liquid-slide {
+  width: 38%;
+  animation: haru-liquid-slide 1.3s ease-in-out infinite;
+}
+
+/* Grow the touch area of a small control to ~44px tall without changing how
+   it looks (vertical only, so neighbours in a row do not overlap). */
+@utility hit-area {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -7px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* lecture slides: the «Nói theo» cue breathes while the learner repeats */
+@keyframes lecture-say {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+.lecture-say {
+  animation: lecture-say 1.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lecture-say {
+    animation: none;
+  }
+}
+
+/* «Hội thoại»: a wrong line shakes once */
+@keyframes chat-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.chat-shake { animation: chat-shake 0.3s ease-in-out 1; }
+@media (prefers-reduced-motion: reduce) { .chat-shake { animation: none; } }

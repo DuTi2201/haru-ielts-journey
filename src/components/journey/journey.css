@@ -1,0 +1,1782 @@
+/* Hành trình Thiên Nga (components/journey): the castle scene, its weather, the crows and the
+ * thorns, and the swan's frames. The scene is always dark enough for light text, so its ink is a
+ * fixed near-white rather than a theme token. Nothing moves for reduced motion. */
+
+@layer components {
+  .jr-scene {
+    --px: 0;
+    --py: 0;
+    --away: 0; /* 0..3: days away, capped */
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: oklch(0.98 0.005 285);
+    background: oklch(0.16 0.03 285);
+  }
+  .jr-ink-soft {
+    color: oklch(0.98 0.005 285 / 0.78);
+  }
+
+  .jr-layer {
+    position: absolute;
+    inset: -3%;
+    width: 106%;
+    height: 106%;
+    object-fit: cover;
+    object-position: center;
+    pointer-events: none;
+    user-select: none;
+    transition:
+      opacity 1.6s ease,
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 1.6s ease;
+  }
+  .jr-castle {
+    transform: translate3d(calc(var(--px) * -8px), calc(var(--py) * -6px), 0) scale(1.02);
+    filter: saturate(calc(0.92 - var(--away) * 0.12)) brightness(calc(0.9 - var(--away) * 0.06))
+      blur(0.6px);
+  }
+  .jr-castle-dark {
+    transform: translate3d(calc(var(--px) * -8px), calc(var(--py) * -6px), 0) scale(1.02);
+  }
+
+  /* the time of day on the learner's clock */
+  .jr-tint {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: opacity 1.6s ease;
+  }
+  .jr-tint[data-time="night"] {
+    background: linear-gradient(180deg, oklch(0.2 0.08 270 / 0.45), oklch(0.15 0.05 280 / 0.25));
+    mix-blend-mode: multiply;
+  }
+  .jr-tint[data-time="dawn"] {
+    background: radial-gradient(120% 80% at 15% 10%, oklch(0.88 0.12 70 / 0.35), transparent 60%);
+    mix-blend-mode: soft-light;
+  }
+  .jr-tint[data-time="dusk"] {
+    background: radial-gradient(120% 80% at 85% 15%, oklch(0.7 0.14 20 / 0.35), transparent 60%);
+    mix-blend-mode: soft-light;
+  }
+  .jr-tint[data-time="day"] {
+    opacity: 0;
+  }
+
+  .jr-rays {
+    position: absolute;
+    inset: -40% -20% auto -20%;
+    height: 140%;
+    pointer-events: none;
+    background: repeating-conic-gradient(
+      from 200deg at 10% 0%,
+      oklch(0.95 0.08 85 / 0.16) 0deg 4deg,
+      transparent 4deg 13deg
+    );
+    mask: radial-gradient(90% 70% at 10% 0%, black, transparent 75%);
+    -webkit-mask: radial-gradient(90% 70% at 10% 0%, black, transparent 75%);
+    mix-blend-mode: screen;
+  }
+
+  .jr-fog {
+    position: absolute;
+    left: -50%;
+    right: -50%;
+    bottom: 0;
+    height: 55%;
+    pointer-events: none;
+    opacity: calc(0.25 + var(--away) * 0.18);
+    background:
+      radial-gradient(40% 60% at 20% 80%, oklch(0.9 0.01 280 / 0.35), transparent 70%),
+      radial-gradient(35% 50% at 60% 90%, oklch(0.9 0.01 280 / 0.3), transparent 70%),
+      radial-gradient(45% 55% at 90% 75%, oklch(0.9 0.01 280 / 0.3), transparent 70%);
+    filter: blur(6px);
+    transform: translate3d(calc(var(--px) * 10px), 0, 0);
+  }
+
+  /* crows: a flock that crosses the sky, each flapping between two drawings */
+  .jr-crow {
+    position: absolute;
+    left: 0;
+    width: clamp(30px, 9%, 64px);
+    pointer-events: none;
+    filter: drop-shadow(0 0 1.5px oklch(0.95 0.02 280 / 0.55))
+      drop-shadow(0 2px 6px oklch(0 0 0 / 0.4));
+  }
+  .jr-crow img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: auto;
+  }
+  .jr-crow img + img {
+    opacity: 0;
+  }
+  .jr-perch {
+    position: absolute;
+    bottom: 2%;
+    z-index: 1;
+    width: 34%;
+    pointer-events: none;
+    transform-origin: 50% 100%;
+    filter: drop-shadow(0 0 1.5px oklch(0.95 0.02 280 / 0.6));
+  }
+
+  .jr-vines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(1.35);
+    transition:
+      opacity 1.4s ease,
+      transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .jr-scene[data-away="1"] .jr-vines {
+    opacity: 0.45;
+    transform: scale(1.18);
+  }
+  .jr-scene[data-away="2"] .jr-vines {
+    opacity: 0.7;
+    transform: scale(1.08);
+  }
+  .jr-scene[data-away="3"] .jr-vines {
+    opacity: 0.92;
+    transform: scale(1);
+  }
+
+  .jr-vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      120% 90% at 50% 45%,
+      transparent calc(55% - var(--away) * 8%),
+      oklch(0.08 0.02 285 / calc(0.55 + var(--away) * 0.12)) 100%
+    );
+  }
+  .jr-scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, oklch(0.1 0.03 285 / 0.62) 0%, transparent 34%),
+      linear-gradient(0deg, oklch(0.1 0.03 285 / 0.72) 0%, transparent 42%);
+  }
+  .jr-grain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.1;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  .jr-glass {
+    background: oklch(0.12 0.03 285 / 0.42);
+    border: 1px solid oklch(1 0 0 / 0.14);
+    backdrop-filter: blur(10px) saturate(1.2);
+    -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  }
+
+  /* the swan */
+  .jr-swan {
+    position: relative;
+    display: inline-block;
+    transform-origin: 50% 100%;
+  }
+  .jr-swan img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: 50% 100%;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  /* the swan's own light where no stage lights it (the showcase, the moments): soft, wide, low */
+  .jr-swan-glow {
+    position: absolute;
+    inset: 18% -6% -6%;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in oklch, var(--glow, var(--blue)) 30%, transparent),
+      transparent
+    );
+    filter: blur(18px);
+    opacity: 0.6;
+  }
+  .jr-swan[data-tap] {
+    cursor: pointer;
+    outline: none;
+  }
+  .jr-swan[data-tap]:focus-visible {
+    box-shadow: 0 0 0 3px oklch(1 0 0 / 0.5);
+    border-radius: 20px;
+  }
+
+  /* the enchanted rose under its glass (Relics.tsx) */
+  .jr-rose {
+    --wilt: 0;
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .jr-rose-glow {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    width: 120%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      oklch(0.72 0.2 15 / 0.75),
+      oklch(0.65 0.18 350 / 0.25) 55%,
+      transparent
+    );
+    filter: blur(6px);
+    opacity: calc(1 - var(--wilt) * 0.65);
+    pointer-events: none;
+  }
+  .jr-rose-flower {
+    position: absolute;
+    left: 50%;
+    bottom: 15%;
+    height: 66%;
+    max-width: 82%;
+    object-fit: contain;
+    translate: -50% 0;
+    transform-origin: 50% 100%;
+    pointer-events: none;
+    user-select: none;
+    filter: saturate(calc(1 - var(--wilt) * 0.45)) brightness(calc(1 - var(--wilt) * 0.22))
+      drop-shadow(0 0 5px oklch(0.75 0.2 15 / calc(0.85 - var(--wilt) * 0.6)));
+    transition: filter 1.2s ease;
+  }
+  .jr-rose[data-state="dead"] .jr-rose-flower {
+    filter: grayscale(0.85) brightness(0.55) drop-shadow(0 0 4px oklch(0.55 0.15 300 / 0.5));
+  }
+  /* the wilting rose is drawn over its own fallen petals: wider, standing on the base */
+  .jr-rose-flower[data-wilted] {
+    bottom: 13.5%;
+    width: 88%;
+    height: auto;
+    max-width: none;
+  }
+  .jr-rose[data-state="dead"] .jr-rose-glow {
+    background: radial-gradient(closest-side, oklch(0.5 0.16 300 / 0.45), transparent);
+    opacity: 0.6;
+  }
+  /* the inside of the glass (the jar's own shape, in the rose's box): nothing pokes through */
+  .jr-jar-inside {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    clip-path: inset(2% 3% 13% 3% round 47% 47% 10% 10% / 29% 29% 4% 4%);
+  }
+  .jr-jar {
+    position: absolute;
+    inset: 2% 3% 13%;
+    border-radius: 50% 50% 12% 12% / 34% 34% 5% 5%;
+    border: 2px solid oklch(0.2 0.03 275 / 0.9);
+    background: linear-gradient(
+      100deg,
+      oklch(1 0 0 / 0.2),
+      oklch(1 0 0 / 0.04) 28%,
+      transparent 55%,
+      oklch(1 0 0 / 0.12) 92%
+    );
+    box-shadow:
+      inset 0 0 0 1.5px oklch(1 0 0 / 0.32),
+      inset 0 0 10px oklch(1 0 0 / 0.16),
+      inset 0 -6px 10px oklch(0.8 0.1 15 / 0.12);
+    pointer-events: none;
+  }
+  .jr-jar::before {
+    content: "";
+    position: absolute;
+    left: 14%;
+    top: 16%;
+    width: 9%;
+    height: 52%;
+    border-radius: 999px;
+    background: linear-gradient(180deg, oklch(1 0 0 / 0.55), oklch(1 0 0 / 0));
+  }
+  .jr-jar::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -5%;
+    width: 16%;
+    aspect-ratio: 1;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, oklch(1 0 0 / 0.8), oklch(0.85 0.02 280 / 0.35));
+    box-shadow: 0 0 4px oklch(1 0 0 / 0.4);
+  }
+  .jr-jar-base {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2%;
+    height: 13%;
+    border-radius: 5px 5px 40% 40% / 5px 5px 60% 60%;
+    background: linear-gradient(180deg, oklch(0.5 0.08 55), oklch(0.32 0.06 45));
+    border: 2px solid oklch(0.2 0.03 275 / 0.9);
+    box-shadow:
+      inset 0 2px 0 oklch(0.82 0.13 85),
+      0 4px 10px oklch(0 0 0 / 0.45);
+  }
+  .jr-petal {
+    position: absolute;
+    z-index: 1;
+    width: 9%;
+    aspect-ratio: 0.8;
+    border-radius: 55% 55% 50% 50% / 70% 70% 30% 30%;
+    background: radial-gradient(circle at 30% 30%, oklch(0.62 0.21 20), oklch(0.4 0.16 18));
+    box-shadow: 0 0 4px oklch(0.75 0.2 15 / 0.7);
+    pointer-events: none;
+  }
+  /* a petal lying on the base: flat and curled, not a bead */
+  .jr-petal-down {
+    bottom: 14%;
+    width: 13%;
+    aspect-ratio: 1.8;
+    border-radius: 75% 25% 70% 30% / 90% 45% 85% 40%;
+    rotate: calc(var(--r, 0deg) * 0.35);
+    opacity: 0.92;
+  }
+  .jr-rose[data-state="dead"] .jr-petal-down {
+    filter: grayscale(0.6) brightness(0.7);
+    box-shadow: none;
+  }
+  .jr-petal-falling {
+    left: 52%;
+    top: 34%;
+    opacity: 0;
+  }
+  /* the moments' rose: larger, its glow wider, the last petal and the petals flying back */
+  .jr-rose-xl .jr-rose-glow {
+    filter: blur(14px);
+  }
+  .jr-rose-xl .jr-jar {
+    border-width: 2px;
+  }
+  .jr-petal-last {
+    left: 52%;
+    top: 34%;
+    box-shadow:
+      0 0 8px oklch(0.78 0.2 15 / 0.9),
+      0 0 18px oklch(0.7 0.2 15 / 0.5);
+  }
+  .jr-moment[data-rose="reborn"] .jr-petal-down {
+    display: none;
+  }
+  .jr-petal-up {
+    bottom: 14%;
+    rotate: var(--r, 0deg);
+  }
+  .jr-dim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 45%, oklch(0.45 0.18 300 / 0.55), transparent 70%);
+    opacity: 0;
+  }
+  .jr-spark {
+    position: absolute;
+    width: 6%;
+    aspect-ratio: 1;
+    background: oklch(0.98 0.06 90);
+    clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+    filter: drop-shadow(0 0 2px oklch(0.95 0.1 85));
+    opacity: calc(0.9 - var(--wilt) * 0.7);
+    pointer-events: none;
+  }
+
+  /* ---- the storybook frame: title card, subtitles, the swan's stage ---- */
+  .jr-title {
+    text-shadow: 0 1px 16px oklch(0.08 0.03 285 / 0.7);
+  }
+  .jr-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: oklch(0.98 0.005 285 / 0.72);
+  }
+  .jr-chapter {
+    font-variant-numeric: lining-nums;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: oklch(0.88 0.09 85);
+  }
+  .jr-display {
+    font-variant-numeric: lining-nums;
+    font-family: var(--font-display);
+    font-size: clamp(34px, 9vw, 42px);
+    font-weight: 600;
+    line-height: 1.02;
+    letter-spacing: -0.005em;
+  }
+  .jr-story {
+    font-variant-numeric: lining-nums;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: oklch(0.98 0.005 285 / 0.85);
+  }
+  .jr-warnline {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: oklch(0.8 0.14 25);
+  }
+  .jr-hairline {
+    position: relative;
+    height: 2px;
+    border-radius: 2px;
+    background: oklch(1 0 0 / 0.18);
+    overflow: hidden;
+  }
+  .jr-hairline > span {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, oklch(0.8 0.1 80), oklch(0.93 0.11 90));
+    box-shadow: 0 0 8px oklch(0.9 0.12 88 / 0.8);
+    transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* the streak: a small flame and a numeral, nothing louder */
+  .jr-vigil {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+    color: oklch(0.93 0.1 85);
+  }
+  /* the candle of chapter I, still burning: the streak */
+  .jr-candle {
+    position: relative;
+    display: block;
+    width: 22px;
+    aspect-ratio: 296 / 384;
+    margin-bottom: 2px;
+  }
+  .jr-candle > img {
+    width: 100%;
+    height: auto;
+  }
+
+  /* a living flame over a drawn candle (CandleFlame) */
+  .jr-swan-fx {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .jr-swan-fx[data-fit="height"] {
+    top: 0;
+    left: 50%;
+    right: auto;
+    height: 100%;
+    translate: -50% 0;
+  }
+
+  /* light bursting from the raised sword of chapter IV (SwordGleam) */
+  .jr-gleam {
+    position: absolute;
+    width: 30%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: 0.55;
+    transition: opacity 0.25s ease-out;
+  }
+  .jr-gleam[data-on] {
+    opacity: 1;
+  }
+  .jr-gleam > span {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+  }
+  .jr-gleam-halo {
+    inset: -60% !important;
+    background: radial-gradient(
+      closest-side,
+      oklch(0.97 0.08 92 / 0.55),
+      oklch(0.9 0.12 85 / 0.2) 45%,
+      transparent
+    );
+  }
+  .jr-gleam-core {
+    inset: 18% !important;
+    background: radial-gradient(
+      closest-side,
+      oklch(1 0 0) 0%,
+      oklch(0.99 0.05 95 / 0.95) 35%,
+      oklch(0.93 0.12 88 / 0.55) 65%,
+      transparent
+    );
+    filter: blur(1px);
+  }
+  .jr-gleam-flare {
+    inset: -35% !important;
+    border-radius: 0 !important;
+    background:
+      linear-gradient(90deg, transparent 0 46%, oklch(1 0.03 95 / 0.9) 50%, transparent 54% 100%),
+      linear-gradient(0deg, transparent 0 47%, oklch(1 0.03 95 / 0.95) 50%, transparent 53% 100%);
+    -webkit-mask: radial-gradient(closest-side, black 15%, transparent 100%);
+    mask: radial-gradient(closest-side, black 15%, transparent 100%);
+  }
+
+  .jr-flame {
+    position: absolute;
+    aspect-ratio: 0.62;
+    translate: -50% -60%;
+    pointer-events: none;
+  }
+  .jr-flame-halo {
+    position: absolute;
+    left: 50%;
+    top: 55%;
+    width: 900%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      oklch(0.93 0.13 80 / 0.55),
+      oklch(0.8 0.16 60 / 0.22) 40%,
+      oklch(0.7 0.16 45 / 0.08) 65%,
+      transparent
+    );
+    mix-blend-mode: screen;
+  }
+  .jr-flame-pool {
+    position: absolute;
+    left: 50%;
+    top: 260%;
+    width: 1100%;
+    aspect-ratio: 3.2;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, oklch(0.85 0.14 70 / 0.4), transparent);
+    mix-blend-mode: screen;
+  }
+  .jr-flame-body {
+    position: absolute;
+    inset: 0;
+    transform-origin: 50% 92%;
+    border-radius: 50% 50% 46% 46% / 64% 64% 36% 36%;
+    background: radial-gradient(
+      70% 60% at 50% 72%,
+      oklch(0.99 0.04 95) 0%,
+      oklch(0.93 0.15 88) 35%,
+      oklch(0.78 0.19 55 / 0.95) 62%,
+      oklch(0.62 0.21 35 / 0) 100%
+    );
+    filter: blur(0.3px) drop-shadow(0 0 3px oklch(0.85 0.17 70 / 0.9));
+  }
+  .jr-flame-core {
+    position: absolute;
+    left: 32%;
+    right: 32%;
+    top: 52%;
+    bottom: 10%;
+    border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+    background: oklch(0.72 0.12 250 / 0.55);
+    filter: blur(0.6px);
+  }
+  .jr-ember {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 18%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: oklch(0.95 0.15 85);
+    box-shadow: 0 0 3px oklch(0.9 0.17 70);
+    opacity: 0;
+  }
+
+  .jr-vigil b {
+    font-variant-numeric: lining-nums;
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 700;
+  }
+  .jr-vigil small {
+    margin-top: 2px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  /* the weekly streak shield */
+  .jr-shield {
+    display: inline-grid;
+    place-items: center;
+    margin-top: 6px;
+  }
+  .jr-shield img {
+    width: 17px;
+    height: auto;
+    filter: grayscale(1) brightness(0.8);
+    opacity: 0.45;
+  }
+  .jr-shield[data-ready] img {
+    filter: drop-shadow(0 0 5px oklch(0.9 0.12 88 / 0.7));
+    opacity: 1;
+  }
+  .jr-shield-big {
+    width: 128px;
+    height: auto;
+    filter: drop-shadow(0 0 24px oklch(0.9 0.12 88 / 0.75));
+  }
+
+  /* the swan's stage: one key light, the ground under its feet, the relic standing beside it */
+  .jr-stage {
+    --key: oklch(0.92 0.1 85);
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+  }
+  .jr-stage[data-light="dim"] {
+    --key: oklch(0.78 0.06 260);
+  }
+  .jr-stage[data-light="cursed"] {
+    --key: oklch(0.6 0.16 300);
+  }
+  .jr-key {
+    position: absolute;
+    left: 50%;
+    bottom: 8%;
+    width: min(340px, 95%);
+    aspect-ratio: 1.15;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in oklch, var(--key) 42%, transparent),
+      color-mix(in oklch, var(--key) 12%, transparent) 55%,
+      transparent
+    );
+    pointer-events: none;
+  }
+  .jr-stage-swan {
+    position: relative;
+    display: inline-flex;
+  }
+  .jr-stage-relic {
+    position: relative;
+    margin-right: -6px;
+    margin-bottom: 2px;
+  }
+  .jr-stage .jr-swan-glow {
+    display: none;
+  }
+  .jr-stage .jr-swan img {
+    filter: drop-shadow(0 0 1px color-mix(in oklch, var(--key) 80%, transparent))
+      drop-shadow(0 0 14px color-mix(in oklch, var(--key) 35%, transparent));
+  }
+  .jr-ground {
+    position: absolute;
+    left: 50%;
+    bottom: 1%;
+    width: 78%;
+    height: 9%;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, oklch(0.05 0.02 285 / 0.7), transparent);
+    pointer-events: none;
+  }
+  /* a film's subtitle: two lines, always the same height, so the swan stays on its water */
+  .jr-subtitle {
+    font-variant-numeric: lining-nums;
+    max-width: 30ch;
+    height: 2.7em;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: center;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: oklch(0.99 0.005 85);
+    text-shadow:
+      0 1px 2px oklch(0.05 0.02 285 / 0.9),
+      0 0 18px oklch(0.05 0.02 285 / 0.8);
+  }
+
+  /* a relic standing in the scene */
+  .jr-relic {
+    position: relative;
+    display: inline-flex;
+    cursor: pointer;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .jr-relic:active {
+    transform: scale(0.95);
+  }
+  .jr-relic:focus-visible {
+    border-radius: 14px;
+    box-shadow: 0 0 0 2px oklch(1 0 0 / 0.6);
+  }
+
+  /* a chapter numeral to pick (the landing's showcase) */
+  .jr-numeral {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    color: oklch(1 0 0 / 0.6);
+    border: 1px solid oklch(1 0 0 / 0.25);
+    background: oklch(0.12 0.03 285 / 0.45);
+    transition:
+      color 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  .jr-numeral:hover {
+    color: oklch(1 0 0 / 0.9);
+  }
+  .jr-numeral[data-on] {
+    color: oklch(0.95 0.1 88);
+    border-color: oklch(0.88 0.11 88);
+    box-shadow: 0 0 16px oklch(0.88 0.11 88 / 0.5);
+  }
+  .jr-numeral:focus-visible {
+    outline: 2px solid oklch(1 0 0 / 0.7);
+    outline-offset: 2px;
+  }
+
+  /* the five chapters as numerals on a line */
+  .jr-path {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .jr-path::before {
+    content: "";
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    top: 50%;
+    height: 1px;
+    background: oklch(1 0 0 / 0.25);
+  }
+  .jr-path li {
+    position: relative;
+  }
+  .jr-path-dot {
+    font-variant-numeric: lining-nums;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    background: oklch(0.14 0.03 285);
+    border: 1px solid oklch(1 0 0 / 0.25);
+    color: oklch(1 0 0 / 0.45);
+  }
+  .jr-path li[data-state="past"] .jr-path-dot {
+    color: oklch(0.15 0.03 285);
+    background: oklch(0.85 0.09 85);
+    border-color: transparent;
+  }
+  .jr-path li[data-state="now"] .jr-path-dot {
+    width: 40px;
+    height: 40px;
+    font-size: 17px;
+    color: oklch(0.95 0.1 88);
+    border: 1.5px solid oklch(0.88 0.11 88);
+    box-shadow:
+      0 0 0 4px oklch(0.88 0.11 88 / 0.15),
+      0 0 18px oklch(0.88 0.11 88 / 0.55);
+  }
+
+  /* the enchanted hourglass: today's sand, Vietnam time */
+  .jr-hourglass {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    aspect-ratio: 228 / 384;
+  }
+  .jr-hourglass > img,
+  .jr-hourglass-sand {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+  }
+  .jr-hourglass-glow {
+    position: absolute;
+    inset: 10% -25%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, oklch(0.85 0.14 80 / 0.6), transparent);
+    filter: blur(6px);
+    pointer-events: none;
+  }
+  .jr-hourglass[data-state="urgent"] .jr-hourglass-glow {
+    background: radial-gradient(closest-side, oklch(0.7 0.19 35 / 0.65), transparent);
+  }
+  .jr-hourglass[data-state="safe"] .jr-hourglass-glow {
+    background: radial-gradient(closest-side, oklch(0.9 0.16 90 / 0.85), transparent);
+  }
+  .jr-hourglass[data-state="out"] > img {
+    filter: grayscale(0.7) brightness(0.6);
+  }
+  .jr-hourglass[data-state="out"] .jr-hourglass-glow {
+    background: radial-gradient(closest-side, oklch(0.5 0.16 300 / 0.4), transparent);
+  }
+  .jr-stream line {
+    stroke: oklch(0.92 0.1 85);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 2px oklch(0.92 0.14 85));
+  }
+  .jr-stream .jr-grains {
+    stroke: oklch(1 0.05 90);
+    stroke-width: 3.2;
+    stroke-dasharray: 1.5 7;
+  }
+  .jr-seal {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    -webkit-mask: url("../../assets/journey/prop-hourglass.webp") center / contain no-repeat;
+    mask: url("../../assets/journey/prop-hourglass.webp") center / contain no-repeat;
+    background: linear-gradient(
+      115deg,
+      transparent 30%,
+      oklch(1 0.08 90 / 0.65) 45%,
+      transparent 60%
+    );
+    background-size: 300% 100%;
+    mix-blend-mode: screen;
+  }
+
+  /* the moments: a new stage, the crows driven off */
+  .jr-moment {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    color: oklch(0.98 0.005 285);
+    background: oklch(0.1 0.03 285);
+  }
+  .jr-flash {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 50% 55%,
+      oklch(1 0 0),
+      oklch(0.98 0.03 85 / 0.6) 40%,
+      transparent 75%
+    );
+    opacity: 0;
+    pointer-events: none;
+  }
+  .jr-feather {
+    position: absolute;
+    top: -10%;
+    width: 10px;
+    height: 22px;
+    border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+    background: oklch(0.98 0.01 280 / 0.9);
+    box-shadow: 0 0 6px oklch(1 0 0 / 0.6);
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .jr-castle,
+    .jr-castle-dark {
+      animation: jr-push 2.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .jr-title {
+      animation: jr-rise 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+    }
+    .jr-stage {
+      animation: jr-rise 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.7s both;
+    }
+    .jr-key {
+      animation: jr-breathe 6s ease-in-out infinite;
+    }
+    .jr-crow {
+      animation: jr-cross var(--dur, 16s) linear var(--delay, 0s) infinite;
+    }
+    .jr-crow img {
+      animation: jr-flap-a 0.5s steps(1, end) infinite;
+    }
+    .jr-crow img + img {
+      animation: jr-flap-b 0.5s steps(1, end) infinite;
+    }
+    .jr-perch {
+      animation: jr-peck 3.2s ease-in-out infinite;
+    }
+    .jr-fog {
+      animation: jr-fog 40s ease-in-out infinite alternate;
+    }
+    .jr-rays {
+      animation: jr-rays 14s ease-in-out infinite alternate;
+    }
+    .jr-swan[data-motion="bob"] {
+      animation: jr-bob 3.4s ease-in-out infinite;
+    }
+    .jr-swan[data-motion="sway"] {
+      animation: jr-sway 4.6s ease-in-out infinite;
+    }
+    .jr-swan[data-motion="glide"] {
+      animation: jr-glide 4s ease-in-out infinite;
+    }
+    .jr-swan[data-motion="hop"] {
+      animation: jr-hop 1.8s cubic-bezier(0.3, 0, 0.3, 1) infinite;
+    }
+    .jr-swan[data-react] {
+      animation: jr-react 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+    }
+    .jr-swan-glow {
+      animation: jr-glow 3.4s ease-in-out infinite;
+    }
+    .jr-flash {
+      animation: jr-flash 1.6s ease-out both;
+    }
+    .jr-feather {
+      animation: jr-feather var(--fall, 4s) ease-in var(--delay, 0s) infinite;
+    }
+    .jr-rise {
+      animation: jr-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s) both;
+    }
+    .jr-rose-flower {
+      animation: jr-float 4.2s ease-in-out infinite;
+    }
+    .jr-rose[data-state="last"] .jr-rose-flower {
+      animation: jr-tremble 2.6s ease-in-out infinite;
+    }
+    .jr-rose[data-state="dead"] .jr-rose-flower {
+      animation: none;
+    }
+    .jr-rose-glow {
+      animation: jr-glow 3.4s ease-in-out infinite;
+    }
+    .jr-spark {
+      animation: jr-twinkle 2.4s ease-in-out var(--d, 0s) infinite;
+    }
+    .jr-petal-falling {
+      animation: jr-petal-fall 6.5s cubic-bezier(0.45, 0, 0.6, 1) 1.2s infinite;
+    }
+    .jr-rose[data-state="last"] .jr-petal-falling {
+      animation-duration: 4.8s;
+    }
+    .jr-hourglass-glow {
+      animation: jr-glow 3.6s ease-in-out infinite;
+    }
+    .jr-hourglass[data-state="urgent"] .jr-hourglass-glow {
+      animation-duration: 1.4s;
+    }
+    .jr-stream .jr-grains {
+      animation: jr-grains 0.9s linear infinite;
+    }
+    .jr-seal {
+      animation: jr-seal 3.8s ease-in-out infinite;
+    }
+    .jr-petal-last {
+      animation: jr-last-petal 3.6s cubic-bezier(0.4, 0, 0.55, 1) both;
+    }
+    .jr-petal-up {
+      animation: jr-petal-up 2.2s cubic-bezier(0.5, 0, 0.3, 1) var(--delay, 0s) both;
+    }
+    .jr-dim {
+      animation: jr-flash 2.4s ease-out both;
+    }
+    .jr-gleam-flare {
+      animation: jr-flare 6s linear infinite;
+    }
+    .jr-gleam-core,
+    .jr-gleam-halo {
+      animation: jr-halo-breathe 2.4s ease-in-out infinite;
+    }
+    .jr-flame-body {
+      animation:
+        jr-flame-sway 2.6s ease-in-out infinite,
+        jr-flame-flick 0.9s steps(6, end) infinite;
+    }
+    .jr-flame-halo {
+      animation:
+        jr-halo-breathe 3.1s ease-in-out infinite,
+        jr-halo-flick 0.47s ease-in-out infinite alternate;
+    }
+    .jr-flame-pool {
+      animation: jr-halo-flick 0.61s ease-in-out infinite alternate;
+    }
+    .jr-ember {
+      animation: jr-ember 2.8s ease-out calc(var(--n) * 0.93s) infinite;
+    }
+    .jr-shield-big {
+      animation: jr-shield 3s ease-out both;
+    }
+    .jr-flee {
+      animation: jr-flee 1.6s cubic-bezier(0.5, 0, 0.75, 0) var(--delay, 0s) both;
+    }
+  }
+
+  @keyframes jr-cross {
+    0% {
+      left: -12%;
+      transform: translateY(0) scale(var(--s, 1));
+    }
+    30% {
+      transform: translateY(-14px) scale(var(--s, 1));
+    }
+    65% {
+      transform: translateY(8px) scale(var(--s, 1));
+    }
+    100% {
+      left: 110%;
+      transform: translateY(-6px) scale(var(--s, 1));
+    }
+  }
+  @keyframes jr-flap-a {
+    0%,
+    49.9% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes jr-flap-b {
+    0%,
+    49.9% {
+      opacity: 0;
+    }
+    50%,
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes jr-peck {
+    0%,
+    70%,
+    100% {
+      transform: rotate(0deg);
+    }
+    78% {
+      transform: rotate(-8deg);
+    }
+    86% {
+      transform: rotate(4deg);
+    }
+  }
+  @keyframes jr-fog {
+    from {
+      translate: -6% 0;
+    }
+    to {
+      translate: 6% 0;
+    }
+  }
+  @keyframes jr-rays {
+    from {
+      opacity: 0.6;
+      rotate: -2deg;
+    }
+    to {
+      opacity: 1;
+      rotate: 3deg;
+    }
+  }
+  @keyframes jr-bob {
+    0%,
+    100% {
+      transform: translateY(0) scaleY(1);
+    }
+    50% {
+      transform: translateY(-2.5%) scaleY(1.012);
+    }
+  }
+  @keyframes jr-sway {
+    0%,
+    100% {
+      transform: rotate(-1.5deg);
+    }
+    50% {
+      transform: rotate(1.5deg) translateY(-1%);
+    }
+  }
+  @keyframes jr-glide {
+    0%,
+    100% {
+      transform: translate(0, 0) rotate(-0.6deg);
+    }
+    50% {
+      transform: translate(3%, -1.5%) rotate(0.6deg);
+    }
+  }
+  @keyframes jr-hop {
+    0%,
+    100% {
+      transform: translateY(0) scale(1, 1);
+    }
+    12% {
+      transform: translateY(0) scale(1.04, 0.95);
+    }
+    38% {
+      transform: translateY(-8%) scale(0.98, 1.03);
+    }
+    60% {
+      transform: translateY(0) scale(1.03, 0.97);
+    }
+    72% {
+      transform: none;
+    }
+  }
+  @keyframes jr-react {
+    0% {
+      transform: scale(1);
+    }
+    35% {
+      transform: translateY(-10%) scale(1.06, 0.96) rotate(-3deg);
+    }
+    70% {
+      transform: translateY(0) scale(0.98, 1.03);
+    }
+    100% {
+      transform: none;
+    }
+  }
+  @keyframes jr-glow {
+    0%,
+    100% {
+      opacity: 0.6;
+      transform: scale(0.95);
+    }
+    50% {
+      opacity: 0.95;
+      transform: scale(1.05);
+    }
+  }
+  @keyframes jr-flash {
+    0% {
+      opacity: 0;
+    }
+    18% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes jr-feather {
+    0% {
+      opacity: 0;
+      transform: translateY(0) rotate(0deg);
+    }
+    10% {
+      opacity: 0.95;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(115vh) translateX(var(--drift, 30px)) rotate(var(--spin, 260deg));
+    }
+  }
+  @keyframes jr-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px) scale(0.96);
+      filter: blur(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+  }
+  @keyframes jr-flee {
+    0% {
+      opacity: 1;
+      transform: translate(0, 0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--fx, 160px), var(--fy, -180px)) scale(0.4) rotate(-12deg);
+    }
+  }
+
+  @keyframes jr-float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(-1deg);
+    }
+    50% {
+      transform: translateY(-4%) rotate(1deg);
+    }
+  }
+  @keyframes jr-tremble {
+    0%,
+    60%,
+    100% {
+      transform: rotate(0deg);
+    }
+    66% {
+      transform: rotate(-3deg);
+    }
+    72% {
+      transform: rotate(2.5deg);
+    }
+    78% {
+      transform: rotate(-1.5deg);
+    }
+    84% {
+      transform: rotate(0.8deg);
+    }
+  }
+  @keyframes jr-twinkle {
+    0%,
+    100% {
+      transform: scale(0.3) rotate(0deg);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1) rotate(45deg);
+    }
+  }
+  @keyframes jr-petal-fall {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) rotate(0deg);
+    }
+    8% {
+      opacity: 1;
+    }
+    30% {
+      transform: translate(-90%, 140%) rotate(-60deg);
+    }
+    55% {
+      transform: translate(70%, 290%) rotate(40deg);
+    }
+    80% {
+      opacity: 1;
+      transform: translate(-30%, 470%) rotate(-25deg);
+    }
+    92%,
+    100% {
+      opacity: 0;
+      transform: translate(-10%, 520%) rotate(-80deg);
+    }
+  }
+  @keyframes jr-grains {
+    to {
+      stroke-dashoffset: -8.5;
+    }
+  }
+  @keyframes jr-seal {
+    0% {
+      background-position: 100% 0;
+    }
+    60%,
+    100% {
+      background-position: 0% 0;
+    }
+  }
+  @keyframes jr-last-petal {
+    0% {
+      top: 34%;
+      left: 52%;
+      transform: rotate(0deg) scale(1);
+    }
+    12% {
+      transform: rotate(-20deg) scale(1.05);
+    }
+    35% {
+      left: 36%;
+      transform: rotate(-70deg);
+    }
+    60% {
+      left: 64%;
+      transform: rotate(30deg);
+    }
+    82% {
+      left: 58%;
+      transform: rotate(-30deg);
+    }
+    100% {
+      top: 79%;
+      left: var(--to-x, 74%);
+      transform: rotate(var(--r, -12deg)) scale(1);
+    }
+  }
+  @keyframes jr-petal-up {
+    0% {
+      opacity: 1;
+      bottom: 14%;
+      transform: translateX(0) scale(1);
+    }
+    55% {
+      opacity: 1;
+      transform: translateX(-40%) rotate(140deg) scale(1.1);
+    }
+    100% {
+      opacity: 0;
+      bottom: 72%;
+      left: 50%;
+      transform: rotate(320deg) scale(0.3);
+    }
+  }
+  @keyframes jr-push {
+    from {
+      scale: 1.1;
+      opacity: 0;
+    }
+    to {
+      scale: 1;
+    }
+  }
+  @keyframes jr-breathe {
+    0%,
+    100% {
+      opacity: 0.85;
+      scale: 1;
+    }
+    50% {
+      opacity: 1;
+      scale: 1.04;
+    }
+  }
+  @keyframes jr-shield {
+    0% {
+      opacity: 0;
+      scale: 0.6;
+    }
+    20% {
+      opacity: 1;
+      scale: 1.08;
+    }
+    32% {
+      scale: 1;
+    }
+    40% {
+      scale: 1.06;
+    }
+    100% {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+  @keyframes jr-flame-sway {
+    0%,
+    100% {
+      transform: rotate(0deg) scale(1, 1);
+    }
+    18% {
+      transform: rotate(-4deg) scale(0.94, 1.08) skewX(-3deg);
+    }
+    37% {
+      transform: rotate(2deg) scale(1.05, 0.95) skewX(2deg);
+    }
+    55% {
+      transform: rotate(-2deg) scale(0.96, 1.12) skewX(-1deg);
+    }
+    74% {
+      transform: rotate(3deg) scale(1.03, 0.97) skewX(3deg);
+    }
+    88% {
+      transform: rotate(-1deg) scale(0.98, 1.05);
+    }
+  }
+  @keyframes jr-flame-flick {
+    0% {
+      opacity: 1;
+    }
+    17% {
+      opacity: 0.86;
+    }
+    33% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.93;
+    }
+    67% {
+      opacity: 0.8;
+    }
+    83% {
+      opacity: 0.97;
+    }
+  }
+  @keyframes jr-halo-breathe {
+    0%,
+    100% {
+      scale: 1;
+    }
+    40% {
+      scale: 1.08;
+    }
+    70% {
+      scale: 0.95;
+    }
+  }
+  @keyframes jr-halo-flick {
+    from {
+      opacity: 0.75;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes jr-ember {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, 0) scale(1);
+    }
+    12% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(calc(-50% + (var(--n) - 1) * 140%), -520%) scale(0.4);
+    }
+  }
+  @keyframes jr-flare {
+    from {
+      rotate: 0deg;
+    }
+    to {
+      rotate: 90deg;
+    }
+  }
+}
+
+/* feathers on the journey (Feathers.tsx): the chapter's wing, starlight on the swan, the relics
+ * and the constellations of the support topics */
+@layer components {
+  .jr-wing {
+    position: relative;
+    height: 70px;
+    width: 250px;
+  }
+  .jr-wing > span {
+    position: absolute;
+    transform-origin: 50% 100%;
+  }
+  .jr-wing .fx-glyph[data-look="empty"] {
+    opacity: 0.55;
+  }
+  .jr-glass .fx-glyph[data-look="star-empty"] {
+    opacity: 0.6;
+  }
+
+  .jr-sparkle {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .jr-sparkle > span {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    scale: var(--s);
+    background: radial-gradient(
+      closest-side,
+      oklch(1 0.03 95),
+      oklch(0.92 0.1 290 / 0.6) 55%,
+      transparent
+    );
+    clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  }
+  .jr-sparkle[data-level="3"] > span {
+    width: 8px;
+    height: 8px;
+  }
+
+  .jr-relic-medal {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    color: oklch(0.25 0.04 285);
+    background: radial-gradient(circle at 35% 30%, oklch(1 0 0), var(--tone) 70%);
+    box-shadow:
+      0 0 0 2px oklch(1 0 0 / 0.55),
+      0 0 18px color-mix(in oklch, var(--tone) 70%, transparent);
+  }
+  .jr-relic-medal:not([data-earned]) {
+    color: oklch(1 0 0 / 0.55);
+    background: oklch(1 0 0 / 0.08);
+    box-shadow: inset 0 0 0 1.5px oklch(1 0 0 / 0.3);
+  }
+
+  .jr-relic-art {
+    display: block;
+    max-width: none;
+    filter: drop-shadow(0 0 10px color-mix(in oklch, var(--tone) 75%, transparent));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .jr-relic-art:not([data-earned]) {
+    filter: grayscale(1) brightness(0.7);
+    opacity: 0.45;
+  }
+  .jr-relic-float {
+    display: inline-grid;
+    margin-bottom: 26px;
+    border-radius: 999px;
+  }
+  .jr-constellation-line {
+    stroke: oklch(1 0 0 / 0.22);
+    stroke-width: 0.8;
+    stroke-dasharray: 2 2.5;
+  }
+  .jr-star circle {
+    fill: oklch(1 0 0 / 0.45);
+  }
+  .jr-star[data-lit] circle {
+    fill: oklch(0.99 0.04 95);
+  }
+  .jr-star .jr-star-halo {
+    fill: oklch(0.9 0.1 290 / 0.28) !important;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .jr-sparkle > span {
+      animation: jr-twinkle 2.6s ease-in-out infinite;
+      animation-delay: var(--d);
+    }
+    .jr-relic-float {
+      animation: jr-hover 3.6s ease-in-out infinite;
+    }
+    .jr-star[data-lit] .jr-star-halo {
+      animation: jr-twinkle 3.2s ease-in-out infinite;
+    }
+    .jr-wing > span[data-on] {
+      animation: jr-preen 4s ease-in-out infinite;
+      animation-delay: calc(var(--i) * 0.12s);
+    }
+  }
+  @keyframes jr-twinkle {
+    0%,
+    100% {
+      opacity: 0.15;
+      transform: scale(0.6) rotate(0deg);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.15) rotate(45deg);
+    }
+  }
+  @keyframes jr-hover {
+    50% {
+      translate: 0 -5px;
+    }
+  }
+  @keyframes jr-preen {
+    50% {
+      translate: 0 -1.5px;
+    }
+  }
+}
+
+/* the moments of a chapter finished (JourneyMoments): letterbox, the old swan fading into light,
+ * the blindfold falling, the lantern of the far shore */
+@layer components {
+  .jr-letterbox::before,
+  .jr-letterbox::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    height: 8vh;
+    background: oklch(0.05 0 0);
+  }
+  .jr-letterbox::before {
+    top: 0;
+  }
+  .jr-letterbox::after {
+    bottom: 0;
+  }
+  .jr-ribbon {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    z-index: 3;
+    width: 120px;
+    height: auto;
+    translate: -50% 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .jr-lantern {
+    position: absolute;
+    left: 50%;
+    top: 34%;
+    width: 60vmin;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, oklch(0.88 0.13 75 / 0.45), transparent);
+    mix-blend-mode: screen;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .jr-letterbox::before {
+      animation: jr-bar-in-top 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+    .jr-letterbox::after {
+      animation: jr-bar-in-bottom 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+    .jr-before {
+      animation: jr-before 1.5s ease-in both;
+    }
+    .jr-after {
+      animation: jr-after 1.1s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+    }
+    .jr-ribbon {
+      animation: jr-ribbon-fall 1.5s cubic-bezier(0.45, 0, 0.7, 1) 0.4s both;
+    }
+    .jr-lantern {
+      animation: jr-lantern 3.4s ease-in-out infinite;
+    }
+  }
+  @keyframes jr-bar-in-top {
+    from {
+      translate: 0 -100%;
+    }
+  }
+  @keyframes jr-bar-in-bottom {
+    from {
+      translate: 0 100%;
+    }
+  }
+  @keyframes jr-before {
+    0%,
+    55% {
+      filter: none;
+      opacity: 1;
+    }
+    100% {
+      filter: brightness(2.4) blur(2px);
+      opacity: 0.2;
+    }
+  }
+  @keyframes jr-after {
+    from {
+      opacity: 0;
+      scale: 0.86;
+      filter: brightness(2) blur(3px);
+    }
+  }
+  @keyframes jr-ribbon-fall {
+    0% {
+      opacity: 0;
+      transform: translateY(0) rotate(0deg);
+    }
+    15% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(46vh) rotate(160deg);
+    }
+  }
+  @keyframes jr-lantern {
+    50% {
+      opacity: 0.6;
+      scale: 1.08;
+    }
+  }
+}
+
+/* Trang chủ: ánh sáng của khung Hành trình đổi theo chương đang xem: đêm tháp gai (ánh nến), trăng
+ * trên hồ, bình minh hồng, rồi vàng ánh kim của Bạch Thiên Nga. Viền sáng loang ra nền trang để
+ * khối tối không bị "đóng khung cứng". */
+@layer components {
+  .jr-showcase {
+    --jr-glow: oklch(0.62 0.16 55 / 0.42);
+    --jr-tint: oklch(0.55 0.17 50 / 0.2);
+    box-shadow:
+      0 30px 90px -30px var(--jr-glow),
+      0 0 0 1px oklch(1 0 0 / 0.06);
+    transition: box-shadow 1.2s ease;
+  }
+  .jr-showcase[data-stage="2"],
+  .jr-showcase[data-stage="3"] {
+    --jr-glow: oklch(0.6 0.12 265 / 0.45);
+    --jr-tint: oklch(0.55 0.1 255 / 0.18);
+  }
+  .jr-showcase[data-stage="4"] {
+    --jr-glow: oklch(0.7 0.14 20 / 0.45);
+    --jr-tint: oklch(0.7 0.13 30 / 0.18);
+  }
+  .jr-showcase[data-stage="5"] {
+    --jr-glow: oklch(0.85 0.13 85 / 0.55);
+    --jr-tint: oklch(0.9 0.1 85 / 0.16);
+  }
+  .jr-tint {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(70% 60% at 70% 80%, var(--jr-tint), transparent 70%);
+    transition: background 1.2s ease;
+  }
+  .jr-halo {
+    position: absolute;
+    inset: -40px -24px;
+    z-index: -1;
+    border-radius: 48px;
+    background: radial-gradient(60% 55% at 50% 60%, var(--jr-glow), transparent 75%);
+    filter: blur(24px);
+    opacity: 0.7;
+    transition: background 1.2s ease;
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .jr-showcase,
+    .jr-tint,
+    .jr-halo {
+      transition: none;
+    }
+  }
+}
