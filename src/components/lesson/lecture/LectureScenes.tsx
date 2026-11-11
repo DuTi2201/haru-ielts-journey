@@ -44,6 +44,10 @@ export function Scene(p: SceneProps) {
       return <SentenceForms {...p} />;
     case "speaking_answer":
       return <SpeakingAnswer {...p} />;
+    case "ref_table":
+      return <RefTable {...p} />;
+    case "fix_pairs":
+      return <FixPairs {...p} />;
     default:
       return null;
   }
@@ -719,6 +723,83 @@ function DoDoes({ data, has, latest, onReplay }: SceneProps) {
           </div>
         )}
       </div>
+      <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ reference table, one row at a time --
+type RefRow = { key: string; head: string; en: string; vi?: string; note?: string };
+
+/** A table of the book (uses, adverbs, time phrases): a label cell and the English example, one row
+ * brought in as the voice reaches it. */
+function RefTable({ data, has, latest, onReplay }: SceneProps) {
+  const rows = (data["rows"] as RefRow[]) ?? [];
+  const cols = (data["cols"] as string[]) ?? [];
+  return (
+    <div className="flex flex-1 flex-col gap-1.5">
+      {cols.length === 2 && (
+        <div className="grid grid-cols-[38%_1fr] gap-2 px-1 text-[10px] font-bold uppercase tracking-[0.12em] opacity-70">
+          <span>{cols[0]}</span>
+          <span>{cols[1]}</span>
+        </div>
+      )}
+      <ol className="space-y-1">
+        {rows.map((r) => {
+          if (!has(r.key)) return <li key={r.key} className="h-[44px] rounded-[12px] border border-dashed border-white/12" aria-hidden="true" />;
+          const now = latest === r.key;
+          return (
+            <li key={r.key} className={enter}>
+              <Tap k={r.key} onReplay={onReplay} label={r.en}>
+                <span
+                  className={cn(
+                    "grid min-h-[44px] grid-cols-[38%_1fr] items-center gap-2 rounded-[12px] px-2.5 py-1.5 transition-colors duration-500",
+                    now ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-white/10",
+                  )}
+                >
+                  <span className="text-[12px] font-bold leading-tight">{r.head}</span>
+                  <span className="min-w-0">
+                    <En className="block text-[14px] font-extrabold leading-snug">{r.en}</En>
+                    {r.vi && <span className="block text-[11px] font-medium opacity-75">{r.vi}</span>}
+                  </span>
+                </span>
+              </Tap>
+            </li>
+          );
+        })}
+      </ol>
+      <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
+    </div>
+  );
+}
+
+type FixRow = { key: string; wrong: string; right: string; why: string };
+
+/** Common mistakes: the wrong sentence struck through, the right one under it, and the reason. */
+function FixPairs({ data, has, latest, onReplay }: SceneProps) {
+  const rows = (data["rows"] as FixRow[]) ?? [];
+  return (
+    <div className="flex flex-1 flex-col gap-1.5">
+      <ol className="space-y-1">
+        {rows.map((r) => {
+          if (!has(r.key)) return <li key={r.key} className="h-[52px] rounded-[12px] border border-dashed border-white/12" aria-hidden="true" />;
+          const now = latest === r.key;
+          return (
+            <li key={r.key} className={enter}>
+              <Tap k={r.key} onReplay={onReplay} label={r.right}>
+                <span className={cn("block rounded-[12px] px-2.5 py-1.5 transition-colors duration-500", now ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-white/10")}>
+                  <span className="flex flex-wrap items-baseline gap-x-3">
+                    <En className="text-[13px] font-semibold line-through decoration-2 opacity-70" >{r.wrong}</En>
+                    <span aria-hidden="true">→</span>
+                    <En className="text-[14px] font-extrabold" >{r.right}</En>
+                  </span>
+                  <span className="block text-[11px] font-medium opacity-75">{r.why}</span>
+                </span>
+              </Tap>
+            </li>
+          );
+        })}
+      </ol>
       <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
     </div>
   );
