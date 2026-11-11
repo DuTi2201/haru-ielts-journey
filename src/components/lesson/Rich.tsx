@@ -1,3 +1,4 @@
+import { Bus, School, Store, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
@@ -13,6 +14,9 @@ export function Ko({ children, className }: { children: ReactNode; className?: s
     </span>
   );
 }
+
+/** `prep: @store | …` shows a line icon in the badge instead of text. */
+const BADGE_ICONS: Record<string, LucideIcon> = { store: Store, bus: Bus, school: School };
 
 const HANGUL = "\\u1100-\\u11FF\\u3130-\\u318F\\uAC00-\\uD7AF";
 // A run of Hangul with the small punctuation that sits inside grammar patterns
@@ -256,11 +260,14 @@ export function RichBlock({
                     aria-hidden="true"
                     className="flex h-12 min-w-12 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-blue px-3 text-[18px] font-bold text-primary-foreground"
                   >
-                    {r.prep}
+                    {(() => {
+                      const Icon = r.prep.startsWith("@") ? BADGE_ICONS[r.prep.slice(1)] : undefined;
+                      return Icon ? <Icon className="h-6 w-6" strokeWidth={2} /> : r.prep;
+                    })()}
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-[15px] font-semibold leading-5 text-ink">
-                      <span className="sr-only">{r.prep}: </span>
+                      {!r.prep.startsWith("@") && <span className="sr-only">{r.prep}: </span>}
                       <Rich text={r.label} />
                     </p>
                     <Rich as="p" text={r.examples} className="mt-0.5 text-[14px] leading-5 text-ink-2" />
