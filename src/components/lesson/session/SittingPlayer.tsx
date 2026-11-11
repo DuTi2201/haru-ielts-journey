@@ -362,6 +362,14 @@ export function SittingPlayer({
                 {...(scopedLecture ? { sitting: sitting.n } : {})}
                 onPlay={onListened}
                 pictures={lecturePictures(lesson)}
+                {...(!isLast
+                  ? {
+                      onNext: {
+                        label: `học ${sitting.steps[si + 1]!.label.replace(/ · .*$/, "")}`,
+                        go: () => setStepIndex(si + 1),
+                      },
+                    }
+                  : {})}
               />
             </div>
           ) : (
@@ -379,6 +387,14 @@ export function SittingPlayer({
                   {...(scopedLecture ? { sitting: sitting.n } : {})}
                   onPlay={onListened}
                   pictures={lecturePictures(lesson)}
+                  {...(!isLast
+                    ? {
+                        onNext: {
+                          label: `học ${sitting.steps[si + 1]!.label.replace(/ · .*$/, "")}`,
+                          go: () => setStepIndex(si + 1),
+                        },
+                      }
+                    : {})}
                 />
               </div>
             </Disclosure>

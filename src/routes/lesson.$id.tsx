@@ -811,6 +811,10 @@ function LessonView({ lesson }: { lesson: LessonOut }) {
                     onPlay={markListened}
                     pictures={lecturePictures(lesson)}
                     onSkip={{ label: "Học Từ vựng trước", go: () => goTo("vocab") }}
+                    after={{
+                      label: "học Từ vựng, rồi Ngữ pháp, sau đó mới làm bài tập",
+                      go: () => goTo(lesson.vocab.length > 0 ? "vocab" : "grammar"),
+                    }}
                   />
                 )}
                 {shownNotes.length > 0 && (

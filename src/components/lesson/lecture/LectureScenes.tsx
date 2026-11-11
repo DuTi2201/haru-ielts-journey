@@ -40,6 +40,10 @@ export function Scene(p: SceneProps) {
       return <TenseTimeline {...p} />;
     case "do_does":
       return <DoDoes {...p} />;
+    case "sentence_forms":
+      return <SentenceForms {...p} />;
+    case "speaking_answer":
+      return <SpeakingAnswer {...p} />;
     default:
       return null;
   }
@@ -109,7 +113,7 @@ function Foot({ data, has, latest, onReplay }: Omit<SceneProps, "visual">) {
         <span className="min-w-0">
           {pick !== "rule" && (
             <span className="block text-[10px] font-bold uppercase tracking-[0.14em] opacity-70">
-              {pick === "quote" ? "Lời thầy Minh" : "Trong IELTS"}
+              {pick === "quote" ? "Trích dẫn" : "Trong IELTS"}
             </span>
           )}
           <span
@@ -364,39 +368,44 @@ function TruthCards({ data, has, latest, onReplay }: SceneProps) {
 // ------------------------------------------------------------- one question, four tenses --
 type Answer = { key: string; at: "now" | "span" | "past" | "future"; tense: string; en: string; vi: string };
 
-/** Where an answer sits on the time axis: past ··· now ··· future (x from 0 to 100). */
-function Span({ at, on }: { at: Answer["at"]; on: boolean }) {
-  const c = on ? "oklch(0.5 0.16 285)" : AMBER;
+/** One answer on the shared time axis: the same left-to-right scale in every lane (past on the
+ * left, the present at the dashed line in the middle, the future on the right), so the four
+ * answers can be compared by where they sit. */
+function Lane({ at, color }: { at: Answer["at"]; color: string }) {
+  const bar = "absolute top-1/2 h-[7px] -translate-y-1/2 rounded-full";
+  const dot = "absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full";
   return (
-    <svg width="74" height="22" viewBox="0 0 74 22" aria-hidden="true" className="shrink-0">
-      <path d="M3 11h68" stroke="currentColor" strokeOpacity="0.3" strokeWidth="1.5" />
-      <path d="M37 5v12" stroke="currentColor" strokeOpacity="0.45" strokeWidth="1.5" />
-      {at === "now" && <circle cx="37" cy="11" r="5" fill={c} />}
+    <span className="relative block h-5 w-full" style={{ color }} aria-hidden="true">
+      <span className="absolute inset-x-0 top-1/2 h-px bg-current opacity-25" />
+      {at === "now" && <span className={dot} style={{ left: "50%", background: "currentColor" }} />}
       {at === "span" && (
-        <g>
-          <path d="M10 11h27" stroke={c} strokeWidth="5" strokeLinecap="round" />
-          <circle cx="37" cy="11" r="5" fill={c} />
-        </g>
+        <>
+          <span className={bar} style={{ left: "14%", width: "36%", background: "currentColor" }} />
+          <span className={dot} style={{ left: "50%", background: "currentColor" }} />
+        </>
       )}
       {at === "past" && (
-        <g>
-          <path d="M8 11h14" stroke={c} strokeWidth="5" strokeLinecap="round" />
-          <path d="m25 7 6 8m0-8-6 8" stroke={c} strokeWidth="2" strokeLinecap="round" />
-        </g>
+        <>
+          <span className={bar} style={{ left: "8%", width: "24%", background: "currentColor" }} />
+          <svg className="absolute top-1/2 -translate-y-1/2" style={{ left: "33%" }} width="14" height="14" viewBox="0 0 14 14">
+            <path d="m2 2 10 10m0-10L2 12" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+          </svg>
+        </>
       )}
       {at === "future" && (
-        <g>
-          <path d="M40 11h20" stroke={c} strokeWidth="3" strokeDasharray="4 4" strokeLinecap="round" />
-          <path d="m60 6 7 5-7 5" fill="none" stroke={c} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-        </g>
+        <>
+          <span className="absolute top-1/2 -translate-y-1/2 border-t-[3px] border-dashed" style={{ left: "54%", width: "30%", borderColor: "currentColor" }} />
+          <svg className="absolute top-1/2 -translate-y-1/2" style={{ left: "83%" }} width="14" height="14" viewBox="0 0 14 14">
+            <path d="m3 2 6 5-6 5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </>
       )}
-    </svg>
+    </span>
   );
 }
 
 function TenseTimeline({ data, has, latest, onReplay }: SceneProps) {
   const answers = (data["answers"] as Answer[]) ?? [];
-  const ielts = has("ielts_q");
   return (
     <div className="flex flex-1 flex-col gap-2">
       <div className="min-h-[52px]">
@@ -412,27 +421,131 @@ function TenseTimeline({ data, has, latest, onReplay }: SceneProps) {
           </Tap>
         )}
       </div>
-      {has("axis") && (
-        <p className={cn("flex items-center justify-between px-1 text-[10px] font-bold uppercase tracking-[0.12em] opacity-65", enter)}>
-          <span>Quá khứ</span>
-          <span>Bây giờ</span>
-          <span>Tương lai</span>
-        </p>
-      )}
-      <ol className="space-y-1.5">
-        {answers.map((a) => {
-          if (!has(a.key)) return <li key={a.key} className="h-[46px] rounded-[14px] border border-dashed border-white/15" aria-hidden="true" />;
-          const now = latest === a.key;
-          return (
-            <li key={a.key} className={enter}>
-              <Tap k={a.key} onReplay={onReplay} label={a.en}>
-                <span className={cn("flex min-h-[46px] items-center gap-2.5 rounded-[14px] px-2.5 py-1.5 transition-colors duration-500", now ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-white/10")}>
-                  <Span at={a.at} on={now} />
-                  <span className="min-w-0 flex-1">
-                    <En className="block text-[14.5px] font-extrabold leading-tight">{a.en}</En>
-                    <span className="block text-[11px] font-semibold opacity-70">
-                      {a.tense} · {a.vi}
+      <div className="min-h-[18px]">
+        {has("axis") && (
+          <p className={cn("grid grid-cols-3 px-1 text-[10px] font-bold uppercase tracking-[0.12em] opacity-70", enter)}>
+            <span className="text-left">Quá khứ</span>
+            <span className="text-center">Hiện tại</span>
+            <span className="text-right">Tương lai</span>
+          </p>
+        )}
+      </div>
+      <div className="relative">
+        {has("axis") && (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 left-1/2 border-l-2 border-dashed border-white/35"
+          />
+        )}
+        <ol className="space-y-1.5">
+          {answers.map((a) => {
+            if (!has(a.key)) return <li key={a.key} className="h-[58px] rounded-[14px] border border-dashed border-white/15" aria-hidden="true" />;
+            const now = latest === a.key;
+            return (
+              <li key={a.key} className={enter}>
+                <Tap k={a.key} onReplay={onReplay} label={a.en}>
+                  <span className={cn("block rounded-[14px] px-3 py-1.5 transition-colors duration-500", now ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-[oklch(0.3_0.06_285/0.7)]")}>
+                    <span className="flex items-baseline justify-between gap-2">
+                      <En className="text-[14.5px] font-extrabold leading-tight">{a.en}</En>
+                      <span className="shrink-0 text-[10.5px] font-bold uppercase tracking-[0.08em] opacity-70">{a.tense}</span>
                     </span>
+                    <Lane at={a.at} color={now ? "oklch(0.5 0.16 285)" : AMBER} />
+                    <span className="block text-[11px] font-semibold opacity-70">{a.vi}</span>
+                  </span>
+                </Tap>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+      <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
+    </div>
+  );
+}
+
+// ------------------------------------------------- how to build the three kinds of sentence --
+type FormRow = { key: string; label: string; parts: string[]; hi: number[]; vi: string };
+
+function FormParts({ parts, hi, on }: { parts: string[]; hi: number[]; on: boolean }) {
+  return (
+    <span lang="en" className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[16px] font-extrabold leading-snug">
+      {parts.map((p, i) =>
+        hi.includes(i) ? (
+          <span
+            key={i}
+            className={cn(
+              "rounded-[8px] px-1.5 py-0.5 text-[oklch(0.25_0.05_285)]",
+              on ? "bg-[oklch(0.84_0.12_165)]" : "bg-[oklch(0.88_0.13_90)]",
+            )}
+          >
+            {p}
+          </span>
+        ) : (
+          <span key={i}>{p}</span>
+        ),
+      )}
+    </span>
+  );
+}
+
+function SentenceForms({ data, has, latest, onReplay }: SceneProps) {
+  const rows = (data["rows"] as FormRow[]) ?? [];
+  const persons = (data["persons"] as { who: string; verb: string }[]) ?? [];
+  const spelling = (data["spelling"] as [string, string][]) ?? [];
+  const short = (data["short"] as string[]) ?? [];
+  const spell = has("spelling");
+  return (
+    <div className="flex flex-1 flex-col gap-2">
+      <div className="min-h-[64px]">
+        {spell ? (
+          <Tap k="spelling" onReplay={onReplay} className={enter} key="spelling">
+            <span className="block rounded-[14px] bg-white/10 px-3 py-2">
+              <span className="block text-[10px] font-bold uppercase tracking-[0.12em] opacity-70">Thêm s không đơn giản</span>
+              <span className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                {spelling.map(([b, e]) => (
+                  <span key={b} lang="en" className="text-[14px] font-bold">
+                    <span className="opacity-70">{b}</span>
+                    <span className="mx-1" style={{ color: AMBER }}>→</span>
+                    {e}
+                  </span>
+                ))}
+              </span>
+            </span>
+          </Tap>
+        ) : has("persons") ? (
+          <Tap k="persons" onReplay={onReplay} className={enter} key="persons">
+            <span className="grid grid-cols-2 gap-2">
+              {persons.map((p, i) => (
+                <span key={p.who} className="block rounded-[14px] bg-white/10 px-3 py-2">
+                  <span className="block text-[10.5px] font-bold uppercase tracking-[0.08em] opacity-70">{p.who}</span>
+                  <En className="block text-[17px] font-extrabold">
+                    {p.verb.replace(/s$/, "")}
+                    {i > 0 && <span className="rounded-[6px] bg-[oklch(0.88_0.13_90)] px-1 text-[oklch(0.25_0.05_285)]">s</span>}
+                  </En>
+                </span>
+              ))}
+            </span>
+          </Tap>
+        ) : null}
+      </div>
+      <ol className="space-y-1.5">
+        {rows.map((r) => {
+          if (!has(r.key)) {
+            return (
+              <li key={r.key} className="flex h-[58px] items-center rounded-[14px] border border-dashed border-white/15 px-3 text-[11px] font-bold uppercase tracking-[0.1em] opacity-60">
+                {r.label}
+              </li>
+            );
+          }
+          const now = latest === r.key;
+          return (
+            <li key={r.key} className={enter}>
+              <Tap k={r.key} onReplay={onReplay} label={parts(r)}>
+                <span className={cn("flex items-center gap-3 rounded-[14px] px-3 py-2 transition-colors duration-500", now ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-white/10")}>
+                  <span className="w-[74px] shrink-0 text-[10.5px] font-bold uppercase leading-tight tracking-[0.08em] opacity-70">{r.label}</span>
+                  <span className="min-w-0 flex-1">
+                    <FormParts parts={r.parts} hi={r.hi} on={now} />
+                    <span className="block text-[11.5px] font-medium opacity-75">{r.vi}</span>
                   </span>
                 </span>
               </Tap>
@@ -440,17 +553,87 @@ function TenseTimeline({ data, has, latest, onReplay }: SceneProps) {
           );
         })}
       </ol>
-      {ielts ? (
-        <Tap k={has("ielts_a") ? "ielts_a" : "ielts_q"} onReplay={onReplay} className={cn("mt-auto", enter)}>
-          <span className="block rounded-[16px] bg-white/12 px-3.5 py-2.5">
-            <span className="block text-[10px] font-bold uppercase tracking-[0.14em] opacity-70">Speaking Part 1</span>
-            <En className="block text-[13.5px] font-semibold opacity-90">{str(data["ielts_q"])}</En>
-            {has("ielts_a") && <En className={cn("mt-0.5 block text-[15px] font-extrabold", enter)}>{str(data["ielts_a"])}</En>}
+      <div className="min-h-[20px]">
+        {has("short") && (
+          <Tap k="short" onReplay={onReplay} className={enter}>
+            <span lang="en" className="block px-1 text-[12.5px] font-semibold opacity-85">
+              <span lang="vi" className="mr-2 text-[10px] font-bold uppercase tracking-[0.1em] opacity-70">Đáp ngắn</span>
+              {short.join(" · ")}
+            </span>
+          </Tap>
+        )}
+      </div>
+      <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
+    </div>
+  );
+}
+
+function parts(r: FormRow) {
+  return r.parts.join(" ");
+}
+
+// ---------------------------------------------------- a full answer in IELTS Speaking Part 1 --
+type Part = { key: string; role: string; tense: string; en: string; vi: string };
+
+function SpeakingAnswer({ data, has, latest, onReplay }: SceneProps) {
+  const items = (data["parts"] as Part[]) ?? [];
+  const started = has("p1");
+  return (
+    <div className="flex flex-1 flex-col gap-2">
+      <div className="min-h-[58px]">
+        {has("q") && (
+          <Tap k="q" onReplay={onReplay} className={enter}>
+            <span className="block rounded-[16px] bg-white/12 px-3.5 py-2">
+              <span className="block text-[10px] font-bold uppercase tracking-[0.14em] opacity-70">Giám khảo hỏi</span>
+              <span className="flex items-baseline justify-between gap-3">
+                <En className="text-[16px] font-extrabold">{str(data["question"])}</En>
+                <span className="shrink-0 text-[11.5px] font-semibold opacity-70">{str(data["question_vi"])}</span>
+              </span>
+            </span>
+          </Tap>
+        )}
+      </div>
+      {has("short") && !started && (
+        <Tap k="short" onReplay={onReplay} className={enter}>
+          <span className="flex items-center justify-between gap-3 rounded-[14px] border border-[oklch(0.78_0.13_20/0.6)] bg-[oklch(0.78_0.13_20/0.16)] px-3.5 py-2.5">
+            <En className="text-[17px] font-extrabold">{str(data["short"])}</En>
+            <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: ROSE }}>
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
+                <path d="m2 2 8 8m0-8-8 8" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+              </svg>
+              Chỉ một câu: quá cụt
+            </span>
           </span>
         </Tap>
-      ) : (
-        <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
       )}
+      <ol className="space-y-1.5">
+        {items.map((it, i) => {
+          if (!has(it.key)) return started ? <li key={it.key} className="h-[60px] rounded-[14px] border border-dashed border-white/15" aria-hidden="true" /> : null;
+          const now = latest === it.key;
+          return (
+            <li key={it.key} className={enter}>
+              <Tap k={it.key} onReplay={onReplay} label={it.en}>
+                <span className={cn("flex items-center gap-3 rounded-[14px] px-3 py-2 transition-colors duration-500", now ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-white/10")}>
+                  <span
+                    className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold tabular-nums", now ? "bg-[oklch(0.45_0.14_285)] text-white" : "bg-white/20")}
+                    aria-hidden="true"
+                  >
+                    {i + 1}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[10px] font-bold uppercase tracking-[0.1em] opacity-70">
+                      {it.role} · {it.tense}
+                    </span>
+                    <En className="block text-[15px] font-extrabold leading-snug">{it.en}</En>
+                    <span className="block text-[11.5px] font-medium opacity-75">{it.vi}</span>
+                  </span>
+                </span>
+              </Tap>
+            </li>
+          );
+        })}
+      </ol>
+      <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
     </div>
   );
 }

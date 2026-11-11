@@ -6,9 +6,12 @@ import { getLectureStatus } from "@/lib/api/audio";
 import { cn } from "@/lib/utils";
 import { SlideLecture } from "./SlideLecture";
 
-type Passed = Omit<ComponentProps<typeof SlideLecture>, "sitting">;
+type Passed = Omit<ComponentProps<typeof SlideLecture>, "sitting" | "onNext" | "autoStart"> & {
+  /** Where to go when the last sitting's lecture ends (the lesson's vocabulary, then grammar). */
+  after?: { label: string; go: () => void };
+};
 
-export function WholeLecture(props: Passed) {
+export function WholeLecture({ after, ...props }: Passed) {
   const status = useQuery({
     queryKey: ["lecture-status", props.lessonId],
     queryFn: () => getLectureStatus(props.lessonId),
@@ -16,6 +19,7 @@ export function WholeLecture(props: Passed) {
     retry: 1,
   });
   const [picked, setPicked] = useState<number | null>(null);
+  const [auto, setAuto] = useState(false);
 
   if (status.isPending) {
     return (
@@ -25,11 +29,12 @@ export function WholeLecture(props: Passed) {
       />
     );
   }
-  if (status.data?.whole.ready) return <SlideLecture {...props} />;
+  if (status.data?.whole.ready) return <SlideLecture {...props} {...(after ? { onNext: after } : {})} />;
 
   const sittings = status.data?.sittings ?? [];
   // status unknown or a one-sitting lesson: the lecture of sitting 1 is the lesson's lecture
-  if (sittings.length <= 1) return <SlideLecture {...props} sitting={1} />;
+  if (sittings.length <= 1)
+    return <SlideLecture {...props} sitting={1} {...(after ? { onNext: after } : {})} />;
 
   const n = picked ?? sittings.find((s) => !s.ready)?.n ?? 1;
   return (
@@ -42,7 +47,10 @@ export function WholeLecture(props: Passed) {
             type="button"
             role="tab"
             aria-selected={n === s.n}
-            onClick={() => setPicked(s.n)}
+            onClick={() => {
+              setAuto(false);
+              setPicked(s.n);
+            }}
             className={cn(
               "rounded-full border px-3 py-1.5 text-[13px] font-semibold",
               n === s.n
@@ -55,7 +63,25 @@ export function WholeLecture(props: Passed) {
           </button>
         ))}
       </div>
-      <SlideLecture key={n} {...props} sitting={n} />
+      <SlideLecture
+        key={n}
+        {...props}
+        sitting={n}
+        autoStart={auto && n === picked}
+        {...(n < sittings.length
+          ? {
+              onNext: {
+                label: `Buổi ${n + 1}`,
+                go: () => {
+                  setAuto(true);
+                  setPicked(n + 1);
+                },
+              },
+            }
+          : after
+            ? { onNext: after }
+            : {})}
+      />
     </div>
   );
 }

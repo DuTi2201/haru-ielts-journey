@@ -96,9 +96,15 @@ export function SlideLecture({
   sitting,
   onPlay,
   onSkip,
+  onNext,
+  autoStart,
   pictures,
 }: {
   lessonId: number;
+  /** What follows the lecture. When it ends, a panel offers it at once, or after a countdown. */
+  onNext?: { label: string; go: () => void; seconds?: number };
+  /** Start playing as soon as this lecture is mounted (the learner just chose to go on to it). */
+  autoStart?: boolean;
   /** Studio pictures for the slides (the lesson's own); without them the slides show icons. */
   pictures?: LecturePictures;
   /** The lecture of this sitting (buổi, 1-based) alone; without it, the whole lesson's. */
@@ -188,6 +194,17 @@ export function SlideLecture({
     podcast.seek(start / 1000);
     if (podcast.state === "paused") podcast.resume();
   }
+
+  const started0 = useRef(false);
+  useEffect(() => {
+    if (!autoStart || started0.current || auth.isAnonymous || !data) return;
+    started0.current = true;
+    void podcast.play(lessonId, "template", sitting);
+  }, [autoStart, auth.isAnonymous, data, podcast, lessonId, sitting]);
+
+  // the recording has played to its end: offer what comes next
+  const ended =
+    loaded && podcast.state === "idle" && podcast.duration > 0 && podcast.time >= podcast.duration - 1;
 
   // heard to the last slide: counted once per recording
   const lastSlide = !!data && !!state && state.slide === data.slides.length - 1;
@@ -320,6 +337,17 @@ export function SlideLecture({
         </div>
       </div>
 
+      {ended && onNext && (
+        <EndedPanel
+          key={`${lessonId}-${sitting ?? 0}`}
+          next={onNext}
+          onAgain={() => {
+            podcast.seek(0);
+            void podcast.play(lessonId, "template", sitting);
+          }}
+        />
+      )}
+
       {auth.isAnonymous && (
         <Link
           to="/support-language"
@@ -418,7 +446,8 @@ export function SlideView({
         !t.sitting.what.toLowerCase().startsWith(t.main.toLowerCase().slice(0, 6))
           ? t.sitting.what
           : null;
-      const words = pictures?.words ?? [];
+      const own = Array.isArray(s["words"]) ? (s["words"] as string[]) : null;
+      const words = own ?? pictures?.words ?? [];
       return (
         <div className="my-auto grid gap-4 sm:grid-cols-[1.1fr_1fr] sm:items-center sm:gap-7">
           <div className="min-w-0">
@@ -1061,3 +1090,71 @@ function Chip({ children }: { children: React.ReactNode }) {
 }
 
 export type { LectureSlidesOut };
+
+/** After the last word: what to do next, with a visible countdown (as a "skip" bar on a video
+ * player) so the learner can go on at once, wait, or stay and hear it again. */
+function EndedPanel({
+  next,
+  onAgain,
+}: {
+  next: { label: string; go: () => void; seconds?: number };
+  onAgain: () => void;
+}) {
+  const total = next.seconds ?? 10;
+  const [left, setLeft] = useState<number | null>(next.seconds === 0 ? null : total);
+  const go = useRef(next.go);
+  go.current = next.go;
+  useEffect(() => {
+    if (left === null) return;
+    if (left <= 0) {
+      go.current();
+      return;
+    }
+    const t = window.setTimeout(() => setLeft((v) => (v === null ? v : v - 1)), 1000);
+    return () => window.clearTimeout(t);
+  }, [left]);
+  return (
+    <div
+      role="status"
+      className="relative overflow-hidden rounded-[18px] border border-line bg-card p-3.5 shadow-elev-1 animate-in fade-in slide-in-from-bottom-1 duration-500 motion-reduce:animate-none"
+    >
+      {left !== null && (
+        <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-fill">
+          <div
+            className="h-full bg-blue transition-[width] duration-1000 ease-linear motion-reduce:transition-none"
+            style={{ width: `${(left / total) * 100}%` }}
+          />
+        </div>
+      )}
+      <p className="text-[14px] font-bold">Nghe xong rồi.</p>
+      <p className="mt-0.5 text-[12.5px] font-medium leading-5 text-ink-2">
+        {left !== null ? `Tự chuyển sau ${left} giây: ${next.label}.` : next.label}
+      </p>
+      <div className="mt-2.5 flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => next.go()}
+          className="hit-area inline-flex min-h-11 items-center rounded-full bg-blue px-5 text-[13px] font-semibold text-primary-foreground"
+        >
+          Chuyển ngay
+        </button>
+        {left !== null && (
+          <button
+            type="button"
+            onClick={() => setLeft(null)}
+            className="hit-area inline-flex min-h-11 items-center rounded-full border border-line bg-card px-4 text-[13px] font-semibold"
+          >
+            Ở lại
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={onAgain}
+          className="hit-area inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line bg-card px-4 text-[13px] font-semibold"
+        >
+          <RotateCcw size={14} strokeWidth={2.6} aria-hidden="true" /> Nghe lại
+        </button>
+      </div>
+    </div>
+  );
+}
