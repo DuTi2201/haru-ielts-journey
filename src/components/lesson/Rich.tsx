@@ -167,6 +167,29 @@ export function RichBlock({
             </ul>
           );
         }
+        if (b.head[0] === "Sai" && b.head[1] === "Đúng") {
+          return <MistakeRows key={i} head={b.head} rows={b.rows} className={className} />;
+        }
+        if (b.head.length === 2) {
+          // two columns: one compact list instead of a card per row
+          return (
+            <dl
+              key={i}
+              className="divide-y divide-line overflow-hidden rounded-[12px] border border-line bg-card"
+            >
+              {b.rows.map((row, r) => (
+                <div key={r} className="grid grid-cols-[minmax(0,36%)_minmax(0,1fr)] gap-x-3 px-3 py-1.5">
+                  <dt className="text-[13px] font-semibold leading-5 text-blue-deep">
+                    <Rich text={row[0]} />
+                  </dt>
+                  <dd className="min-w-0">
+                    <Rich text={row[1]} className={className} />
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          );
+        }
         return (
           <div key={i}>
             <div className="space-y-2 lg:hidden">
@@ -230,6 +253,62 @@ export function RichBlock({
           </div>
         );
       })}
+    </div>
+  );
+}
+
+const MISTAKES_SHOWN = 6;
+
+/** A «Sai | Đúng | Vì sao» table: each mistake is its own pair, the wrong form marked ✗ and the
+ * right one ✓ in words as well as colour; the first six show, the rest open on demand. */
+function MistakeRows({
+  head,
+  rows,
+  className,
+}: {
+  head: string[];
+  rows: string[][];
+  className?: string | undefined;
+}) {
+  const one = (row: string[], r: number) => (
+    <li key={r} className="rounded-[12px] border border-line bg-card px-3 py-2">
+      <p className="flex gap-2 text-[13.5px] leading-5">
+        <span className="shrink-0 font-semibold text-danger" aria-hidden="true">
+          ✗
+        </span>
+        <span className="min-w-0">
+          <span className="sr-only">{head[0]}: </span>
+          <del className="decoration-danger decoration-2 text-ink-2">
+            <Rich text={row[0]} />
+          </del>
+        </span>
+      </p>
+      <p className="mt-0.5 flex gap-2 text-[13.5px] font-semibold leading-5">
+        <span className="shrink-0 text-green" aria-hidden="true">
+          ✓
+        </span>
+        <span className="min-w-0">
+          <span className="sr-only">{head[1]}: </span>
+          <Rich text={row[1]} />
+        </span>
+      </p>
+      {row[2] && <Rich as="p" text={row[2]} className={cn("mt-1 pl-5 text-xs leading-5 text-ink-2", className)} />}
+    </li>
+  );
+  const first = rows.slice(0, MISTAKES_SHOWN);
+  const more = rows.slice(MISTAKES_SHOWN);
+  return (
+    <div>
+      <ul className="space-y-2">{first.map(one)}</ul>
+      {more.length > 0 && (
+        <details className="group mt-2">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-1.5 text-xs font-semibold text-blue-deep [&::-webkit-details-marker]:hidden">
+            <span className="group-open:hidden">Xem thêm {more.length} lỗi</span>
+            <span className="hidden group-open:inline">Ẩn bớt</span>
+          </summary>
+          <ul className="space-y-2">{more.map((row, r) => one(row, r + MISTAKES_SHOWN))}</ul>
+        </details>
+      )}
     </div>
   );
 }
