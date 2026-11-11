@@ -82,7 +82,7 @@ function UsageBlock({
         <SectionLabel>Ý nghĩa & cách dùng</SectionLabel>
         <RichBlock
           text={g.usage_context_vi}
-          className="mt-0.5 text-[14px] leading-[23px] text-ink"
+          className="mt-0.5 text-[15px] leading-6 text-ink"
         />
       </div>
     );
@@ -97,7 +97,7 @@ function UsageBlock({
       {main.map((x, i) => (
         <div key={`${x.key}-${i}`}>
           <SectionLabel>{x.label ?? (onlyOne ? "Ý nghĩa & cách dùng" : "Cách dùng")}</SectionLabel>
-          <RichBlock text={x.body_vi} className="mt-1 text-[14px] leading-[23px] text-ink" />
+          <RichBlock text={x.body_vi} className="mt-1 text-[15px] leading-6 text-ink" />
         </div>
       ))}
       {more.length > 0 && (

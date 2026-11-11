@@ -20,7 +20,7 @@ const HANGUL = "\\u1100-\\u11FF\\u3130-\\u318F\\uAC00-\\uD7AF";
 const HANGUL_RUN = new RegExp(
   `([-~(]*[${HANGUL}][${HANGUL}\\-~/()·+]*(?:[ ][${HANGUL}][${HANGUL}\\-~/()·+]*)*)`,
 );
-const INLINE = /(~~[^~]+?~~|\*\*[^*]+?\*\*|`[^`]+?`|\*[^*\s][^*]*?\*)/;
+const INLINE = /(~~[^~]+?~~|==[^=]+?==|\*\*[^*]+?\*\*|`[^`]+?`|\*[^*\s][^*]*?\*)/;
 
 /** Splits a plain string on Hangul runs so the Korean gets the Korean font. */
 function withKorean(text: string, keyBase: string): ReactNode[] {
@@ -54,6 +54,14 @@ export function Rich({
       {parts.map((part, i) => {
         if (!part) return null;
         const key = `r${i}`;
+        if (part.startsWith("==") && part.endsWith("==") && part.length > 4) {
+          // the word the example is about
+          return (
+            <mark key={key} className="rounded-[6px] bg-yellow-strong/70 px-1 font-semibold text-ink">
+              {withKorean(part.slice(2, -2), key)}
+            </mark>
+          );
+        }
         if (part.startsWith("~~") && part.endsWith("~~") && part.length > 4) {
           // the wrong form of a mistake: struck through, and said so for a screen reader
           return (
@@ -97,6 +105,10 @@ type Block =
   | { kind: "p"; lines: string[] }
   | { kind: "ul"; items: string[] }
   | { kind: "quote"; text: string }
+  | { kind: "heading"; text: string }
+  | { kind: "scale"; rows: { pct: number; words: string }[] }
+  | { kind: "chips"; items: string[] }
+  | { kind: "preps"; rows: { prep: string; label: string; examples: string }[] }
   | { kind: "note"; text: string }
   | { kind: "group"; n: string; title: string; en: string | null; body: string[]; examples: { en: string; vi: string | null }[] }
   | { kind: "table"; head: string[]; rows: string[][] };
@@ -125,6 +137,19 @@ function toBlocks(text: string): Block[] {
       out.push({ kind: "group", n, title, en, body: [], examples: [] });
     } else if (/^>\s?/.test(line)) {
       out.push({ kind: "quote", text: line.replace(/^>\s?/, "").replace(/[«»]/g, "").trim() });
+    } else if (/^##\s+/.test(line)) {
+      out.push({ kind: "heading", text: line.replace(/^##\s+/, "").trim() });
+    } else if (/^%\d+\s*·/.test(line)) {
+      const m = /^%(\d+)\s*·\s*(.+)$/.exec(line.trim());
+      const row = { pct: Math.min(100, Number(m?.[1] ?? 0)), words: m?.[2] ?? "" };
+      if (last?.kind === "scale") last.rows.push(row);
+      else out.push({ kind: "scale", rows: [row] });
+    } else if (/^chips:\s*/.test(line)) {
+      out.push({ kind: "chips", items: line.replace(/^chips:\s*/, "").split(";").map((x) => x.trim()).filter(Boolean) });
+    } else if (/^prep:\s*/.test(line)) {
+      const [prep = "", label = "", examples = ""] = line.replace(/^prep:\s*/, "").split(" | ").map((x) => x.trim());
+      if (last?.kind === "preps") last.rows.push({ prep, label, examples });
+      else out.push({ kind: "preps", rows: [{ prep, label, examples }] });
     } else if (/^!\s?/.test(line)) {
       out.push({ kind: "note", text: line.replace(/^!\s?/, "").trim() });
     } else if (last?.kind === "group") {
@@ -167,13 +192,77 @@ export function RichBlock({
         if (b.kind === "p") {
           return <Rich key={i} as="p" text={b.lines.join("\n")} className={className} />;
         }
+        if (b.kind === "heading") {
+          return (
+            <h3 key={i} className="flex items-center gap-2 pt-2 text-[15.5px] font-semibold leading-6 text-ink">
+              <span aria-hidden="true" className="h-4 w-1 shrink-0 rounded-full bg-blue" />
+              <Rich text={b.text} />
+            </h3>
+          );
+        }
+        if (b.kind === "scale") {
+          return (
+            <ol key={i} className="space-y-2.5 rounded-[16px] border border-line bg-card px-3 py-3" aria-label="Thang tần suất">
+              {b.rows.map((r, k) => (
+                <li key={k} className="flex items-center gap-3">
+                  <span className="w-11 shrink-0 text-right text-[15px] font-bold tabular-nums text-blue-deep">
+                    {r.pct}%
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <Rich text={r.words} className="block text-[16px] font-semibold leading-6 text-ink" />
+                    <span aria-hidden="true" className="mt-1 block h-2 rounded-full bg-paper">
+                      <span
+                        className="block h-2 rounded-full bg-blue"
+                        style={{ width: `${Math.max(r.pct, 3)}%` }}
+                      />
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+          );
+        }
+        if (b.kind === "chips") {
+          return (
+            <ul key={i} className="flex flex-wrap gap-2">
+              {b.items.map((c) => (
+                <li key={c} className="rounded-full bg-blue-soft px-3 py-1.5 text-[14.5px] font-semibold text-blue-deep">
+                  <Rich text={c} />
+                </li>
+              ))}
+            </ul>
+          );
+        }
+        if (b.kind === "preps") {
+          return (
+            <ul key={i} className="space-y-2">
+              {b.rows.map((r) => (
+                <li key={r.prep} className="flex items-center gap-3 rounded-[16px] border border-line bg-card px-3 py-2.5">
+                  <span
+                    aria-hidden="true"
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue text-[20px] font-bold text-primary-foreground"
+                  >
+                    {r.prep}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[15px] font-semibold leading-5 text-ink">
+                      <span className="sr-only">{r.prep}: </span>
+                      <Rich text={r.label} />
+                    </p>
+                    <Rich as="p" text={r.examples} className="mt-0.5 text-[14px] leading-5 text-ink-2" />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          );
+        }
         if (b.kind === "quote") {
           return (
             <blockquote key={i} className="relative rounded-[16px] bg-yellow-soft px-4 pb-3 pt-4">
               <span aria-hidden="true" className="absolute left-3 top-0.5 text-4xl font-bold leading-none text-blue/50">
                 “
               </span>
-              <Rich as="p" text={b.text} className="pl-4 text-[15px] font-semibold leading-6 text-ink" />
+              <Rich as="p" text={b.text} className="pl-4 text-[15.5px] font-semibold leading-6 text-ink" />
             </blockquote>
           );
         }
@@ -210,14 +299,14 @@ export function RichBlock({
                 </div>
               </header>
               {b.body.length > 0 && (
-                <Rich as="p" text={b.body.join("\n")} className="mt-2 text-[13.5px] leading-[22px] text-ink" />
+                <Rich as="p" text={b.body.join("\n")} className="mt-2 text-[14.5px] leading-6 text-ink" />
               )}
               {b.examples.length > 0 && (
                 <ul className="mt-2 space-y-1.5">
                   {b.examples.map((e, k) => (
                     <li key={k} className="rounded-r-[10px] border-l-4 border-blue bg-blue-soft/50 px-2.5 py-1.5">
-                      <Rich as="p" text={e.en} className="text-[14px] font-semibold leading-5 text-ink" />
-                      {e.vi && <Rich as="p" text={e.vi} className="mt-0.5 text-xs leading-5 text-ink-2" />}
+                      <Rich as="p" text={e.en} className="text-[15.5px] font-semibold leading-6 text-ink" />
+                      {e.vi && <Rich as="p" text={e.vi} className="mt-0.5 text-[13px] leading-5 text-ink-2" />}
                     </li>
                   ))}
                 </ul>
