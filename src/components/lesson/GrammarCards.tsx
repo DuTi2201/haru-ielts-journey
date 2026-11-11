@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { StageProfile } from "@/lib/lesson-stage";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Check, ChevronDown, HelpCircle, Volume2 } from "lucide-react";
+import { CalendarClock, Check, ChevronDown, HelpCircle, Volume2 } from "lucide-react";
 
 import { ApiError } from "@/lib/api/client";
 import { recordItemReview } from "@/lib/api/content";
@@ -104,7 +104,7 @@ function UsageBlock({
         <More title="Vì sao chọn mẫu này · liên hệ với bài học">
           {more.map((x) => (
             <div key={x.key}>
-              <p className="text-[11.5px] font-semibold leading-5 text-ink">
+              <p className="text-xs font-semibold leading-5 text-ink">
                 <Rich text={x.label ?? ""} />
               </p>
               <RichBlock text={x.body_vi} className="mt-0.5 text-[13px] leading-5 text-ink-2" />
@@ -194,6 +194,18 @@ function MistakesBox({ text }: { text: string }) {
 
 /** The card's one question. The learner answers first, then marks the card: a wrong answer marks it
  * "Chưa chắc" by itself (and goes back to the review queue), a right one opens the two buttons. */
+/** "Ôn lại hôm nay / ngày mai / sau N ngày": the day the server brings the card back, counted
+ * in calendar days of the learner's own clock. */
+function dueLabel(iso: string): string {
+  const due = new Date(iso);
+  if (Number.isNaN(due.getTime())) return "sẽ quay lại ôn theo lịch giãn cách";
+  const day = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const days = Math.round((day(due) - day(new Date())) / 86_400_000);
+  if (days <= 0) return "ôn lại hôm nay";
+  if (days === 1) return "ôn lại ngày mai";
+  return `ôn lại sau ${days} ngày`;
+}
+
 function SelfCheck({
   g,
   onAnswered,
@@ -307,6 +319,8 @@ export function GrammarCards({
 }) {
   const navigate = useNavigate();
   const [judged, setJudged] = useState<Record<number, boolean>>({});
+  // card id -> when the server will bring it back (from the answer to the mark just sent)
+  const [dueAt, setDueAt] = useState<Record<number, string | null>>({});
   // card id -> whether its one question was last answered right
   const [answered, setAnswered] = useState<Record<number, boolean>>({});
   const loginHintShown = useRef(false);
@@ -348,7 +362,9 @@ export function GrammarCards({
     else miss();
     setJudged((j) => ({ ...j, [g.id]: correct }));
     onReviewed?.(g.id, correct);
-    recordItemReview({ item_type: "grammar_point", item_id: g.id, correct }).catch((err) => {
+    recordItemReview({ item_type: "grammar_point", item_id: g.id, correct })
+      .then((state) => setDueAt((d) => ({ ...d, [g.id]: state.due_at ?? null })))
+      .catch((err) => {
       if (err instanceof ApiError && err.status === 401 && !loginHintShown.current) {
         loginHintShown.current = true;
         toast("Đăng nhập để lưu tiến độ ngữ pháp.", {
@@ -364,7 +380,7 @@ export function GrammarCards({
   return (
     <>
       {(labelled || linked) && (
-        <p className="mt-3 rounded-[14px] bg-card/70 px-3 py-2 text-[11.5px] font-medium leading-5 text-ink-2">
+        <p className="mt-3 rounded-[14px] bg-card/70 px-3 py-2 text-xs font-medium leading-5 text-ink-2">
           {labelled && (
             <>
               <strong className="font-semibold text-ink">Bắt buộc</strong>: phải nhớ chắc, vì các
@@ -381,7 +397,7 @@ export function GrammarCards({
         </p>
       )}
       {judgedCount > 0 && (
-        <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-[14px] bg-card/70 px-3 py-2 text-[11.5px] font-medium leading-5 text-ink-2">
+        <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-[14px] bg-card/70 px-3 py-2 text-xs font-medium leading-5 text-ink-2">
           <span>
             Bạn đã đánh dấu{" "}
             <strong className="font-semibold text-ink">
@@ -530,7 +546,7 @@ export function GrammarCards({
                     <Rich
                       as="p"
                       text={`ⓘ Nguồn: ${g.source_note_vi}`}
-                      className="mt-3 text-[10.5px] leading-4 text-ink-2/80"
+                      className="mt-3 text-xs leading-4 text-ink-2/80"
                     />
                   )}
                 </WhyBox>
@@ -572,10 +588,15 @@ export function GrammarCards({
               </div>
               )}
               {verdict !== undefined && (
-                <p role="status" className="mt-1.5 text-[12px] font-semibold text-ink-2">
-                  {verdict
-                    ? "Đã ghi — mẫu này sẽ quay lại ôn theo lịch giãn cách."
-                    : "Đã ghi — mẫu này sẽ được nhắc lại sớm hơn."}
+                <p role="status" className="mt-1.5 flex items-center gap-1.5 text-[12px] font-semibold text-ink-2">
+                  <CalendarClock size={14} strokeWidth={2.4} aria-hidden="true" className="shrink-0 text-blue-deep" />
+                  <span>
+                    {dueAt[g.id]
+                      ? `Đã ghi · ${dueLabel(dueAt[g.id] as string)}`
+                      : verdict
+                        ? "Đã ghi · mẫu này sẽ quay lại ôn theo lịch giãn cách."
+                        : "Đã ghi · mẫu này sẽ được nhắc lại sớm hơn."}
+                  </span>
                 </p>
               )}
             </>

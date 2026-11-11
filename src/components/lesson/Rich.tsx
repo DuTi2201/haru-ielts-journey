@@ -1,5 +1,7 @@
-import { Bus, School, Store, type LucideIcon } from "lucide-react";
+import { Bus, School, Store, Volume2, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+
+import { speakKorean } from "@/lib/audio-playback";
 
 import { cn } from "@/lib/utils";
 
@@ -112,7 +114,7 @@ type Block =
   | { kind: "heading"; text: string }
   | { kind: "scale"; rows: { pct: number; words: string }[] }
   | { kind: "chips"; items: string[] }
-  | { kind: "preps"; rows: { prep: string; label: string; examples: string }[] }
+  | { kind: "preps"; rows: { prep: string; label: string; examples: string; say: string | null }[] }
   | { kind: "note"; text: string }
   | { kind: "ask"; text: string }
   | { kind: "pats"; rows: { label: string; parts: string[]; example: string }[] }
@@ -154,9 +156,11 @@ function toBlocks(text: string): Block[] {
     } else if (/^chips:\s*/.test(line)) {
       out.push({ kind: "chips", items: line.replace(/^chips:\s*/, "").split(";").map((x) => x.trim()).filter(Boolean) });
     } else if (/^prep:\s*/.test(line)) {
-      const [prep = "", label = "", examples = ""] = line.replace(/^prep:\s*/, "").split(" | ").map((x) => x.trim());
-      if (last?.kind === "preps") last.rows.push({ prep, label, examples });
-      else out.push({ kind: "preps", rows: [{ prep, label, examples }] });
+      // «prep: badge | label | examples | words to read aloud» (the last part is optional)
+      const [prep = "", label = "", examples = "", say = null] = line.replace(/^prep:\s*/, "").split(" | ").map((x) => x.trim());
+      const row = { prep, label, examples, say: say || null };
+      if (last?.kind === "preps") last.rows.push(row);
+      else out.push({ kind: "preps", rows: [row] });
     } else if (/^ask:\s*/.test(line)) {
       out.push({ kind: "ask", text: line.replace(/^ask:\s*/, "").trim() });
     } else if (/^pat:\s*/.test(line)) {
@@ -272,6 +276,16 @@ export function RichBlock({
                     </p>
                     <Rich as="p" text={r.examples} className="mt-0.5 text-[14px] leading-5 text-ink-2" />
                   </div>
+                  {r.say && (
+                    <button
+                      type="button"
+                      onClick={() => speakKorean(r.say ?? "")}
+                      aria-label={`Nghe: ${r.say}`}
+                      className="hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-soft text-blue-deep active:scale-90"
+                    >
+                      <Volume2 size={18} strokeWidth={2.4} aria-hidden="true" />
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
@@ -371,7 +385,7 @@ export function RichBlock({
                     <Rich text={b.title} />
                   </h4>
                   {b.en && (
-                    <p className="mt-1 inline-block rounded-full bg-blue-soft px-2 py-0.5 text-[11.5px] font-semibold text-blue-deep">
+                    <p className="mt-1 inline-block rounded-full bg-blue-soft px-2 py-0.5 text-xs font-semibold text-blue-deep">
                       {b.en}
                     </p>
                   )}
@@ -448,7 +462,7 @@ export function RichBlock({
                           plainLength(cell) <= SHORT_CELL && "flex items-baseline gap-2",
                         )}
                       >
-                        <dt className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-ink-2">
+                        <dt className="shrink-0 text-xs font-semibold uppercase tracking-wide text-ink-2">
                           <Rich text={b.head[c + 1]} />
                         </dt>
                         <dd className="min-w-0">
@@ -466,7 +480,7 @@ export function RichBlock({
                   {b.head.map((h, c) => (
                     <th
                       key={c}
-                      className="px-3 pb-0.5 text-[11px] font-semibold uppercase tracking-wide text-ink-2"
+                      className="px-3 pb-0.5 text-xs font-semibold uppercase tracking-wide text-ink-2"
                     >
                       <Rich text={h} />
                     </th>
