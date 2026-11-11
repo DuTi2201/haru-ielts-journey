@@ -96,6 +96,9 @@ export function Rich({
 type Block =
   | { kind: "p"; lines: string[] }
   | { kind: "ul"; items: string[] }
+  | { kind: "quote"; text: string }
+  | { kind: "note"; text: string }
+  | { kind: "group"; n: string; title: string; en: string | null; body: string[]; examples: { en: string; vi: string | null }[] }
   | { kind: "table"; head: string[]; rows: string[][] };
 
 const isTableLine = (l: string) => /^\s*\|.*\|\s*$/.test(l);
@@ -116,7 +119,19 @@ function toBlocks(text: string): Block[] {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i] ?? "";
     const last = out[out.length - 1];
-    if (isTableLine(line)) {
+    if (/^###\s+/.test(line)) {
+      // «### 1 · Title · English label»: a numbered group, with the lines below it
+      const [n = "", title = "", en = null] = line.replace(/^###\s+/, "").split(" · ").map((x) => x.trim());
+      out.push({ kind: "group", n, title, en, body: [], examples: [] });
+    } else if (/^>\s?/.test(line)) {
+      out.push({ kind: "quote", text: line.replace(/^>\s?/, "").replace(/[«»]/g, "").trim() });
+    } else if (/^!\s?/.test(line)) {
+      out.push({ kind: "note", text: line.replace(/^!\s?/, "").trim() });
+    } else if (last?.kind === "group") {
+      const m = /^ex:\s*(.+?)(?:\s=\s(.+))?$/.exec(line.trim());
+      if (m) last.examples.push({ en: m[1] ?? "", vi: m[2] ?? null });
+      else last.body.push(line);
+    } else if (isTableLine(line)) {
       if (isRule(line)) continue;
       if (last?.kind === "table") last.rows.push(cells(line));
       else out.push({ kind: "table", head: cells(line), rows: [] });
@@ -151,6 +166,64 @@ export function RichBlock({
       {blocks.map((b, i) => {
         if (b.kind === "p") {
           return <Rich key={i} as="p" text={b.lines.join("\n")} className={className} />;
+        }
+        if (b.kind === "quote") {
+          return (
+            <blockquote key={i} className="relative rounded-[16px] bg-yellow-soft px-4 pb-3 pt-4">
+              <span aria-hidden="true" className="absolute left-3 top-0.5 text-4xl font-bold leading-none text-blue/50">
+                “
+              </span>
+              <Rich as="p" text={b.text} className="pl-4 text-[15px] font-semibold leading-6 text-ink" />
+            </blockquote>
+          );
+        }
+        if (b.kind === "note") {
+          return (
+            <div key={i} className="flex gap-2 rounded-[12px] bg-blue-soft px-3 py-2">
+              <span aria-hidden="true" className="shrink-0 text-sm">
+                ⚠️
+              </span>
+              <Rich text={b.text} className="min-w-0 flex-1 text-[13px] font-semibold leading-5 text-ink" />
+            </div>
+          );
+        }
+        if (b.kind === "group") {
+          return (
+            <section key={i} className="rounded-[16px] border border-line bg-card p-3">
+              <header className="flex items-start gap-2.5">
+                <span
+                  aria-hidden="true"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue text-[13px] font-bold text-primary-foreground"
+                >
+                  {b.n}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-[14.5px] font-semibold leading-5 text-ink">
+                    <span className="sr-only">Nhóm {b.n}: </span>
+                    <Rich text={b.title} />
+                  </h4>
+                  {b.en && (
+                    <p className="mt-1 inline-block rounded-full bg-blue-soft px-2 py-0.5 text-[11.5px] font-semibold text-blue-deep">
+                      {b.en}
+                    </p>
+                  )}
+                </div>
+              </header>
+              {b.body.length > 0 && (
+                <Rich as="p" text={b.body.join("\n")} className="mt-2 text-[13.5px] leading-[22px] text-ink" />
+              )}
+              {b.examples.length > 0 && (
+                <ul className="mt-2 space-y-1.5">
+                  {b.examples.map((e, k) => (
+                    <li key={k} className="rounded-r-[10px] border-l-4 border-blue bg-blue-soft/50 px-2.5 py-1.5">
+                      <Rich as="p" text={e.en} className="text-[14px] font-semibold leading-5 text-ink" />
+                      {e.vi && <Rich as="p" text={e.vi} className="mt-0.5 text-xs leading-5 text-ink-2" />}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          );
         }
         if (b.kind === "ul") {
           return (
