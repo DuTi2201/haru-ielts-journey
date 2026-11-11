@@ -615,6 +615,16 @@ export interface WriteFillOut {
   blanks: WriteBlankOut[];
   tips_vi?: string[];
   grammar?: string[];
+  /** One imperative line: what to do ("Sửa phần gạch ngang"). Derived on screen when missing. */
+  task_vi?: string | null;
+  /** "fix" | "inflect" | "word" | "bank" | "rewrite" — the chip over the task. Derived when missing. */
+  kind?: string | null;
+  /** The meaning to put into English (Vietnamese), shown under the task. */
+  situation_vi?: string | null;
+  /** The sentence as the book printed it, wrong part between ~~ ~~ (fix tasks). */
+  original?: string | null;
+  /** Words to choose from; the learner taps one to fill the gap. */
+  bank?: string[];
 }
 export interface WriteEssayOut {
   id: string;
@@ -632,6 +642,12 @@ export interface WriteEssayOut {
   prompt_en?: string | null;
   bullets_en?: string[];
   framework_vi?: string[];
+  /** Sentence frames with ____ gaps; a tap puts one into the writing box. */
+  frames?: string[];
+  /** Words and phrases worth using for this prompt. */
+  useful_vi?: string[];
+  /** The mistakes to avoid on this prompt. */
+  avoid_vi?: string[];
   patterns_vi?: string[];
   outline?: { part_vi: string; content_vi: string; chars?: string | null }[];
   model_answer_en: string;

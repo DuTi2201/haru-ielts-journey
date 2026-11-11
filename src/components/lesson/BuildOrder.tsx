@@ -9,6 +9,7 @@ import { BulletList } from "./Disclosure";
 import { GrammarLinkBox } from "./GrammarLinkBox";
 import type { AnswerEvent } from "./McqExercise";
 import { Ko, Rich } from "./Rich";
+import { ExerciseHead, splitProgress } from "./ExerciseHead";
 
 /** "Tạo câu" rung 1: put word tiles in order to make one sentence. A tap moves a tile onto
  * the answer line and a tap on it there takes it back. Tiles no answer uses are distractors
@@ -60,19 +61,13 @@ export function BuildOrder({
       aria-label={exercise.title_vi}
       className="rounded-[20px] border border-line bg-paper p-3.5 shadow-elev-1"
     >
-      <header>
-        <p className="text-[12px] font-semibold uppercase tracking-wide text-blue-deep">
-          {exercise.title_vi}
-        </p>
-        {exercise.instruction_vi && (
-          <p className="text-xs font-semibold leading-5 text-ink-2">{exercise.instruction_vi}</p>
-        )}
-        {exercise.situation_vi && (
-          <span className="mt-1.5 inline-block rounded-full bg-blue-soft px-2.5 py-0.5 text-[12px] font-semibold text-blue-deep">
-            {exercise.situation_vi}
-          </span>
-        )}
-      </header>
+      <ExerciseHead
+        chip="Xếp câu"
+        n={splitProgress(exercise.title_vi).n}
+        total={splitProgress(exercise.title_vi).total}
+        task="Xếp các mảnh thành một câu đúng"
+        detail={exercise.situation_vi ?? null}
+      />
 
       <p className="mt-3 rounded-[14px] bg-yellow-soft px-3 py-2 text-sm font-semibold leading-6">
         Hãy nói: <Rich text={exercise.meaning_vi} />

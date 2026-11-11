@@ -15,6 +15,7 @@ import { ExerciseAudio } from "./ExerciseAudio";
 import { GrammarLinkBox } from "./GrammarLinkBox";
 import { renderMarks } from "./render-marks";
 import { Ko, Rich } from "./Rich";
+import { ExerciseHead, firstSentence, splitProgress } from "./ExerciseHead";
 import { SceneView } from "./SceneView";
 
 const CIRCLED = ["①", "②", "③", "④", "⑤"];
@@ -432,19 +433,13 @@ export function McqExercise({
       aria-label={exercise.title_vi}
       className="rounded-[20px] border border-line bg-paper p-3.5 shadow-elev-1"
     >
-      <header>
-        <p className="text-[12px] font-semibold uppercase tracking-wide text-blue-deep">
-          {exercise.title_vi}
-        </p>
-        {exercise.instruction_en && (
-          <p lang="ko" className="font-korean mt-1 text-[13px] font-semibold leading-5">
-            {exercise.instruction_en}
-          </p>
-        )}
-        {exercise.instruction_vi && (
-          <p className="text-xs font-semibold leading-5 text-ink-2">{exercise.instruction_vi}</p>
-        )}
-      </header>
+      <ExerciseHead
+        chip="Chọn đáp án"
+        n={splitProgress(exercise.title_vi).n}
+        total={splitProgress(exercise.title_vi).total}
+        task={firstSentence(exercise.instruction_vi || splitProgress(exercise.title_vi).name).head}
+        detail={firstSentence(exercise.instruction_vi).rest || null}
+      />
 
       {exercise.stimulus && (
         <div className="mt-3">

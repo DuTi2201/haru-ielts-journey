@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AlertCircle, Check, CheckCircle2, Circle, Eye, EyeOff } from "lucide-react";
 
 import type { CapstoneDetectorOut, ExerciseResultOut, WriteEssayOut } from "@/lib/api/types";
@@ -7,6 +7,7 @@ import { readLocal, writeLocal } from "@/lib/lesson-local";
 import { detect } from "@/lib/review";
 import { cn } from "@/lib/utils";
 import { DataBlockView } from "./DataBlock";
+import { ExerciseHead, firstSentence, splitProgress } from "./ExerciseHead";
 import { EssayAiCheck } from "./EssayAiCheck";
 import { BulletList, Disclosure } from "./Disclosure";
 import { GrammarLinkBox } from "./GrammarLinkBox";
@@ -53,6 +54,29 @@ export function WriteEssay({
     onTextChange?.(text);
   }, [text, onTextChange]);
 
+  const taRef = useRef<HTMLTextAreaElement>(null);
+  const progress = splitProgress(exercise.title_vi);
+  const task = firstSentence(exercise.instruction_vi || progress.name);
+
+  /** A sentence frame goes into the box at the cursor, and its first ____ is selected to type over. */
+  function insertFrame(frame: string) {
+    const el = taRef.current;
+    const start = el?.selectionStart ?? text.length;
+    const end = el?.selectionEnd ?? start;
+    const before = text.slice(0, start);
+    const lead = before.length > 0 && !/\s$/.test(before) ? " " : "";
+    const next = before + lead + frame + text.slice(end);
+    setText(next);
+    writeLocal(draftKey, next);
+    requestAnimationFrame(() => {
+      if (!el) return;
+      el.focus();
+      const gap = /_{3,}/.exec(next.slice(start));
+      if (gap) el.setSelectionRange(start + gap.index, start + gap.index + gap[0].length);
+      else el.setSelectionRange(start + lead.length + frame.length, start + lead.length + frame.length);
+    });
+  }
+
   const count = countWords(text);
   const status = lengthStatus(count, exercise.limits.min, exercise.limits.max);
   const prev = previous[exercise.id];
@@ -71,19 +95,13 @@ export function WriteEssay({
       aria-label={exercise.title_vi}
       className="rounded-[20px] border border-line bg-paper p-3.5 shadow-elev-1"
     >
-      <header>
-        <p className="text-[12px] font-semibold uppercase tracking-wide text-blue-deep">
-          {exercise.title_vi} · {exercise.points} điểm
-        </p>
-        {exercise.instruction_en && (
-          <p lang="ko" className="font-korean mt-1 text-[13px] font-semibold leading-6">
-            {exercise.instruction_en}
-          </p>
-        )}
-        {exercise.instruction_vi && (
-          <p className="text-xs font-semibold leading-5 text-ink-2">{exercise.instruction_vi}</p>
-        )}
-      </header>
+      <ExerciseHead
+        chip={exercise.limits.max <= 60 ? "Viết câu" : "Viết đoạn"}
+        n={progress.n}
+        total={progress.total}
+        task={task.head}
+        detail={task.rest || null}
+      />
 
       {exercise.data && exercise.data.length > 0 && (
         <div className="mt-3 space-y-2.5">
@@ -96,7 +114,7 @@ export function WriteEssay({
       {(exercise.prompt_en || (exercise.bullets_en && exercise.bullets_en.length > 0)) && (
         <div className="mt-3 rounded-[16px] border border-line bg-card p-3.5">
           {exercise.prompt_en && (
-            <p lang="ko" className="font-korean text-[15px] font-semibold leading-6">
+            <p lang="en" className="text-[17px] font-bold leading-7">
               {exercise.prompt_en}
             </p>
           )}
@@ -112,17 +130,58 @@ export function WriteEssay({
         </div>
       )}
 
-      <div className="mt-3 space-y-2">
-        {exercise.framework_vi && exercise.framework_vi.length > 0 && (
-          <Disclosure title="Khung bài viết gợi ý">
-            <BulletList items={exercise.framework_vi} />
+      {(exercise.frames?.length ?? 0) > 0 && (
+        <section aria-label="Khung câu" className="mt-3">
+          <p className="text-[13px] font-bold text-ink">Khung câu, bấm để chèn vào bài</p>
+          <ul className="mt-1.5 flex flex-col gap-1.5">
+            {exercise.frames?.map((f) => (
+              <li key={f}>
+                <button
+                  type="button"
+                  onClick={() => insertFrame(f)}
+                  className="hit-area min-h-11 w-full rounded-[12px] border border-blue/40 bg-blue-soft px-3 py-2 text-left text-[15px] font-semibold leading-6 text-blue-deep active:scale-[0.98]"
+                >
+                  {f}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {((exercise.useful_vi?.length ?? 0) > 0 ||
+        (exercise.avoid_vi?.length ?? 0) > 0 ||
+        (exercise.framework_vi?.length ?? 0) > 0 ||
+        (exercise.patterns_vi?.length ?? 0) > 0 ||
+        (exercise.outline?.length ?? 0) > 0) && (
+        <div className="mt-3 space-y-2">
+          <Disclosure title={(exercise.useful_vi?.length ?? 0) > 0 ? "Từ và cụm nên dùng · lỗi cần tránh" : "Gợi ý cách viết"}>
+            {(exercise.useful_vi?.length ?? 0) > 0 && (
+              <ul className="flex flex-wrap gap-1.5" aria-label="Từ và cụm nên dùng">
+                {exercise.useful_vi?.map((u) => (
+                  <li key={u}>
+                    <button
+                      type="button"
+                      onClick={() => insertFrame(u)}
+                      className="min-h-10 rounded-full bg-green-soft px-3 text-[14px] font-semibold active:scale-95"
+                    >
+                      {u}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {(exercise.avoid_vi?.length ?? 0) > 0 && (
+              <div className="mt-2.5 rounded-[12px] bg-yellow-soft px-3 py-2">
+                <p className="text-[13px] font-bold">Tránh</p>
+                <BulletList items={exercise.avoid_vi ?? []} />
+              </div>
+            )}
+            {(exercise.framework_vi?.length ?? 0) > 0 && <BulletList items={exercise.framework_vi ?? []} />}
             {exercise.outline && exercise.outline.length > 0 && (
               <ul className="mt-2.5 space-y-1.5">
                 {exercise.outline.map((o) => (
-                  <li
-                    key={o.part_vi}
-                    className="rounded-[10px] bg-blue-soft px-2.5 py-1.5 text-xs leading-5"
-                  >
+                  <li key={o.part_vi} className="rounded-[10px] bg-blue-soft px-2.5 py-1.5 text-xs leading-5">
                     <span className="font-semibold">{o.part_vi}</span>
                     {o.chars && <span className="font-semibold text-ink-2"> · {o.chars}</span>}
                     <Rich as="p" text={o.content_vi} className="text-ink-2" />
@@ -130,23 +189,22 @@ export function WriteEssay({
                 ))}
               </ul>
             )}
+            {exercise.patterns_vi && exercise.patterns_vi.length > 0 && (
+              <BulletList items={exercise.patterns_vi} />
+            )}
           </Disclosure>
-        )}
-        {exercise.patterns_vi && exercise.patterns_vi.length > 0 && (
-          <Disclosure title="Mẫu câu nên dùng">
-            <BulletList items={exercise.patterns_vi} />
-          </Disclosure>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="mt-3">
-        <label htmlFor={`${exercise.id}-essay`} className="text-xs font-semibold">
+        <label htmlFor={`${exercise.id}-essay`} className="text-[13px] font-bold">
           Bài viết của bạn
         </label>
         <textarea
           id={`${exercise.id}-essay`}
+          ref={taRef}
           lang="en"
-          rows={9}
+          rows={exercise.limits.max <= 50 ? 4 : exercise.limits.max <= 150 ? 8 : 12}
           autoCapitalize="sentences"
           spellCheck={true}
           value={text}
@@ -154,8 +212,8 @@ export function WriteEssay({
             setText(e.target.value);
             writeLocal(draftKey, e.target.value);
           }}
-          placeholder="Write your paragraph in English…"
-          className="font-korean mt-1 block w-full resize-y rounded-[14px] border border-line bg-card p-3 text-[15px] leading-7 outline-none focus-visible:ring-2 focus-visible:ring-blue/50"
+          placeholder={exercise.limits.max <= 60 ? "Viết câu của bạn ở đây…" : "Viết bài của bạn ở đây…"}
+          className="mt-1 block w-full resize-y rounded-[14px] border border-line bg-card p-3 text-[16px] leading-7 outline-none focus-visible:ring-2 focus-visible:ring-blue"
         />
         <p
           role="status"
@@ -174,6 +232,45 @@ export function WriteEssay({
           {status === "short" && ` ${exercise.limits.min - count} từ`}
           {status === "long" && ` ${count - exercise.limits.max} từ`}
         </p>
+        <span
+          aria-hidden="true"
+          className="mt-1 block h-1.5 overflow-hidden rounded-full bg-progress"
+        >
+          <span
+            className={cn(
+              "block h-1.5 rounded-full",
+              status === "ok" ? "bg-green" : status === "long" ? "bg-danger" : "bg-blue",
+            )}
+            style={{ width: `${Math.min(100, Math.round((count / Math.max(1, exercise.limits.max)) * 100))}%` }}
+          />
+        </span>
+        {exercise.checklist_vi && exercise.checklist_vi.length > 0 && (
+          <section aria-label="Danh sách tự kiểm tra" className="mt-3 rounded-[14px] border border-line bg-card p-3">
+            <h4 className="text-[13px] font-bold">Kiểm tra khi viết xong</h4>
+            <ul className="mt-1.5 space-y-0.5">
+              {exercise.checklist_vi.map((c, i) => (
+                <li key={i}>
+                  <label className="flex min-h-10 cursor-pointer items-start gap-2.5 py-1 text-[14px] leading-5">
+                    <input
+                      type="checkbox"
+                      checked={checks.has(i)}
+                      onChange={() =>
+                        setChecks((s) => {
+                          const n = new Set(s);
+                          if (n.has(i)) n.delete(i);
+                          else n.add(i);
+                          return n;
+                        })
+                      }
+                      className="mt-0.5 h-5 w-5 shrink-0 accent-blue"
+                    />
+                    <Rich text={c} className="text-ink" />
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
         {detectors.length > 0 && <PatternsUsed detectors={detectors} found={found} />}
         {belowText}
         {prev && !revealed && (
@@ -203,7 +300,7 @@ export function WriteEssay({
         type="button"
         onClick={() => setRevealed((v) => !v)}
         aria-expanded={revealed}
-        className="hit-area mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-line bg-card px-4 text-sm font-semibold shadow-elev-1 active:scale-[0.97] "
+        className="hit-area mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-4 text-[13.5px] font-semibold text-blue-deep underline underline-offset-4 active:scale-[0.97]"
       >
         {revealed ? <EyeOff size={16} strokeWidth={2.4} /> : <Eye size={16} strokeWidth={2.4} />}
         {revealed
@@ -251,37 +348,6 @@ export function WriteEssay({
             <Disclosure title="Lỗi hay gặp" tone="bg-yellow-soft" defaultOpen>
               <BulletList items={exercise.common_errors_vi} />
             </Disclosure>
-          )}
-
-          {exercise.checklist_vi && exercise.checklist_vi.length > 0 && (
-            <section
-              aria-label="Danh sách tự kiểm tra"
-              className="rounded-[16px] border border-line bg-card p-3.5"
-            >
-              <h4 className="text-xs font-semibold">Tự kiểm tra bài của bạn</h4>
-              <ul className="mt-2 space-y-1.5">
-                {exercise.checklist_vi.map((c, i) => (
-                  <li key={i}>
-                    <label className="flex min-h-9 cursor-pointer items-start gap-2 text-xs leading-5">
-                      <input
-                        type="checkbox"
-                        checked={checks.has(i)}
-                        onChange={() =>
-                          setChecks((s) => {
-                            const n = new Set(s);
-                            if (n.has(i)) n.delete(i);
-                            else n.add(i);
-                            return n;
-                          })
-                        }
-                        className="mt-0.5 h-4 w-4 shrink-0 accent-blue"
-                      />
-                      <Rich text={c} className="text-ink-2" />
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            </section>
           )}
 
           <SelfScore

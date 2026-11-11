@@ -10,6 +10,7 @@ import { ExerciseAudio, TurnList } from "./ExerciseAudio";
 import { GrammarLinkBox } from "./GrammarLinkBox";
 import type { AnswerEvent } from "./McqExercise";
 import { Ko } from "./Rich";
+import { ExerciseHead, firstSentence, splitProgress } from "./ExerciseHead";
 
 const SPEAKER_LABEL = { F: "Nữ", M: "Nam", N: "Dẫn" } as const;
 
@@ -73,16 +74,13 @@ export function DictationExercise({
       aria-label={exercise.title_vi}
       className="rounded-[20px] border border-line bg-paper p-3.5 shadow-elev-1"
     >
-      <header>
-        <p className="flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-wide text-blue-deep">
-          <Headphones size={13} strokeWidth={2.6} aria-hidden="true" /> {exercise.title_vi}
-        </p>
-        {exercise.instruction_vi && (
-          <p className="mt-1 text-xs font-semibold leading-5 text-ink-2">
-            {exercise.instruction_vi}
-          </p>
-        )}
-      </header>
+      <ExerciseHead
+        chip="Nghe chép"
+        n={splitProgress(exercise.title_vi).n}
+        total={splitProgress(exercise.title_vi).total}
+        task={firstSentence(exercise.instruction_vi || splitProgress(exercise.title_vi).name).head}
+        detail={firstSentence(exercise.instruction_vi).rest || null}
+      />
 
       <div className="mt-3">
         <ExerciseAudio
@@ -122,7 +120,7 @@ export function DictationExercise({
               </label>
               <textarea
                 id={`${exercise.id}-line-${i}`}
-                lang="ko"
+                lang="en"
                 rows={2}
                 autoComplete="off"
                 autoCapitalize="off"
