@@ -519,7 +519,7 @@ export function SlideView({
             >
               {String(s["headword"])}
             </button>
-            {(s["pos"] || s["pron"]) && (
+            {(s["pos"] || s["pron"]) ? (
               <p className="mt-1 flex items-center justify-center gap-2 text-[13px] opacity-80">
                 {s["pos"] ? (
                   <span className="rounded-md bg-white/15 px-1.5 py-0.5 text-[11px] font-bold">
@@ -532,7 +532,7 @@ export function SlideView({
                   </span>
                 ) : null}
               </p>
-            )}
+            ) : null}
             <p
               className={cn(
                 "mt-2 text-[17px] font-semibold transition-opacity duration-500",

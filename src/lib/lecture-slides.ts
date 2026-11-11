@@ -26,7 +26,7 @@ export interface LectureSlidesOut {
   shadow?: [number, number][];
 }
 
-const shadowSet = (data: { shadow?: [number, number][] }) =>
+const shadowSet = (data: { shadow?: [number, number][] | undefined }) =>
   data.shadow ? new Set(data.shadow.map(([l, r]) => `${l}:${r}`)) : null;
 
 /** [line, run, ms] */
