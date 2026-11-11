@@ -110,6 +110,9 @@ type Block =
   | { kind: "chips"; items: string[] }
   | { kind: "preps"; rows: { prep: string; label: string; examples: string }[] }
   | { kind: "note"; text: string }
+  | { kind: "ask"; text: string }
+  | { kind: "pats"; rows: { label: string; parts: string[]; example: string }[] }
+  | { kind: "timeline"; rows: { when: string; tense: string; en: string }[] }
   | { kind: "group"; n: string; title: string; en: string | null; body: string[]; examples: { en: string; vi: string | null }[] }
   | { kind: "table"; head: string[]; rows: string[][] };
 
@@ -150,6 +153,17 @@ function toBlocks(text: string): Block[] {
       const [prep = "", label = "", examples = ""] = line.replace(/^prep:\s*/, "").split(" | ").map((x) => x.trim());
       if (last?.kind === "preps") last.rows.push({ prep, label, examples });
       else out.push({ kind: "preps", rows: [{ prep, label, examples }] });
+    } else if (/^ask:\s*/.test(line)) {
+      out.push({ kind: "ask", text: line.replace(/^ask:\s*/, "").trim() });
+    } else if (/^pat:\s*/.test(line)) {
+      const [label = "", form = "", example = ""] = line.replace(/^pat:\s*/, "").split(" | ").map((x) => x.trim());
+      const row = { label, parts: form.split(" + ").map((x) => x.trim()).filter(Boolean), example };
+      if (last?.kind === "pats") last.rows.push(row);
+      else out.push({ kind: "pats", rows: [row] });
+    } else if (/^tl:\s*/.test(line)) {
+      const [when = "", tense = "", en = ""] = line.replace(/^tl:\s*/, "").split(" | ").map((x) => x.trim());
+      if (last?.kind === "timeline") last.rows.push({ when, tense, en });
+      else out.push({ kind: "timeline", rows: [{ when, tense, en }] });
     } else if (/^!\s?/.test(line)) {
       out.push({ kind: "note", text: line.replace(/^!\s?/, "").trim() });
     } else if (last?.kind === "group") {
@@ -240,7 +254,7 @@ export function RichBlock({
                 <li key={r.prep} className="flex items-center gap-3 rounded-[16px] border border-line bg-card px-3 py-2.5">
                   <span
                     aria-hidden="true"
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue text-[20px] font-bold text-primary-foreground"
+                    className="flex h-12 min-w-12 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-blue px-3 text-[18px] font-bold text-primary-foreground"
                   >
                     {r.prep}
                   </span>
@@ -254,6 +268,64 @@ export function RichBlock({
                 </li>
               ))}
             </ul>
+          );
+        }
+        if (b.kind === "ask") {
+          return (
+            <div key={i} className="flex justify-center py-1">
+              <p className="rounded-[20px] rounded-bl-[6px] bg-blue px-4 py-3 text-[18px] font-bold leading-6 text-primary-foreground shadow-sm">
+                <span className="sr-only">Câu hỏi: </span>
+                {b.text}
+              </p>
+            </div>
+          );
+        }
+        if (b.kind === "pats") {
+          const tone = ["bg-blue-soft text-blue-deep", "bg-yellow-soft text-ink", "bg-progress/55 text-ink"];
+          return (
+            <ul key={i} className="space-y-2">
+              {b.rows.map((r, k) => (
+                <li key={k} className="rounded-[16px] border border-line bg-card px-3 py-2.5">
+                  <p className="text-[12px] font-bold uppercase tracking-wide text-ink-2">{r.label}</p>
+                  <p className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                    {r.parts.map((part, j) => (
+                      <span key={j} className="contents">
+                        {j > 0 && (
+                          <span aria-hidden="true" className="text-[15px] font-bold text-ink-2">
+                            +
+                          </span>
+                        )}
+                        <span className={cn("rounded-[10px] px-2.5 py-1 text-[15.5px] font-semibold leading-6", tone[j % tone.length])}>
+                          <Rich text={part} />
+                        </span>
+                      </span>
+                    ))}
+                  </p>
+                  {r.example && (
+                    <Rich as="p" text={r.example} className="mt-1.5 border-l-4 border-blue pl-2 text-[15.5px] font-semibold leading-6 text-ink" />
+                  )}
+                </li>
+              ))}
+            </ul>
+          );
+        }
+        if (b.kind === "timeline") {
+          return (
+            <ol key={i} className="relative space-y-3 rounded-[16px] border border-line bg-card px-3 py-3" aria-label="Trục thời gian">
+              <span aria-hidden="true" className="absolute bottom-6 left-[22px] top-6 w-0.5 bg-line" />
+              {b.rows.map((r, k) => (
+                <li key={k} className="relative flex items-start gap-3">
+                  <span aria-hidden="true" className="z-10 mt-1.5 h-5 w-5 shrink-0 rounded-full border-4 border-card bg-blue ring-2 ring-blue/30" />
+                  <div className="min-w-0 flex-1">
+                    <p className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-[13px] font-bold text-ink-2">{r.when}</span>
+                      <span className="rounded-full bg-blue-soft px-2 py-0.5 text-[12px] font-semibold text-blue-deep">{r.tense}</span>
+                    </p>
+                    <Rich as="p" text={r.en} className="mt-0.5 text-[16.5px] font-semibold leading-6 text-ink" />
+                  </div>
+                </li>
+              ))}
+            </ol>
           );
         }
         if (b.kind === "quote") {
