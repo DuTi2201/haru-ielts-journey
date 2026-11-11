@@ -313,6 +313,8 @@ export interface GrammarPointOut {
   use_level?: GrammarUseLevel | null;
   /** Core cards: how much of it a learner must keep. Null on an extension card (it has use_level). */
   importance?: GrammarImportance | null;
+  /** One question to answer before marking the card understood; the right option is first. */
+  check_item?: { stem: string; options: string[]; why: string } | null;
   /** The earlier cards this one is made of or rests on. */
   built_from?: GrammarRefOut[];
   /** The later cards that are made of this one. */

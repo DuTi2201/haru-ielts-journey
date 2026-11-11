@@ -20,7 +20,7 @@ const HANGUL = "\\u1100-\\u11FF\\u3130-\\u318F\\uAC00-\\uD7AF";
 const HANGUL_RUN = new RegExp(
   `([-~(]*[${HANGUL}][${HANGUL}\\-~/()·+]*(?:[ ][${HANGUL}][${HANGUL}\\-~/()·+]*)*)`,
 );
-const INLINE = /(\*\*[^*]+?\*\*|`[^`]+?`|\*[^*\s][^*]*?\*)/;
+const INLINE = /(~~[^~]+?~~|\*\*[^*]+?\*\*|`[^`]+?`|\*[^*\s][^*]*?\*)/;
 
 /** Splits a plain string on Hangul runs so the Korean gets the Korean font. */
 function withKorean(text: string, keyBase: string): ReactNode[] {
@@ -54,6 +54,15 @@ export function Rich({
       {parts.map((part, i) => {
         if (!part) return null;
         const key = `r${i}`;
+        if (part.startsWith("~~") && part.endsWith("~~") && part.length > 4) {
+          // the wrong form of a mistake: struck through, and said so for a screen reader
+          return (
+            <del key={key} className="text-ink-2 decoration-danger decoration-2">
+              <span className="sr-only">Sai: </span>
+              {withKorean(part.slice(2, -2), key)}
+            </del>
+          );
+        }
         if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
           return (
             <strong key={key} className="font-semibold text-ink">

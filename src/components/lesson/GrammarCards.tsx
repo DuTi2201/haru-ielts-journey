@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { StageProfile } from "@/lib/lesson-stage";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -135,7 +135,7 @@ function WhyBox({ pattern, children }: { pattern: string; children: ReactNode })
       >
         <span className="flex items-center gap-1.5">
           <HelpCircle size={16} strokeWidth={2.4} aria-hidden="true" />
-          {open ? "Thu gọn" : "Vì sao? Cách dùng, so sánh & lỗi hay mắc"}
+          {open ? "Ẩn bớt" : "Liên hệ với các mẫu khác"}
         </span>
         <ChevronDown
           size={16}
@@ -152,19 +152,6 @@ function WhyBox({ pattern, children }: { pattern: string; children: ReactNode })
           {children}
         </div>
       )}
-    </div>
-  );
-}
-
-/** For a beginner, how the pattern is built stays on the card («Cấu tạo»): without it the examples
- * cannot be copied. The rest of the explanation is behind «Vì sao?». */
-function FormOnCard({ g }: { g: GrammarPointOut }) {
-  const form = g.usage_sections?.find((x) => x.key === "form");
-  if (!form) return null;
-  return (
-    <div className="mt-3 rounded-[14px] bg-card px-3 py-2.5">
-      <SectionLabel>{form.label ?? "Cấu tạo"}</SectionLabel>
-      <RichBlock text={form.body_vi} className="mt-1 text-[14px] leading-[23px] text-ink" />
     </div>
   );
 }
@@ -205,6 +192,92 @@ function MistakesBox({ text }: { text: string }) {
   );
 }
 
+/** The card's one question. The learner answers first, then marks the card: a wrong answer marks it
+ * "Chưa chắc" by itself (and goes back to the review queue), a right one opens the two buttons. */
+function SelfCheck({
+  g,
+  onAnswered,
+}: {
+  g: GrammarPointOut;
+  onAnswered: (correct: boolean) => void;
+}) {
+  const check = g.check_item;
+  const [picked, setPicked] = useState<string | null>(null);
+  // the right option comes first in the data: show them in a fixed shuffle that is the same on every visit
+  const options = useMemo(() => {
+    if (!check) return [];
+    const right = check.options[0];
+    return [...check.options].sort((a, b) => hash(`${g.id}${a}`) - hash(`${g.id}${b}`)).map((o) => ({ o, right: o === right }));
+  }, [check, g.id]);
+  if (!check) return null;
+  const done = picked !== null;
+  const correct = done && options.find((x) => x.o === picked)?.right === true;
+  return (
+    <div className="mt-3 rounded-[14px] border border-line bg-card px-3 py-2.5">
+      <SectionLabel>Tự kiểm tra · 1 câu</SectionLabel>
+      <Rich as="p" text={check.stem} className="mt-1 text-[14px] font-semibold leading-6 text-ink" />
+      <ul className="mt-1.5 space-y-1.5">
+        {options.map(({ o, right }) => {
+          const chosen = picked === o;
+          return (
+            <li key={o}>
+              <button
+                type="button"
+                disabled={done}
+                aria-pressed={chosen}
+                onClick={() => {
+                  tap();
+                  setPicked(o);
+                  onAnswered(right);
+                }}
+                className={cn(
+                  "flex min-h-11 w-full items-center gap-2 rounded-[12px] border px-3 text-left text-[13.5px] font-semibold",
+                  !done && "border-line bg-paper active:scale-[0.99]",
+                  done && right && "border-transparent bg-green-soft",
+                  done && chosen && !right && "border-transparent bg-danger-soft",
+                  done && !chosen && !right && "border-line bg-paper opacity-70",
+                )}
+              >
+                <span className="min-w-0 flex-1">
+                  <Ko>{o}</Ko>
+                </span>
+                {done && right && <span className="shrink-0 text-xs">✓ Đúng</span>}
+                {done && chosen && !right && <span className="shrink-0 text-xs">✗ Sai</span>}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      {done && (
+        <div role="status" className="mt-2">
+          <p className="text-[12.5px] font-semibold text-ink">
+            {correct ? "Đúng rồi." : "Chưa đúng. Đọc lại phần công thức rồi thử lại."}
+          </p>
+          <Rich as="p" text={check.why} className="mt-0.5 text-xs leading-5 text-ink-2" />
+          {!correct && (
+            <button
+              type="button"
+              onClick={() => {
+                tap();
+                setPicked(null);
+              }}
+              className="hit-area mt-1 min-h-9 text-xs font-semibold text-blue-deep underline underline-offset-2"
+            >
+              Làm lại
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function hash(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return h;
+}
+
 /** One grammar pattern: what it means and when it is used, how it differs from the
  * patterns it is confused with, the examples (with a device-voice play button) and
  * a self-check that goes into the learner's spaced-review schedule — the same
@@ -234,9 +307,14 @@ export function GrammarCards({
 }) {
   const navigate = useNavigate();
   const [judged, setJudged] = useState<Record<number, boolean>>({});
+  // card id -> whether its one question was last answered right
+  const [answered, setAnswered] = useState<Record<number, boolean>>({});
   const loginHintShown = useRef(false);
   const scrolledToOpen = useRef(false);
 
+  // a card with a question is marked after the question is answered right (or was marked before)
+  const markable = (g: GrammarPointOut) =>
+    !g.check_item || answered[g.id] === true || (answered[g.id] === undefined && verdictOf(g.id) !== undefined);
   const verdictOf = (id: number): boolean | undefined => judged[id] ?? verdicts?.[id];
   const judgedCount = grammar.filter((g) => verdictOf(g.id) !== undefined).length;
   const unsureCount = grammar.filter((g) => verdictOf(g.id) === false).length;
@@ -348,7 +426,18 @@ export function GrammarCards({
                 className="mt-0.5 text-[13px] font-semibold leading-5 text-blue-deep"
               />
 
-              {profile?.structureOnCard && <FormOnCard g={g} />}
+              {(g.tier === "extension" || g.exam || g.importance) && (
+                <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                  {g.tier === "extension" && (
+                    <GrammarBadge tier={g.tier} useLevel={g.use_level} className="bg-card" />
+                  )}
+                  <ImportanceChip importance={g.importance} />
+                  <ExamChip tag={g.exam} className="bg-card" />
+                </div>
+              )}
+
+              {/* the rule comes first and stays open: the examples and the question below rest on it */}
+              <UsageBlock g={g} context={context} />
 
               {/* the situation the examples are about, right above them */}
               <LessonImage src={g.image_url} className="mt-3 aspect-[4/3] w-full max-w-[260px]" />
@@ -390,58 +479,69 @@ export function GrammarCards({
                 </div>
               )}
 
-              <WhyBox pattern={g.pattern}>
-                {(g.tier === "extension" || g.exam || g.importance) && (
-                  <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
-                    {g.tier === "extension" && (
-                      <GrammarBadge tier={g.tier} useLevel={g.use_level} className="bg-card" />
-                    )}
-                    <ImportanceChip importance={g.importance} />
-                    <ExamChip tag={g.exam} className="bg-card" />
-                  </div>
-                )}
-                <Revisits card={g.revisit_of} lessonId={g.lesson_id} />
-                <BuiltFrom refs={g.built_from} lessonId={g.lesson_id} />
+              {g.note_vi && <MistakesBox text={g.note_vi} />}
+              {g.exam_tip_vi && (
+                <div className="mt-3 rounded-[14px] bg-yellow-soft px-3 py-2">
+                  <SectionLabel>Mẹo thi IELTS</SectionLabel>
+                  <Rich as="p" text={g.exam_tip_vi} className="mt-0.5 text-[13px] leading-5 text-ink" />
+                </div>
+              )}
 
-                <UsageBlock g={g} skipForm={!!profile?.structureOnCard} context={context} />
+              <SelfCheck
+                key={`${g.id}-${answered[g.id] === false ? "retry" : "ask"}`}
+                g={g}
+                onAnswered={(ok) => {
+                  setAnswered((a) => ({ ...a, [g.id]: ok }));
+                  if (!ok) judge(g, false);
+                }}
+              />
 
-                {g.contrasts && g.contrasts.length > 0 && (
-                  <div className="mt-3 rounded-[14px] bg-card/80 px-3 py-2.5">
-                    <SectionLabel>
-                      {g.contrast_group ? `Phân biệt · ${g.contrast_group}` : "Khác biệt"}
-                    </SectionLabel>
-                    <ul className="mt-1.5 space-y-2.5">
-                      {g.contrasts.map((c) => (
-                        <li
-                          key={c.pattern}
-                          className="border-l-2 border-line pl-2.5 text-xs leading-5"
-                        >
-                          <Ko className="font-semibold text-ink">{c.pattern}</Ko>
-                          <Rich as="p" text={c.diff_vi} className="mt-0.5 text-ink-2" />
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+              {((g.contrasts?.length ?? 0) > 0 ||
+                (g.built_from?.length ?? 0) > 0 ||
+                (g.built_into?.length ?? 0) > 0 ||
+                g.revisit_of ||
+                g.source_note_vi) && (
+                <WhyBox pattern={g.pattern}>
+                  <Revisits card={g.revisit_of} lessonId={g.lesson_id} />
+                  <BuiltFrom refs={g.built_from} lessonId={g.lesson_id} />
 
-                <BuiltInto refs={g.built_into} lessonId={g.lesson_id} />
+                  {g.contrasts && g.contrasts.length > 0 && (
+                    <div className="mt-3 rounded-[14px] bg-card/80 px-3 py-2.5">
+                      <SectionLabel>
+                        {g.contrast_group ? `Phân biệt · ${g.contrast_group}` : "Khác biệt"}
+                      </SectionLabel>
+                      <ul className="mt-1.5 space-y-2.5">
+                        {g.contrasts.map((c) => (
+                          <li
+                            key={c.pattern}
+                            className="border-l-2 border-line pl-2.5 text-xs leading-5"
+                          >
+                            <Ko className="font-semibold text-ink">{c.pattern}</Ko>
+                            <Rich as="p" text={c.diff_vi} className="mt-0.5 text-ink-2" />
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
-                {g.note_vi && <MistakesBox text={g.note_vi} />}
-                {g.exam_tip_vi && (
-                  <More title="💡 Mẹo cho bài thi IELTS">
-                    <Rich as="p" text={g.exam_tip_vi} className="text-xs leading-5 text-ink-2" />
-                  </More>
-                )}
+                  <BuiltInto refs={g.built_into} lessonId={g.lesson_id} />
 
-                {g.source_note_vi && (
-                  <Rich
-                    as="p"
-                    text={`ⓘ Nguồn: ${g.source_note_vi}`}
-                    className="mt-3 text-[10.5px] leading-4 text-ink-2/80"
-                  />
-                )}
-              </WhyBox>
+                  {g.source_note_vi && (
+                    <Rich
+                      as="p"
+                      text={`ⓘ Nguồn: ${g.source_note_vi}`}
+                      className="mt-3 text-[10.5px] leading-4 text-ink-2/80"
+                    />
+                  )}
+                </WhyBox>
+              )}
 
+              {!markable(g) && (
+                <p className="mt-3 text-[12px] font-semibold text-ink-2">
+                  Trả lời câu trên để đánh dấu mẫu này.
+                </p>
+              )}
+              {markable(g) && (
               <div
                 className="mt-3 flex items-center gap-2"
                 role="group"
@@ -470,6 +570,7 @@ export function GrammarCards({
                   <Check size={15} strokeWidth={2.6} /> Đã hiểu
                 </button>
               </div>
+              )}
               {verdict !== undefined && (
                 <p role="status" className="mt-1.5 text-[12px] font-semibold text-ink-2">
                   {verdict
@@ -506,7 +607,7 @@ export function GrammarCards({
             <li
               key={g.id}
               id={`grammar-card-${g.id}`}
-              className="card-soft scroll-mt-28 rounded-[22px] bg-purple-soft p-4"
+              className="card-soft scroll-mb-[calc(var(--tabbar-h)+1.5rem)] scroll-mt-28 rounded-[22px] bg-purple-soft p-4"
             >
               {body}
             </li>
