@@ -196,12 +196,12 @@ function FiveBoxes({ data, has, latest, onReplay }: SceneProps) {
           })}
         </ol>
         {merged && (
-          <p className={cn("mt-2 flex items-center justify-center gap-2 text-[13px] font-extrabold", enter)} style={{ color: MINT }}>
-            <svg width="120" height="10" viewBox="0 0 120 10" aria-hidden="true">
-              <path d="M2 2v4h116V2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <div className={cn("mt-1.5 text-center", enter)} style={{ color: MINT }}>
+            <svg viewBox="0 0 300 10" preserveAspectRatio="none" className="block h-2.5 w-full" aria-hidden="true">
+              <path d="M4 1v5h292V1" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
             </svg>
-            Một câu, cả năm hộp đều nhận
-          </p>
+            <p className="mt-1 text-[13px] font-extrabold">Một câu, cả năm hộp đều nhận</p>
+          </div>
         )}
       </div>
       <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
