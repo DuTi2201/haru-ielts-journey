@@ -412,7 +412,14 @@ export function SittingPlayer({
             verdicts={grammarVerdicts}
           />
         )}
-        {step.kind === "say" && <SayStep key={`${sitting.n}-say`} lines={step.lines} />}
+        {step.kind === "say" && (
+          <SayStep
+            key={`${sitting.n}-say`}
+            lines={step.lines}
+            lessonId={lesson.id}
+            session={sitting.n}
+          />
+        )}
         {step.kind === "situation" && (
           <SituationStep key={`${sitting.n}-sit`} situation={step.situation} />
         )}

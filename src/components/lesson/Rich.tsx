@@ -4,8 +4,11 @@ import { cn } from "@/lib/utils";
 
 /** Korean text inside a Vietnamese sentence: Noto Sans KR, flagged for readers. */
 export function Ko({ children, className }: { children: ReactNode; className?: string }) {
+  // Haru English: the target language is English. The name stays (it is used across the app),
+  // but the text is tagged and set as English: a screen reader reads it with an English voice and
+  // long words break as English does.
   return (
-    <span lang="ko" className={cn("font-korean [word-break:keep-all]", className)}>
+    <span lang="en" className={cn("[overflow-wrap:anywhere]", className)}>
       {children}
     </span>
   );
