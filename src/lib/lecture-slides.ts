@@ -10,7 +10,7 @@
  * the gaps of app/services/lecture_voice.py) and scaled to the real length. Pure functions. */
 
 export type SlideKind =
-  "title" | "section" | "word" | "review" | "grammar" | "note" | "recap" | "end";
+  "title" | "section" | "word" | "review" | "grammar" | "note" | "recap" | "end" | "scene";
 
 export interface LectureSlide {
   kind: SlideKind;
@@ -21,7 +21,13 @@ export interface LectureSlidesOut {
   script: string;
   lines: [number, string | null][];
   slides: LectureSlide[];
+  /** [line, run] of every stretch said for the learner to repeat, as the voice cuts the script.
+   * English has no script change to cut on, so the server says which they are. */
+  shadow?: [number, number][];
 }
+
+const shadowSet = (data: { shadow?: [number, number][] }) =>
+  data.shadow ? new Set(data.shadow.map(([l, r]) => `${l}:${r}`)) : null;
 
 /** [line, run, ms] */
 export type RunStart = [number, number, number];
@@ -135,20 +141,29 @@ export function stateAt(
     if (show === "word") wordLine = i;
   }
   const meaningOut = wordLine >= 0 && (at.line > wordLine || at.run >= 1);
+  const marked = shadowSet(data);
   const runs = runsOf(lines[at.line] ?? "");
   const run = runs[at.run];
-  const sayAlong = !!run && run.ko && SHADOW.test(run.text);
+  const sayAlong = marked
+    ? marked.has(`${at.line}:${at.run}`)
+    : !!run && run.ko && SHADOW.test(run.text);
   return { slide, shown, latest, meaningOut, sayAlong };
 }
 
 /** The ms where each "say it back" gap ends (the start of the run after a Korean line said for
  * repeating): where «Tự dừng để nói theo» pauses. */
-export function sayAlongEnds(timeline: RunStart[], lines: string[]): number[] {
+export function sayAlongEnds(
+  timeline: RunStart[],
+  lines: string[],
+  shadow?: [number, number][],
+): number[] {
   const out: number[] = [];
+  const marked = shadowSet({ shadow });
   for (let i = 0; i < timeline.length - 1; i++) {
     const [l, r] = timeline[i]!;
     const run = runsOf(lines[l] ?? "")[r];
-    if (run && run.ko && SHADOW.test(run.text)) out.push(timeline[i + 1]![2]);
+    const say = marked ? marked.has(`${l}:${r}`) : !!run && run.ko && SHADOW.test(run.text);
+    if (say) out.push(timeline[i + 1]![2]);
   }
   return out;
 }
@@ -166,8 +181,10 @@ export function slideChapters(
         : s.kind === "review"
           ? "Ôn từ"
           : s.kind === "recap"
-            ? "Nghe lại ví dụ"
-            : null;
+            ? "Nói lại"
+            : s.kind === "scene"
+              ? String(s["eyebrow"] ?? s["title"] ?? "")
+              : null;
     if (!label) return;
     const line = data.lines.findIndex(([slide]) => slide === i);
     const ms = line >= 0 ? lineStart(timeline, line) : null;

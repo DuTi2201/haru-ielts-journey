@@ -8,7 +8,8 @@
 import { API_BASE_URL, tokenStore } from "@/lib/api/client";
 
 export type TelemetryType =
-  "session_start" | "session_complete" | "step_abandon" | "audio_seek" | "audio_rate" | "first_try";
+  "session_start" | "session_complete" | "step_abandon" | "audio_seek" | "audio_rate" | "first_try"
+  | "lecture_complete" | "lecture_replay" | "say_score";
 
 export interface TelemetryEvent {
   type: TelemetryType;

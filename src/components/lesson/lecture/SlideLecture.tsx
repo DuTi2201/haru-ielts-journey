@@ -21,6 +21,7 @@ import { usePodcast } from "@/hooks/use-podcast-audio";
 import { usePrefetchSittings } from "@/hooks/use-prefetch-sittings";
 import { getLectureSlides } from "@/lib/api/audio";
 import { tap } from "@/lib/feedback";
+import { track } from "@/lib/telemetry";
 import {
   estimateTimeline,
   lineOf,
@@ -38,6 +39,7 @@ import {
 import { readLocal, writeLocal } from "@/lib/lesson-local";
 import { cn } from "@/lib/utils";
 
+import { Scene } from "./LectureScenes";
 import { hasPositionArt } from "./PositionArt";
 
 const WAIT_HINT =
@@ -70,7 +72,7 @@ export function lecturePictures(lesson: {
   return {
     banner: lesson.image_url ?? null,
     titleKo: lesson.title_en ?? null,
-    words: lesson.vocab.slice(0, 4).map((v) => v.headword),
+    words: lesson.vocab.slice(0, 6).map((v) => v.headword),
     vocab,
     grammar,
   };
@@ -86,6 +88,7 @@ const TONE: Record<string, [string, string]> = {
   note: ["oklch(0.3 0.08 285)", "oklch(0.4 0.1 60)"],
   review: ["oklch(0.3 0.09 285)", "oklch(0.4 0.12 255)"],
   recap: ["oklch(0.3 0.09 285)", "oklch(0.4 0.12 255)"],
+  scene: ["oklch(0.27 0.08 250)", "oklch(0.37 0.1 195)"],
 };
 
 export function SlideLecture({
@@ -139,8 +142,8 @@ export function SlideLecture({
   );
   const [waiting, setWaiting] = useState(false);
   const stops = useMemo(
-    () => (exact ? sayAlongEnds(timeline, lines) : []),
-    [exact, timeline, lines],
+    () => (exact ? sayAlongEnds(timeline, lines, data?.shadow) : []),
+    [exact, timeline, lines, data?.shadow],
   );
   const lastMs = useRef(0);
   useEffect(() => {
@@ -178,9 +181,26 @@ export function SlideLecture({
     if (start === null) return;
     tap();
     setWaiting(false);
+    track({
+      type: "lecture_replay",
+      payload: { lesson_id: lessonId, session: sitting ?? 0, step: String(data.slides[slide]?.kind ?? "") },
+    });
     podcast.seek(start / 1000);
     if (podcast.state === "paused") podcast.resume();
   }
+
+  // heard to the last slide: counted once per recording
+  const lastSlide = !!data && !!state && state.slide === data.slides.length - 1;
+  const counted = useRef(false);
+  useEffect(() => {
+    if (!lastSlide || !exact || counted.current) return;
+    counted.current = true;
+    track({
+      type: "lecture_complete",
+      value: Math.round(podcast.duration),
+      payload: { lesson_id: lessonId, session: sitting ?? 0 },
+    });
+  }, [lastSlide, exact, podcast.duration, lessonId, sitting]);
 
   const chapters = useMemo(
     () => (data && exact ? slideChapters(data, timeline) : undefined),
@@ -369,7 +389,7 @@ export function SlideLecture({
 }
 
 // ------------------------------------------------------------------------------- the slides --
-function SlideView({
+export function SlideView({
   slide,
   index,
   state,
@@ -412,7 +432,7 @@ function SlideView({
                 </span>
               )}
             </p>
-            <h2 className="mt-3 line-clamp-3 text-balance text-[clamp(24px,7.5vw,32px)] font-extrabold leading-[1.1] tracking-tight sm:text-[40px]">
+            <h2 className="mt-3 text-balance text-[clamp(24px,7.5vw,32px)] font-extrabold leading-[1.1] tracking-tight sm:text-[40px]">
               {t.main}
             </h2>
             {ko && (
@@ -420,10 +440,16 @@ function SlideView({
                 {ko}
               </Ko>
             )}
-            {what && (
-              <p className="mt-2 max-w-[38ch] text-[14px] font-medium leading-5 opacity-90">
-                {what}
+            {s["hook"] ? (
+              <p className="mt-3 max-w-[30ch] text-balance text-[17px] font-bold leading-snug text-[oklch(0.88_0.13_90)]">
+                {String(s["hook"])}
               </p>
+            ) : (
+              what && (
+                <p className="mt-2 max-w-[38ch] text-[14px] font-medium leading-5 opacity-90">
+                  {what}
+                </p>
+              )
             )}
             {(has("counts") || !started) && (
               <p className={cn("mt-4 flex flex-wrap gap-1.5 text-[12px] font-semibold", fade)}>
@@ -439,7 +465,7 @@ function SlideView({
     }
     case "section": {
       const isVocab = String(s["title"]) === "Từ vựng";
-      const preview = isVocab ? (pictures?.words ?? []).slice(0, 4) : [];
+      const preview = isVocab ? (pictures?.words ?? []).slice(0, Number(s["count"]) || 8) : [];
       return (
         <div className="my-auto">
           <div className="flex items-center gap-4">
@@ -457,9 +483,9 @@ function SlideView({
               {preview.map((w, n) => (
                 <span
                   key={w}
-                  lang="ko"
+                  lang="en"
                   className={cn(
-                    "font-korean rounded-[14px] bg-white/92 px-3 py-1.5 text-[18px] font-bold text-[oklch(0.3_0.08_285)] shadow-elev-1",
+                    "rounded-[14px] bg-white/92 px-3 py-1.5 text-[18px] font-bold text-[oklch(0.3_0.08_285)] shadow-elev-1",
                     n % 2 === 0 ? "-rotate-2" : "rotate-1",
                   )}
                 >
@@ -488,11 +514,25 @@ function SlideView({
               type="button"
               onClick={again("word")}
               aria-label={`${String(s["headword"])}, nghe lại`}
-              className="font-korean text-[44px] font-bold leading-tight tracking-tight sm:text-[52px]"
-              lang="ko"
+              className="text-[44px] font-bold leading-tight tracking-tight sm:text-[52px]"
+              lang="en"
             >
               {String(s["headword"])}
             </button>
+            {(s["pos"] || s["pron"]) && (
+              <p className="mt-1 flex items-center justify-center gap-2 text-[13px] opacity-80">
+                {s["pos"] ? (
+                  <span className="rounded-md bg-white/15 px-1.5 py-0.5 text-[11px] font-bold">
+                    {POS_VI[String(s["pos"])] ?? String(s["pos"])}
+                  </span>
+                ) : null}
+                {s["pron"] ? (
+                  <span lang="en-fonipa" className="font-medium tracking-wide">
+                    {String(s["pron"])}
+                  </span>
+                ) : null}
+              </p>
+            )}
             <p
               className={cn(
                 "mt-2 text-[17px] font-semibold transition-opacity duration-500",
@@ -539,6 +579,22 @@ function SlideView({
           picture={pictures?.grammar[String(s["pattern"])] ?? null}
         />
       );
+    case "scene":
+      return (
+        <div className="flex flex-1 flex-col">
+          <SlideEyebrow>{String(s["eyebrow"] ?? "")}</SlideEyebrow>
+          <h3 className="mb-3 mt-1 text-balance text-[21px] font-extrabold leading-tight">
+            {String(s["title"] ?? "")}
+          </h3>
+          <Scene
+            visual={String(s["visual"])}
+            data={(s["data"] as Record<string, unknown>) ?? {}}
+            has={has}
+            latest={state.latest}
+            onReplay={(k) => onReplay(index, k)}
+          />
+        </div>
+      );
     case "note":
       return (
         <div className="flex flex-1 flex-col">
@@ -563,7 +619,7 @@ function SlideView({
       const current = state.latest?.startsWith("ex") ? Number(state.latest.slice(2)) : -1;
       return (
         <div className="flex flex-1 flex-col">
-          <SlideEyebrow>Nghe lại các câu ví dụ</SlideEyebrow>
+          <SlideEyebrow>Nghe rồi nói lại</SlideEyebrow>
           <ol className="mt-3 max-h-[260px] space-y-2 overflow-y-auto pr-1">
             {ex.map((e, i) => (
               <li key={i}>
@@ -601,7 +657,9 @@ function SlideView({
             {String(s["title"])}
           </h2>
           <p className="mx-auto mt-2 max-w-[34ch] text-[14px] font-medium leading-5 opacity-90">
-            Mai quay lại ôn vài phút, Haru sẽ nhắc những gì sắp quên.
+            {s["next"]
+              ? String(s["next"])
+              : "Mai quay lại ôn vài phút, Haru sẽ nhắc những gì sắp quên."}
           </p>
           <p className="mx-auto mt-4 inline-flex items-center gap-2 rounded-[16px] bg-white/14 px-3.5 py-1.5 text-left text-[12px] font-semibold">
             <SwanMark className="h-5 w-7" /> Làm tiếp các bước còn lại để gom lông thiên nga
@@ -715,8 +773,8 @@ function GrammarSlide({
             className="rounded-[14px] bg-white/16 px-3.5 py-2 text-left"
           >
             <span
-              lang="ko"
-              className="font-korean text-[clamp(22px,7vw,30px)] font-bold leading-tight [word-break:keep-all]"
+              lang="en"
+              className="text-[clamp(22px,7vw,30px)] font-bold leading-tight [word-break:keep-all]"
             >
               {String(s["pattern"])}
             </span>
@@ -797,6 +855,8 @@ function ReviewChip({
   );
 }
 
+const POS_VI: Record<string, string> = { N: "danh từ", V: "động từ", A: "tính từ", X: "cụm từ" };
+
 const UI_ICON = {
   title: "1F393",
   vocab: "1F4D6",
@@ -831,12 +891,12 @@ function Illus({ id, size, className }: { id: string; size: number; className?: 
 function Chunks({ text }: { text: string }) {
   const words = text.split(/\s+/).filter(Boolean);
   return (
-    <span className="flex flex-wrap justify-center gap-1.5" lang="ko">
+    <span className="flex flex-wrap justify-center gap-1.5" lang="en">
       {words.map((w, i) => (
         <span
           key={i}
           className={cn(
-            "font-korean rounded-[10px] px-2 py-0.5 text-[20px] font-bold leading-snug",
+            "rounded-[10px] px-2 py-0.5 text-[20px] font-bold leading-snug",
             i % 2 === 0 ? "bg-white/18" : "bg-white/8",
           )}
         >
@@ -946,16 +1006,17 @@ function TitleArt({ banner, words }: { banner: string | null; words: string[] })
     <div
       aria-hidden="true"
       className={cn(
-        "flex gap-2 sm:order-last sm:aspect-[16/9] sm:w-full sm:grid sm:gap-2.5",
+        // tiles are as wide as their word and wrap: a long word ("permanent") never spills out of its tile
+        "flex flex-wrap gap-2 sm:order-last sm:w-full sm:grid sm:gap-2.5",
         words.length <= 2 ? "sm:grid-cols-1" : "sm:grid-cols-2",
       )}
     >
       {words.map((w, n) => (
         <span
           key={w}
-          lang="ko"
+          lang="en"
           className={cn(
-            "font-korean flex min-w-0 flex-1 items-center justify-center rounded-[16px] bg-white/92 px-2 py-2.5 text-center text-[clamp(17px,2.4vw,26px)] font-bold text-[oklch(0.3_0.08_285)] shadow-elev-1 [word-break:keep-all] sm:rounded-[18px]",
+            "flex shrink-0 items-center justify-center whitespace-nowrap rounded-[14px] bg-white/92 px-3 py-2 text-center text-[15px] font-bold text-[oklch(0.3_0.08_285)] shadow-elev-1 sm:rounded-[18px] sm:px-2 sm:py-2.5 sm:text-[clamp(16px,2vw,22px)]",
             n % 3 === 0 ? "-rotate-2" : "rotate-1",
           )}
         >
