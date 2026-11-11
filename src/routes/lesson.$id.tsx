@@ -670,6 +670,13 @@ function LessonView({ lesson }: { lesson: LessonOut }) {
       .replace(/[;,.\s]+$/, "")
       .concat(".") ?? null;
 
+  // up to three short goal lines read as a checklist; a long single paragraph stays as it was
+  const checklist =
+    goalLines.length >= 2 && goalLines.length <= 4 && goalLines.every((l) => l.length <= 90)
+      ? goalLines.slice(0, 3).map((l) => l.replace(/[`*]/g, "").replace(/^[①-⑩]\s*/, "").replace(/[;,.\s]+$/, ""))
+      : null;
+  const dayTag = /^(G\d+ · Ngày \d+) · (.+)$/.exec(lesson.title);
+
   return (
     <Shell>
       <div className="lg:grid lg:grid-cols-[250px_minmax(0,1fr)] lg:gap-8">
@@ -696,9 +703,6 @@ function LessonView({ lesson }: { lesson: LessonOut }) {
                   {mode === "whole" && (
                     <span className="text-[12px] font-semibold opacity-80">
                       Cấp độ {lesson.level}
-                      {lesson.topics.length > 0
-                        ? ` · ${lesson.topics.map((t) => t.name).join(", ")}`
-                        : ""}
                     </span>
                   )}
                 </div>
@@ -707,8 +711,14 @@ function LessonView({ lesson }: { lesson: LessonOut }) {
                     {lesson.title_en}
                   </Ko>
                 )}
-                <h1 className="mt-0.5 text-[22px] font-extrabold leading-tight lg:text-2xl">
-                  <span className="min-w-0 break-words">{lesson.title}</span>
+                {/* "G1 · Ngày 1 · Tên bài": the day is a small tag, the name is the headline */}
+                {dayTag && (
+                  <span className="mt-2 inline-block rounded-full bg-white/18 px-2.5 py-0.5 text-[12px] font-bold tracking-wide ring-1 ring-white/25">
+                    {dayTag[1]}
+                  </span>
+                )}
+                <h1 className="mt-1 text-[22px] font-extrabold leading-tight lg:text-2xl">
+                  <span className="min-w-0 break-words">{dayTag ? dayTag[2] : lesson.title}</span>
                 </h1>
               </div>
               <LessonImage
@@ -717,7 +727,21 @@ function LessonView({ lesson }: { lesson: LessonOut }) {
                 className="h-[68px] w-24 lg:mb-3 lg:h-auto lg:w-full lg:aspect-[16/9]"
               />
             </div>
-            {goalText && (
+            {checklist ? (
+              <ul className="mt-3 space-y-1.5" aria-label="Học xong bài này bạn làm được">
+                {checklist.map((line) => (
+                  <li key={line} className="flex items-start gap-2 text-[13.5px] font-medium leading-5">
+                    <span
+                      aria-hidden="true"
+                      className="mt-px flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-white/25"
+                    >
+                      <Check size={12} strokeWidth={3.2} />
+                    </span>
+                    <span className="min-w-0">{line}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : goalText && (
               <Rich
                 as="p"
                 text={outcome ? `🎯 ${goalText}` : `Sau bài này: ${goalText}`}
