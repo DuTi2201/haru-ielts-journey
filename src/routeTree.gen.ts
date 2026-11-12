@@ -23,6 +23,7 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as ReadingRouteImport } from './routes/reading'
+import { Route as PronunciationRouteImport } from './routes/pronunciation'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SpeakingRouteImport } from './routes/speaking'
@@ -40,6 +41,7 @@ import { Route as LessonIdRouteImport } from './routes/lesson.$id'
 import { Route as ListeningIndexRouteImport } from './routes/listening.index'
 import { Route as ListeningPlayRouteImport } from './routes/listening.play'
 import { Route as ReadingIdRouteImport } from './routes/reading_.$id'
+import { Route as PronunciationSlugRouteImport } from './routes/pronunciation_.$slug'
 import { Route as TalkDebateRouteImport } from './routes/talk_.debate'
 import { Route as TalkHistoryRouteImport } from './routes/talk_.history'
 import { Route as TalkPresentRouteImport } from './routes/talk_.present'
@@ -126,6 +128,11 @@ const ReadingRoute = ReadingRouteImport.update({
   path: '/reading',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PronunciationRoute = PronunciationRouteImport.update({
+  id: '/pronunciation',
+  path: '/pronunciation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RefundRoute = RefundRouteImport.update({
   id: '/refund',
   path: '/refund',
@@ -209,6 +216,11 @@ const ListeningPlayRoute = ListeningPlayRouteImport.update({
 const ReadingIdRoute = ReadingIdRouteImport.update({
   id: '/reading_/$id',
   path: '/reading/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PronunciationSlugRoute = PronunciationSlugRouteImport.update({
+  id: '/pronunciation_/$slug',
+  path: '/pronunciation/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TalkDebateRoute = TalkDebateRouteImport.update({
@@ -302,6 +314,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/progress': typeof ProgressRoute
   '/reading': typeof ReadingRoute
+  '/pronunciation': typeof PronunciationRoute
   '/refund': typeof RefundRoute
   '/review': typeof ReviewRoute
   '/speaking': typeof SpeakingRoute
@@ -317,6 +330,7 @@ export interface FileRoutesByFullPath {
   '/lesson/$id': typeof LessonIdRoute
   '/listening/play': typeof ListeningPlayRoute
   '/reading/$id': typeof ReadingIdRoute
+  '/pronunciation/$slug': typeof PronunciationSlugRoute
   '/talk/debate': typeof TalkDebateRoute
   '/talk/history': typeof TalkHistoryRoute
   '/talk/present': typeof TalkPresentRoute
@@ -350,6 +364,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/progress': typeof ProgressRoute
   '/reading': typeof ReadingRoute
+  '/pronunciation': typeof PronunciationRoute
   '/refund': typeof RefundRoute
   '/review': typeof ReviewRoute
   '/speaking': typeof SpeakingRoute
@@ -365,6 +380,7 @@ export interface FileRoutesByTo {
   '/lesson/$id': typeof LessonIdRoute
   '/listening/play': typeof ListeningPlayRoute
   '/reading/$id': typeof ReadingIdRoute
+  '/pronunciation/$slug': typeof PronunciationSlugRoute
   '/talk/debate': typeof TalkDebateRoute
   '/talk/history': typeof TalkHistoryRoute
   '/talk/present': typeof TalkPresentRoute
@@ -399,6 +415,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/progress': typeof ProgressRoute
   '/reading': typeof ReadingRoute
+  '/pronunciation': typeof PronunciationRoute
   '/refund': typeof RefundRoute
   '/review': typeof ReviewRoute
   '/speaking': typeof SpeakingRoute
@@ -414,6 +431,7 @@ export interface FileRoutesById {
   '/lesson/$id': typeof LessonIdRoute
   '/listening/play': typeof ListeningPlayRoute
   '/reading_/$id': typeof ReadingIdRoute
+  '/pronunciation_/$slug': typeof PronunciationSlugRoute
   '/talk_/debate': typeof TalkDebateRoute
   '/talk_/history': typeof TalkHistoryRoute
   '/talk_/present': typeof TalkPresentRoute
@@ -449,6 +467,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/progress'
     | '/reading'
+    | '/pronunciation'
     | '/refund'
     | '/review'
     | '/speaking'
@@ -464,6 +483,7 @@ export interface FileRouteTypes {
     | '/lesson/$id'
     | '/listening/play'
     | '/reading/$id'
+    | '/pronunciation/$slug'
     | '/talk/debate'
     | '/talk/history'
     | '/talk/present'
@@ -497,6 +517,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/progress'
     | '/reading'
+    | '/pronunciation'
     | '/refund'
     | '/review'
     | '/speaking'
@@ -512,6 +533,7 @@ export interface FileRouteTypes {
     | '/lesson/$id'
     | '/listening/play'
     | '/reading/$id'
+    | '/pronunciation/$slug'
     | '/talk/debate'
     | '/talk/history'
     | '/talk/present'
@@ -545,6 +567,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/progress'
     | '/reading'
+    | '/pronunciation'
     | '/refund'
     | '/review'
     | '/speaking'
@@ -560,6 +583,7 @@ export interface FileRouteTypes {
     | '/lesson/$id'
     | '/listening/play'
     | '/reading_/$id'
+    | '/pronunciation_/$slug'
     | '/talk_/debate'
     | '/talk_/history'
     | '/talk_/present'
@@ -594,6 +618,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ProgressRoute: typeof ProgressRoute
   ReadingRoute: typeof ReadingRoute
+  PronunciationRoute: typeof PronunciationRoute
   RefundRoute: typeof RefundRoute
   ReviewRoute: typeof ReviewRoute
   SpeakingRoute: typeof SpeakingRoute
@@ -609,6 +634,7 @@ export interface RootRouteChildren {
   LessonIdRoute: typeof LessonIdRoute
   ListeningPlayRoute: typeof ListeningPlayRoute
   ReadingIdRoute: typeof ReadingIdRoute
+  PronunciationSlugRoute: typeof PronunciationSlugRoute
   TalkDebateRoute: typeof TalkDebateRoute
   TalkHistoryRoute: typeof TalkHistoryRoute
   TalkPresentRoute: typeof TalkPresentRoute
@@ -728,6 +754,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReadingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pronunciation': {
+      id: '/pronunciation'
+      path: '/pronunciation'
+      fullPath: '/pronunciation'
+      preLoaderRoute: typeof PronunciationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/refund': {
       id: '/refund'
       path: '/refund'
@@ -845,6 +878,13 @@ declare module '@tanstack/react-router' {
       path: '/reading/$id'
       fullPath: '/reading/$id'
       preLoaderRoute: typeof ReadingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pronunciation_/$slug': {
+      id: '/pronunciation_/$slug'
+      path: '/pronunciation/$slug'
+      fullPath: '/pronunciation/$slug'
+      preLoaderRoute: typeof PronunciationSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/talk_/debate': {
@@ -970,6 +1010,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ProgressRoute: ProgressRoute,
   ReadingRoute: ReadingRoute,
+  PronunciationRoute: PronunciationRoute,
   RefundRoute: RefundRoute,
   ReviewRoute: ReviewRoute,
   SpeakingRoute: SpeakingRoute,
@@ -985,6 +1026,7 @@ const rootRouteChildren: RootRouteChildren = {
   LessonIdRoute: LessonIdRoute,
   ListeningPlayRoute: ListeningPlayRoute,
   ReadingIdRoute: ReadingIdRoute,
+  PronunciationSlugRoute: PronunciationSlugRoute,
   TalkDebateRoute: TalkDebateRoute,
   TalkHistoryRoute: TalkHistoryRoute,
   TalkPresentRoute: TalkPresentRoute,

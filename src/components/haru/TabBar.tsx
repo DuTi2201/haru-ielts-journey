@@ -10,7 +10,7 @@ const tabs = [
     label: "Luyện",
     to: "/speaking",
     icon: Headphones,
-    matches: ["/speaking", "/chat", "/talk", "/reading", "/listening", "/writing", "/exam"],
+    matches: ["/speaking", "/pronunciation", "/chat", "/talk", "/reading", "/listening", "/writing", "/exam"],
   },
   { label: "Tiến bộ", to: "/progress", icon: TrendingUp, matches: ["/progress"] },
   { label: "Tôi", to: "/support-language", icon: UserRound, matches: ["/support-language"] },

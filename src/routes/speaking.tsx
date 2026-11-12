@@ -66,6 +66,12 @@ function PracticeHub() {
             hint="Ôn lại từ vựng, cụm động từ và mẫu ngữ pháp đến hạn theo lịch lặp lại ngắt quãng."
           />
           <SkillRow
+            to="/pronunciation"
+            icon={Mic}
+            title="Luyện phát âm 44 âm"
+            hint="Xem khẩu hình trong video BBC rồi ghi âm, máy chấm từng từ và từng âm của bạn."
+          />
+          <SkillRow
             to="/mistakes"
             icon={BookX}
             title="Sổ lỗi sai"
@@ -93,6 +99,7 @@ function PracticeHub() {
 
 type HubPath =
   | "/review"
+  | "/pronunciation"
   | "/mistakes"
   | "/lesson";
 

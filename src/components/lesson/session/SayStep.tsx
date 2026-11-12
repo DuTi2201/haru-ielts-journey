@@ -212,7 +212,7 @@ export function SayStep({
   );
 }
 
-function ScoreLine({ score }: { score: SpeechScore }) {
+export function ScoreLine({ score }: { score: SpeechScore }) {
   if (!score.ok)
     return (
       <p className="mt-2 rounded-[10px] bg-fill px-2.5 py-1.5 text-[12.5px] font-medium text-ink-2">
