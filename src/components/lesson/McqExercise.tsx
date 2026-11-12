@@ -1,3 +1,4 @@
+import { ReadingPassage, isEnglishPassage } from "./ReadingPassage";
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { Check, RotateCcw, X } from "lucide-react";
 
@@ -135,6 +136,7 @@ export function StimulusView({
     case "headline":
       return <Headline text={stimulus.text} hint={stimulus.hint_vi ?? null} />;
     case "passage":
+      if (isEnglishPassage(stimulus.text)) return <ReadingPassage text={stimulus.text} />;
       return (
         <div className="space-y-2 rounded-[16px] border border-line bg-card p-3.5">
           {stimulus.text.split("\n").map((para, i) => (
