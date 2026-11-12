@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { Disclosure } from "./Disclosure";
 import { ExamChip } from "./ExamChip";
 import { Rich } from "./Rich";
+import { ReadingSteps, VocabSteps } from "./HowToCards";
 
 /** The lesson's notes, grouped by what they are for. A lesson used to show every note as the
  * same open yellow card, one long uniform scroll; now the goal comes first as a plain panel,
@@ -125,6 +126,12 @@ export function LessonNotes({
   /** Jumps to the Viết tab of the practice step (the model texts have exercises of their own). */
   onOpenWriting?: (() => void) | undefined;
 }) {
+  const [aboutOpen, setAboutOpen] = useState(false);
+  // three notes are not text: the book list hides behind a small "?", the two "how to" notes are drawn
+  const about = notes.find((n) => n.title?.startsWith("Bài của sách"));
+  const readHow = notes.find((n) => n.title === "Cách đọc từng đoạn");
+  const vocabHow = notes.find((n) => n.title?.startsWith("Cách học từ"));
+  notes = notes.filter((n) => n !== about && n !== readHow && n !== vocabHow);
   const groups = useMemo(() => {
     const by = new Map<LessonNoteKind, LessonNoteOut[]>();
     for (const n of notes) {
@@ -141,6 +148,8 @@ export function LessonNotes({
 
   return (
     <div className="space-y-4">
+      {readHow && <ReadingSteps text={readHow.body} />}
+      {vocabHow && <VocabSteps text={vocabHow.body} />}
       {groups.map(({ kind, notes: list }) => {
         const meta = KINDS[kind];
         const Icon = meta.icon;
@@ -202,6 +211,24 @@ export function LessonNotes({
           </section>
         );
       })}
+      {about && (
+        <div className="flex flex-col items-end gap-2">
+          <button
+            type="button"
+            aria-expanded={aboutOpen}
+            aria-label="Bài của sách nằm trong app"
+            onClick={() => setAboutOpen((v) => !v)}
+            className="hit-area grid size-8 place-items-center rounded-full border border-line bg-card text-sm font-bold text-blue-deep shadow-elev-1 active:scale-95"
+          >
+            ?
+          </button>
+          {aboutOpen && (
+            <div className="w-full rounded-[14px] border border-line bg-card px-3.5 py-3 [animation:haru-fade_0.2s_ease-out_both]">
+              <Rich as="p" text={about.body} className="text-xs leading-5" />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
