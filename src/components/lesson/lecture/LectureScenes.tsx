@@ -370,7 +370,7 @@ function TruthCards({ data, has, latest, onReplay }: SceneProps) {
 }
 
 // ------------------------------------------------------------- one question, four tenses --
-type Answer = { key: string; at: "now" | "span" | "past" | "future"; tense: string; en: string; vi: string };
+type Answer = { key: string; at: "now" | "span" | "past" | "future" | "always" | "window"; tense: string; en: string; vi: string };
 
 /** One answer on the shared time axis: the same left-to-right scale in every lane (past on the
  * left, the present at the dashed line in the middle, the future on the right), so the four
@@ -386,6 +386,21 @@ function Lane({ at, color }: { at: Answer["at"]; color: string }) {
         <>
           <span className={bar} style={{ left: "14%", width: "36%", background: "currentColor" }} />
           <span className={dot} style={{ left: "50%", background: "currentColor" }} />
+        </>
+      )}
+      {at === "always" && (
+        <>
+          <span className={bar} style={{ left: "6%", width: "88%", background: "currentColor" }} />
+          <svg className="absolute top-1/2 -translate-y-1/2" style={{ left: "92%" }} width="14" height="14" viewBox="0 0 14 14">
+            <path d="m3 2 6 5-6 5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </>
+      )}
+      {at === "window" && (
+        <>
+          <span className={bar} style={{ left: "34%", width: "32%", background: "currentColor" }} />
+          <span className="absolute top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full" style={{ left: "34%", background: "currentColor" }} />
+          <span className="absolute top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full" style={{ left: "66%", background: "currentColor" }} />
         </>
       )}
       {at === "past" && (
@@ -417,7 +432,7 @@ function TenseTimeline({ data, has, latest, onReplay }: SceneProps) {
           <Tap k="q" onReplay={onReplay} className={enter}>
             <span className="flex items-center justify-between gap-3 rounded-[16px] bg-[oklch(0.88_0.13_90)] px-3.5 py-2 text-[oklch(0.25_0.05_285)] shadow-elev-2">
               <span>
-                <span className="block text-[10px] font-bold uppercase tracking-[0.12em] opacity-70">Câu hỏi · hiện tại đơn</span>
+                <span className="block text-[10px] font-bold uppercase tracking-[0.12em] opacity-70">{(data["question_label"] as string) ?? "Câu hỏi · hiện tại đơn"}</span>
                 <En className="block text-[17px] font-extrabold leading-tight">{str(data["question"])}</En>
               </span>
               <span className="shrink-0 text-right text-[11.5px] font-semibold leading-tight opacity-75">{str(data["question_vi"])}</span>
