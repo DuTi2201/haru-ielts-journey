@@ -894,8 +894,8 @@ function ParaFilter({ data, has, latest, onReplay }: SceneProps) {
             className={cn(
               "transition-all duration-500",
               g.k === "k" && keep && "rounded bg-[oklch(0.88_0.13_90)] px-0.5 font-bold text-[oklch(0.25_0.05_285)]",
-              g.k === "d" && drop && "line-through decoration-2 decoration-[oklch(0.78_0.13_20)] opacity-45",
-              !g.k && keep && "opacity-55",
+              g.k !== "k" && keep && "opacity-50",
+              g.k === "d" && drop && "line-through decoration-2 decoration-[oklch(0.78_0.13_20)] opacity-40",
             )}
           >
             {g.t}
