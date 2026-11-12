@@ -373,7 +373,7 @@ function TruthCards({ data, has, latest, onReplay }: SceneProps) {
 }
 
 // ------------------------------------------------------------- one question, four tenses --
-type Answer = { key: string; at: "now" | "span" | "past" | "future" | "always" | "window"; tense: string; en: string; vi: string };
+type Answer = { icon?: string; key: string; at: "now" | "span" | "past" | "future" | "always" | "window"; tense: string; en: string; vi: string };
 
 /** One answer on the shared time axis: the same left-to-right scale in every lane (past on the
  * left, the present at the dashed line in the middle, the future on the right), so the four
@@ -467,12 +467,21 @@ function TenseTimeline({ data, has, latest, onReplay }: SceneProps) {
               <li key={a.key} className={enter}>
                 <Tap k={a.key} onReplay={onReplay} label={a.en}>
                   <span className={cn("block rounded-[14px] px-3 py-1.5 transition-colors duration-500", now ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-[oklch(0.3_0.06_285/0.7)]")}>
-                    <span className="flex items-baseline justify-between gap-2">
-                      <En className="text-[14.5px] font-extrabold leading-tight">{a.en}</En>
-                      <span className="shrink-0 text-[10.5px] font-bold uppercase tracking-[0.08em] opacity-70">{a.tense}</span>
+                    <span className="flex items-center gap-2.5">
+                      {a.icon && (
+                        <span className="flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-full bg-[#e6defa]">
+                          <StoryIcon name={a.icon} on={now} size={46} />
+                        </span>
+                      )}
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-baseline justify-between gap-2">
+                          <En className="text-[14.5px] font-extrabold leading-tight">{a.en}</En>
+                          <span className="shrink-0 text-[10.5px] font-bold uppercase tracking-[0.08em] opacity-70">{a.tense}</span>
+                        </span>
+                        <Lane at={a.at} color={now ? "oklch(0.5 0.16 285)" : AMBER} />
+                        <span className="block text-[11px] font-semibold opacity-70">{a.vi}</span>
+                      </span>
                     </span>
-                    <Lane at={a.at} color={now ? "oklch(0.5 0.16 285)" : AMBER} />
-                    <span className="block text-[11px] font-semibold opacity-70">{a.vi}</span>
                   </span>
                 </Tap>
               </li>
