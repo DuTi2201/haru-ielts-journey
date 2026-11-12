@@ -33,7 +33,7 @@ function Preview() {
   return (
     <main className="mx-auto max-w-[560px] space-y-3 p-3">
       <div className="flex items-center gap-2 text-[13px] font-semibold">
-        {["1", "2"].map((n) => (
+        {["1", "2", "45-1", "45-2"].map((n) => (
           <button
             key={n}
             type="button"
