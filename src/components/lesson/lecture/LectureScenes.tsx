@@ -498,13 +498,15 @@ function SentenceForms({ data, has, latest, onReplay }: SceneProps) {
   const spelling = (data["spelling"] as [string, string][]) ?? [];
   const short = (data["short"] as string[]) ?? [];
   const spell = has("spelling");
+  const plain = data["persons_plain"] === true;
+  const spellTitle = (data["spelling_title"] as string) ?? "Thêm s không đơn giản";
   return (
     <div className="flex flex-1 flex-col gap-2">
       <div className="min-h-[64px]">
         {spell ? (
           <Tap k="spelling" onReplay={onReplay} className={enter} key="spelling">
             <span className="block rounded-[14px] bg-white/10 px-3 py-2">
-              <span className="block text-[10px] font-bold uppercase tracking-[0.12em] opacity-70">Thêm s không đơn giản</span>
+              <span className="block text-[10px] font-bold uppercase tracking-[0.12em] opacity-70">{spellTitle}</span>
               <span className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
                 {spelling.map(([b, e]) => (
                   <span key={b} lang="en" className="text-[14px] font-bold">
@@ -523,8 +525,8 @@ function SentenceForms({ data, has, latest, onReplay }: SceneProps) {
                 <span key={p.who} className="block rounded-[14px] bg-white/10 px-3 py-2">
                   <span className="block text-[10.5px] font-bold uppercase tracking-[0.08em] opacity-70">{p.who}</span>
                   <En className="block text-[17px] font-extrabold">
-                    {p.verb.replace(/s$/, "")}
-                    {i > 0 && <span className="rounded-[6px] bg-[oklch(0.88_0.13_90)] px-1 text-[oklch(0.25_0.05_285)]">s</span>}
+                    {plain ? p.verb : p.verb.replace(/s$/, "")}
+                    {!plain && i > 0 && <span className="rounded-[6px] bg-[oklch(0.88_0.13_90)] px-1 text-[oklch(0.25_0.05_285)]">s</span>}
                   </En>
                 </span>
               ))}
