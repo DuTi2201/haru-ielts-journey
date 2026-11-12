@@ -51,6 +51,8 @@ export function Scene(p: SceneProps) {
       return <FixPairs {...p} />;
     case "picture_cards":
       return <PictureCards {...p} />;
+    case "para_filter":
+      return <ParaFilter {...p} />;
     default:
       return null;
   }
@@ -869,6 +871,67 @@ function FixPairs({ data, has, latest, onReplay }: SceneProps) {
         })}
       </ol>
       <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
+    </div>
+  );
+}
+
+type Seg = { t: string; k?: "k" | "d" };
+
+/** One paragraph worked the teacher's way, in four moves that follow the voice: the keywords light
+ * up (`keep`), the detail to leave out is struck through (`drop`), what is left becomes a chain of
+ * short phrases joined by arrows (`sum`), then the main idea and the paragraph's worth (`main`). */
+function ParaFilter({ data, has, latest, onReplay }: SceneProps) {
+  const segs = (data["segs"] as Seg[]) ?? [];
+  const chain = (data["chain"] as string[]) ?? [];
+  const keep = has("keep");
+  const drop = has("drop");
+  return (
+    <div className="flex flex-1 flex-col gap-2">
+      <div lang="en" className="rounded-[16px] bg-white/10 px-3 py-2.5 text-[12.5px] leading-[1.7]">
+        {segs.map((g, i) => (
+          <span
+            key={i}
+            className={cn(
+              "transition-all duration-500",
+              g.k === "k" && keep && "rounded bg-[oklch(0.88_0.13_90)] px-0.5 font-bold text-[oklch(0.25_0.05_285)]",
+              g.k === "d" && drop && "line-through decoration-2 decoration-[oklch(0.78_0.13_20)] opacity-45",
+              !g.k && keep && "opacity-55",
+            )}
+          >
+            {g.t}
+          </span>
+        ))}
+      </div>
+      {has("sum") && (
+        <Tap k="sum" onReplay={onReplay} className={enter} label="Chuỗi từ khóa">
+          <span className="flex flex-wrap items-center gap-1.5 rounded-[16px] bg-white px-3 py-2.5 text-[oklch(0.25_0.05_285)] shadow-elev-2">
+            {chain.map((c, i) => (
+              <span key={c} className="flex items-center gap-1.5">
+                <En className="rounded-full bg-[oklch(0.93_0.06_165)] px-2.5 py-1 text-[12.5px] font-extrabold">{c}</En>
+                {i < chain.length - 1 && (
+                  <svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true">
+                    <path d="M1 6h14m-4-4 4 4-4 4" fill="none" stroke="oklch(0.55 0.15 165)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </span>
+            ))}
+          </span>
+        </Tap>
+      )}
+      {(["main", "value"] as const).map(
+        (k) =>
+          has(k) &&
+          str(data[k]) && (
+            <Tap key={k} k={k} onReplay={onReplay} className={enter}>
+              <span className={cn("block rounded-[14px] px-3 py-2 text-[13px] font-semibold leading-snug", latest === k ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-white/10")}>
+                <span className="mr-1.5 text-[10px] font-bold uppercase tracking-[0.12em] opacity-70">
+                  {k === "main" ? "Ý chính" : "Giá trị"}
+                </span>
+                {str(data[k])}
+              </span>
+            </Tap>
+          ),
+      )}
     </div>
   );
 }
