@@ -629,3 +629,35 @@
 }
 .chat-shake { animation: chat-shake 0.3s ease-in-out 1; }
 @media (prefers-reduced-motion: reduce) { .chat-shake { animation: none; } }
+
+
+/* Lecture pictures (StoryArt): they move only while their own sentence is being said. */
+@media (prefers-reduced-motion: no-preference) {
+  .haru-a-bob { animation: haru-bob 1.4s ease-in-out infinite; }
+  .haru-a-slide { animation: haru-slide 1.6s ease-in-out infinite; }
+  .haru-a-fly { animation: haru-fly 1.8s ease-in-out infinite; }
+  .haru-a-flip { animation: haru-flip 2.4s ease-in-out infinite; }
+  .haru-a-spin { animation: haru-spin 2.4s linear infinite; }
+  .haru-a-pulse { animation: haru-pulse 1s ease-in-out infinite; }
+  .haru-a-shake { animation: haru-shake 0.5s ease-in-out infinite; }
+  .haru-a-wiggle { animation: haru-wiggle 1s ease-in-out infinite; }
+  .haru-a-flicker { animation: haru-flicker 1.2s steps(2, end) infinite; }
+  .haru-a-steam { animation: haru-steam 1.6s ease-out infinite; }
+  .haru-a-wave { animation: haru-wave 1.1s ease-in-out infinite; }
+  .haru-a-wave2 { animation: haru-wave 1.1s ease-in-out 0.3s infinite; }
+  .haru-a-blink { animation: haru-blink 2s ease-in-out infinite; }
+  .haru-a-draw { stroke-dasharray: 1; animation: haru-draw 1.6s ease-out infinite; }
+}
+@keyframes haru-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes haru-slide { 0%, 100% { transform: translateX(-3px); } 50% { transform: translateX(4px); } }
+@keyframes haru-fly { 0%, 100% { transform: translate(-3px, 2px); } 50% { transform: translate(4px, -3px); } }
+@keyframes haru-flip { 0%, 60% { transform: rotate(0); } 100% { transform: rotate(180deg); } }
+@keyframes haru-spin { to { transform: rotate(360deg); } }
+@keyframes haru-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+@keyframes haru-shake { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+@keyframes haru-wiggle { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+@keyframes haru-flicker { 0% { opacity: 1; } 50% { opacity: 0.55; } }
+@keyframes haru-steam { 0% { opacity: 0; transform: translateY(4px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(-5px); } }
+@keyframes haru-wave { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+@keyframes haru-blink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(0.1); } }
+@keyframes haru-draw { 0% { stroke-dashoffset: 1; } 70%, 100% { stroke-dashoffset: 0; } }

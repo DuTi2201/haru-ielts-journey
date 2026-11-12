@@ -8,6 +8,7 @@
  *    most a few words per piece (coherence, redundancy);
  *  - one piece is "current" (the last brought in) and is the only one in full contrast (signalling);
  *  - every piece can be tapped to hear its line again. */
+import { StoryIcon } from "./StoryArt";
 import { type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
@@ -48,6 +49,8 @@ export function Scene(p: SceneProps) {
       return <RefTable {...p} />;
     case "fix_pairs":
       return <FixPairs {...p} />;
+    case "picture_cards":
+      return <PictureCards {...p} />;
     default:
       return null;
   }
@@ -777,6 +780,45 @@ function RefTable({ data, has, latest, onReplay }: SceneProps) {
                   <span className="text-[12px] font-bold leading-tight">{r.head}</span>
                   <span className="min-w-0">
                     <En className="block text-[14px] font-extrabold leading-snug">{r.en}</En>
+                    {r.vi && <span className="block text-[11px] font-medium opacity-75">{r.vi}</span>}
+                  </span>
+                </span>
+              </Tap>
+            </li>
+          );
+        })}
+      </ol>
+      <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
+    </div>
+  );
+}
+
+type PicRow = { key: string; icon: string; head: string; en: string; vi?: string };
+
+/** One drawn picture per sentence: the picture moves while its sentence is spoken. */
+function PictureCards({ data, has, latest, onReplay }: SceneProps) {
+  const rows = (data["rows"] as PicRow[]) ?? [];
+  return (
+    <div className="flex flex-1 flex-col gap-1.5">
+      <ol className="space-y-1.5">
+        {rows.map((r) => {
+          if (!has(r.key)) return <li key={r.key} className="h-[76px] rounded-[16px] border border-dashed border-white/12" aria-hidden="true" />;
+          const now = latest === r.key;
+          return (
+            <li key={r.key} className={enter}>
+              <Tap k={r.key} onReplay={onReplay} label={r.en}>
+                <span
+                  className={cn(
+                    "grid min-h-[76px] grid-cols-[64px_1fr] items-center gap-3 rounded-[16px] px-2.5 py-2 transition-colors duration-500",
+                    now ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-white/10",
+                  )}
+                >
+                  <span className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#e6defa]">
+                    <StoryIcon name={r.icon} on={now} size={46} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[10px] font-bold uppercase tracking-[0.1em] opacity-70">{r.head}</span>
+                    <En className="block text-[14.5px] font-extrabold leading-snug">{r.en}</En>
                     {r.vi && <span className="block text-[11px] font-medium opacity-75">{r.vi}</span>}
                   </span>
                 </span>
