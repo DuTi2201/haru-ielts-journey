@@ -1054,7 +1054,13 @@ function TitleArt({ banner, words }: { banner: string | null; words: string[] })
           key={w}
           lang="en"
           className={cn(
-            "flex shrink-0 items-center justify-center whitespace-nowrap rounded-[14px] bg-white/92 px-3 py-2 text-center text-[15px] font-bold text-[oklch(0.3_0.08_285)] shadow-elev-1 sm:rounded-[18px] sm:px-2 sm:py-2.5 sm:text-[clamp(16px,2vw,22px)]",
+            "flex min-w-0 items-center justify-center rounded-[14px] bg-white/92 px-3 py-2 text-center font-bold text-[oklch(0.3_0.08_285)] shadow-elev-1 sm:rounded-[18px] sm:px-2 sm:py-2.5",
+            // a phrase wraps onto two lines; a long single word shrinks a little, so nothing spills out of its tile
+            w.includes(" ")
+              ? "text-balance text-[14px] leading-tight sm:text-[clamp(14px,1.7vw,19px)]"
+              : w.length > 10
+                ? "shrink-0 whitespace-nowrap text-[14px] sm:text-[clamp(14px,1.6vw,19px)]"
+                : "shrink-0 whitespace-nowrap text-[15px] sm:text-[clamp(16px,2vw,22px)]",
             n % 3 === 0 ? "-rotate-2" : "rotate-1",
           )}
         >
