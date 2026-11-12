@@ -675,7 +675,7 @@ function LessonView({ lesson }: { lesson: LessonOut }) {
     goalLines.length >= 2 && goalLines.length <= 4 && goalLines.every((l) => l.length <= 90)
       ? goalLines.slice(0, 3).map((l) => l.replace(/[`*]/g, "").replace(/^[①-⑩]\s*/, "").replace(/[;,.\s]+$/, ""))
       : null;
-  const dayTag = /^(G\d+ · Ngày \d+) · (.+)$/.exec(lesson.title);
+  const dayTag = /^((?:G|Tuần )\d+ · Ngày \d+) · (.+)$/.exec(lesson.title);
 
   return (
     <Shell>
