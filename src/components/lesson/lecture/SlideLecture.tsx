@@ -14,6 +14,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { LectureControls } from "@/components/haru/PodcastPlayer";
 import { LiquidBar } from "@/components/haru/studio-ui";
 import { LessonImage } from "@/components/lesson/LessonImage";
+import { StoryIcon, storyIconForWord } from "@/components/lesson/lecture/StoryArt";
 import { Ko, Rich, RichBlock } from "@/components/lesson/Rich";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
@@ -958,6 +959,14 @@ function WordPicture({ id, src, word }: { id: string | null; src: string | null;
           onFail={() => setPhotoFailed(true)}
           className="h-full w-full rounded-none border-0"
         />
+      </div>
+    );
+  }
+  const story = storyIconForWord(word);
+  if (story) {
+    return (
+      <div className={tile}>
+        <StoryIcon name={story} on size={104} />
       </div>
     );
   }

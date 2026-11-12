@@ -647,6 +647,21 @@
   .haru-a-wave2 { animation: haru-wave 1.1s ease-in-out 0.3s infinite; }
   .haru-a-blink { animation: haru-blink 2s ease-in-out infinite; }
   .haru-a-draw { stroke-dasharray: 1; animation: haru-draw 1.6s ease-out infinite; }
+  .haru-a-tilt { animation: haru-tilt 2.2s ease-in-out infinite; }
+  .haru-a-hit { animation: haru-hit 1.2s ease-in infinite; }
+  .haru-a-sweep { animation: haru-sweep 1.8s ease-in-out infinite; }
+  .haru-a-slide2 { animation: haru-slide2 1.6s ease-in-out infinite; }
+  .haru-a-grabl { animation: haru-grabl 1.4s ease-in-out infinite; }
+  .haru-a-grabr { animation: haru-grabr 1.4s ease-in-out infinite; }
+  .haru-a-ripple { animation: haru-ripple 2s ease-out infinite; }
+  .haru-a-ripple2 { animation: haru-ripple 2s ease-out 1s infinite; }
+  .haru-a-away { animation: haru-away 1.8s ease-in-out infinite; }
+  .haru-a-coin { animation: haru-coin 1.6s ease-in-out infinite; }
+  .haru-a-pop { animation: haru-pop 1.8s ease-out infinite; }
+  .haru-a-pop2 { animation: haru-pop 1.8s ease-out 0.6s infinite; }
+  .haru-a-pop3 { animation: haru-pop 1.8s ease-out 1.2s infinite; }
+  .haru-a-write { animation: haru-write 1.2s ease-in-out infinite; }
+  .haru-a-spinfast { animation: haru-spin 0.9s linear infinite; }
 }
 @keyframes haru-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 @keyframes haru-slide { 0%, 100% { transform: translateX(-3px); } 50% { transform: translateX(4px); } }
@@ -661,3 +676,15 @@
 @keyframes haru-wave { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
 @keyframes haru-blink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(0.1); } }
 @keyframes haru-draw { 0% { stroke-dashoffset: 1; } 70%, 100% { stroke-dashoffset: 0; } }
+
+@keyframes haru-tilt { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
+@keyframes haru-hit { 0%, 55% { transform: rotate(-22deg); } 70%, 100% { transform: rotate(6deg); } }
+@keyframes haru-sweep { 0% { transform: translateX(-10px); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateX(18px); opacity: 0; } }
+@keyframes haru-slide2 { 0%, 100% { transform: translateX(3px); } 50% { transform: translateX(-4px); } }
+@keyframes haru-grabl { 0%, 100% { transform: translateX(-4px); } 50% { transform: translateX(6px); } }
+@keyframes haru-grabr { 0%, 100% { transform: translateX(4px); } 50% { transform: translateX(-6px); } }
+@keyframes haru-ripple { 0% { transform: scale(0.35); opacity: 1; } 100% { transform: scale(1.15); opacity: 0; } }
+@keyframes haru-away { 0%, 100% { transform: translateX(0); opacity: 1; } 50% { transform: translateX(7px); opacity: 0.45; } }
+@keyframes haru-coin { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.15); } }
+@keyframes haru-pop { 0%, 100% { transform: scale(1); opacity: 0.55; } 25% { transform: scale(1.1); opacity: 1; } 60% { transform: scale(1); opacity: 1; } }
+@keyframes haru-write { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-5px, 4px); } }

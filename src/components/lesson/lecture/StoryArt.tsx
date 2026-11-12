@@ -2,6 +2,7 @@
  * palette as PositionArt). Each picture moves only while its sentence is the one being said
  * (`on`), so the motion always points at what the voice is saying. Reduced motion: no movement. */
 import type { ReactNode } from "react";
+import { WORD_ICONS, WORD_PICTURE } from "./StoryArtWords";
 
 const INK = "#24305e";
 const CORAL = "#ff7a6b";
@@ -176,7 +177,11 @@ const ICONS: Record<string, (p: P) => ReactNode> = {
   hourglass: Hourglass, house: House, suitcase: Suitcase, tv: Tv, bed: Bed, coffee_off: Coffee, steak: Steak,
   salad: Salad, speaker: Speaker, angry: Angry, trend: Trend, calendar: Calendar, plane: Plane, bulb: Bulb,
   repeat: Repeat, thought: Thought, heart: Heart, eye: Eye, face: Face, key: Key,
+  ...WORD_ICONS,
 };
+
+/** The animated picture for a word of the Day 7 lectures, if it has one. */
+export const storyIconForWord = (word: string): string | null => WORD_PICTURE[word.trim()] ?? null;
 
 export function StoryIcon({ name, on, size = 56 }: { name: string; on: boolean; size?: number }) {
   const Icon = ICONS[name];
