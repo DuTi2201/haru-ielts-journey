@@ -802,24 +802,24 @@ function PictureCards({ data, has, latest, onReplay }: SceneProps) {
     <div className="flex flex-1 flex-col gap-1.5">
       <ol className="space-y-1.5">
         {rows.map((r) => {
-          if (!has(r.key)) return <li key={r.key} className="h-[76px] rounded-[16px] border border-dashed border-white/12" aria-hidden="true" />;
+          if (!has(r.key)) return <li key={r.key} className="h-[92px] rounded-[18px] border border-dashed border-white/12" aria-hidden="true" />;
           const now = latest === r.key;
           return (
             <li key={r.key} className={enter}>
               <Tap k={r.key} onReplay={onReplay} label={r.en}>
                 <span
                   className={cn(
-                    "grid min-h-[76px] grid-cols-[64px_1fr] items-center gap-3 rounded-[16px] px-2.5 py-2 transition-colors duration-500",
+                    "grid min-h-[92px] grid-cols-[76px_1fr] items-center gap-3.5 rounded-[18px] px-3 py-2 transition-colors duration-500",
                     now ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-white/10",
                   )}
                 >
-                  <span className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#e6defa]">
-                    <StoryIcon name={r.icon} on={now} size={46} />
+                  <span className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#e6defa]">
+                    <StoryIcon name={r.icon} on={now} size={60} />
                   </span>
                   <span className="min-w-0">
                     <span className="block text-[10px] font-bold uppercase tracking-[0.1em] opacity-70">{r.head}</span>
-                    <En className="block text-[14.5px] font-extrabold leading-snug">{r.en}</En>
-                    {r.vi && <span className="block text-[11px] font-medium opacity-75">{r.vi}</span>}
+                    <En className="block text-[16px] font-extrabold leading-snug">{r.en}</En>
+                    {r.vi && <span className="block text-[12px] font-medium opacity-75">{r.vi}</span>}
                   </span>
                 </span>
               </Tap>
