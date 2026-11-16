@@ -29,7 +29,10 @@ export async function changePassword(body: ChangePasswordIn): Promise<TokenPair>
   return pair;
 }
 
+/** Sign out: the API drops the refresh cookie and ends every token of the account; this tab (and,
+ * through the storage event, the others) forgets its access token even if that call fails. */
 export function logout() {
+  void apiFetch<void>("/api/v1/auth/logout", { method: "POST" }).catch(() => undefined);
   tokenStore.clear();
 }
 

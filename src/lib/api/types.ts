@@ -22,7 +22,8 @@ export interface ChangePasswordIn {
 }
 export interface TokenPair {
   access_token: string;
-  refresh_token: string;
+  /** Not sent by the production API: the refresh token is an HttpOnly cookie. */
+  refresh_token?: string | null;
   token_type: "bearer";
 }
 export interface JobOut {

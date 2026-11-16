@@ -24,7 +24,7 @@ async function fetchProfile() {
 }
 
 function getHasTokenSnapshot() {
-  return !!tokenStore.get();
+  return tokenStore.hasSession();
 }
 
 function getHasTokenServerSnapshot() {

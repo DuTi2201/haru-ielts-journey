@@ -6,43 +6,78 @@ export const API_BASE_URL =
   (import.meta.env["VITE_API_BASE_URL"] as string | undefined)?.replace(/\/$/, "") ??
   "http://localhost:8000";
 
-const ACCESS_KEY = "haru.access_token";
-const REFRESH_KEY = "haru.refresh_token";
+/** Where the session lives (security audit, November 2026):
+ * - the REFRESH token is an HttpOnly cookie set by the API; no script can read it;
+ * - the ACCESS token (60 minutes) is kept in memory only, never in web storage;
+ * - localStorage holds just a flag ("a session probably exists"), so a new tab or a reload knows
+ *   to ask the API for an access token before it calls anything. */
+const SESSION_KEY = "haru.session";
+const LEGACY_KEYS = ["haru.access_token", "haru.refresh_token"];
 
-/** localStorage writes don't trigger a React re-render on their own (that's
- * why login/signup used to "do nothing" visibly: the token was saved, but
- * no component ever found out). set()/clear() dispatch this event so
- * useAuth (via useSyncExternalStore) can react to it immediately, in this
- * tab, without needing a page reload. */
+let accessToken: string | null = null;
+
+/** set()/clear() dispatch this event so useAuth (via useSyncExternalStore) reacts at once, in this
+ * tab, without a page reload. */
 const AUTH_CHANGED_EVENT = "haru:auth-changed";
 
+function storage(): Storage | null {
+  try {
+    return typeof window === "undefined" ? null : window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+// tokens an older build left in web storage are removed the first time this build runs
+for (const key of LEGACY_KEYS) {
+  try {
+    storage()?.removeItem(key);
+  } catch {
+    /* ignore */
+  }
+}
+
 export const tokenStore = {
+  /** The access token, if this tab holds one right now. */
   get(): string | null {
-    return typeof window === "undefined" ? null : window.localStorage.getItem(ACCESS_KEY);
+    return accessToken;
   },
-  getRefresh(): string | null {
-    return typeof window === "undefined" ? null : window.localStorage.getItem(REFRESH_KEY);
+  /** True when the browser should have a session (this tab may still need to fetch its token). */
+  hasSession(): boolean {
+    return accessToken !== null || storage()?.getItem(SESSION_KEY) === "1";
   },
   set(pair: TokenPair) {
-    window.localStorage.setItem(ACCESS_KEY, pair.access_token);
-    window.localStorage.setItem(REFRESH_KEY, pair.refresh_token);
+    accessToken = pair.access_token;
+    try {
+      storage()?.setItem(SESSION_KEY, "1");
+    } catch {
+      /* private mode: the session lasts as long as this tab */
+    }
     window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
   },
   clear() {
-    window.localStorage.removeItem(ACCESS_KEY);
-    window.localStorage.removeItem(REFRESH_KEY);
-    window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+    accessToken = null;
+    try {
+      storage()?.removeItem(SESSION_KEY);
+    } catch {
+      /* ignore */
+    }
+    if (typeof window !== "undefined") window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
   },
-  /** Subscribe to any set()/clear() call, in this tab or another (storage
-   * event covers cross-tab). Returns an unsubscribe function, matching
-   * useSyncExternalStore's expected shape. */
+  /** Subscribe to any set()/clear() call, in this tab or another (the storage event covers the
+   * other tabs: signing out in one drops the token held by the rest). */
   subscribe(callback: () => void): () => void {
     if (typeof window === "undefined") return () => {};
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== null && e.key !== SESSION_KEY) return;
+      if (storage()?.getItem(SESSION_KEY) !== "1") accessToken = null;
+      callback();
+    };
     window.addEventListener(AUTH_CHANGED_EVENT, callback);
-    window.addEventListener("storage", callback);
+    window.addEventListener("storage", onStorage);
     return () => {
       window.removeEventListener(AUTH_CHANGED_EVENT, callback);
-      window.removeEventListener("storage", callback);
+      window.removeEventListener("storage", onStorage);
     };
   },
 };
@@ -142,29 +177,41 @@ async function rawFetch<T>(path: string, init: RequestInit & { json?: unknown } 
 // Endpoints that must never trigger a refresh-and-retry themselves — login/
 // signup never carry a token to begin with, and refresh's own 401 IS the
 // signal that the refresh token itself is dead (retrying it would loop).
-const NO_REFRESH_PATHS = ["/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/auth/refresh"];
+const NO_REFRESH_PATHS = [
+  "/api/v1/auth/login",
+  "/api/v1/auth/signup",
+  "/api/v1/auth/refresh",
+  "/api/v1/auth/logout",
+];
 
 // Concurrent 401s (e.g. a poll tick + a user action firing at once) must
 // share ONE refresh call, not race each other into minting two rotated
 // token pairs where the second invalidates the first's refresh_token.
 let refreshPromise: Promise<void> | null = null;
 
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 async function refreshOnce(): Promise<void> {
   if (!refreshPromise) {
     refreshPromise = (async () => {
-      const refreshToken = tokenStore.getRefresh();
-      if (!refreshToken) throw new Error("no refresh token");
-      const pair = await rawFetch<TokenPair>("/api/v1/auth/refresh", {
-        method: "POST",
-        json: { refresh_token: refreshToken },
-      });
+      // The refresh token is the HttpOnly cookie: the browser attaches it, nothing is sent in the body.
+      const call = () => rawFetch<TokenPair>("/api/v1/auth/refresh", { method: "POST", credentials: "same-origin" });
+      let pair: TokenPair;
+      try {
+        pair = await call();
+      } catch (e) {
+        // A refresh token is good once. Another tab may have redeemed it a moment ago; the cookie
+        // it got back is ours too, so one more try settles it.
+        if (!(e instanceof ApiError) || e.status !== 401) throw e;
+        await wait(600);
+        pair = await call();
+      }
       tokenStore.set(pair);
     })()
       .catch((e) => {
-        // Refresh token is itself dead (expired/invalid/missing) — nothing
-        // left to try; clear so the app falls back to its logged-out state
-        // instead of re-sending a request that will 401 forever.
-        tokenStore.clear();
+        // A 401 means the session is over: drop it so the app shows its signed-out state. A network
+        // failure or a 5xx says nothing about the session, so it is kept for the next try.
+        if (e instanceof ApiError && e.status === 401) tokenStore.clear();
         throw e;
       })
       .finally(() => {
@@ -188,27 +235,31 @@ export async function apiFetch<T>(
   path: string,
   init: RequestInit & { json?: unknown } = {},
 ): Promise<T> {
+  // A new tab or a reload: the session exists (cookie) but this tab holds no access token yet.
+  // Fetch one first, or a route that also answers anonymous callers would answer as if signed out.
+  if (!tokenStore.get() && tokenStore.hasSession() && !NO_REFRESH_PATHS.includes(path)) {
+    try {
+      await refreshOnce();
+    } catch {
+      /* signed out, or offline: the request below says which */
+    }
+  }
   try {
     return await rawFetch<T>(path, init);
   } catch (e) {
-    // "invalid_token": the access token ran out or was refused. "unauthenticated" while a token
-    // was sent: the account behind it is not there (a database that was moved or reset). Either
-    // way the session may still be redeemable — or is dead, and then it must be dropped, or every
-    // screen keeps asking with it, getting 401 and asking again.
+    // "invalid_token": the access token ran out or was refused. "unauthenticated" while a session
+    // was expected: the token is missing or the account behind it is gone. Either way the session
+    // may still be redeemable, or is dead, and then it must be dropped.
     const sessionRejected =
       e instanceof ApiError &&
       e.status === 401 &&
       (e.problem.code === "invalid_token" || e.problem.code === "unauthenticated");
     if (!sessionRejected || NO_REFRESH_PATHS.includes(path)) throw e;
-    if (!tokenStore.getRefresh()) {
-      // nothing to redeem; a token that was sent and refused is dead weight
-      if (tokenStore.get()) tokenStore.clear();
-      throw e;
-    }
+    if (!tokenStore.hasSession()) throw e;
     try {
       await refreshOnce();
     } catch {
-      throw e; // surface the original 401 — refreshOnce already cleared tokens
+      throw e; // surface the original 401 (refreshOnce cleared the session if it is over)
     }
     return rawFetch<T>(path, init);
   }
