@@ -1,7 +1,9 @@
 import { Bus, School, Store, Volume2, type LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
+import { Lane, type Shape } from "./TimeAxis";
 import { speakKorean } from "@/lib/audio-playback";
+import { tap } from "@/lib/feedback";
 
 import { cn } from "@/lib/utils";
 
@@ -120,7 +122,10 @@ type Block =
   | { kind: "pats"; rows: { label: string; parts: string[]; example: string }[] }
   | { kind: "timeline"; rows: { when: string; tense: string; en: string }[] }
   | { kind: "group"; n: string; title: string; en: string | null; body: string[]; examples: { en: string; vi: string | null }[] }
-  | { kind: "table"; head: string[]; rows: string[][] };
+  | { kind: "table"; head: string[]; rows: string[][] }
+  | { kind: "fork"; ask: string; no: string; noThen: string; yes: string; yesThen: string }
+  | { kind: "steps"; rows: { title: string; detail: string }[] }
+  | { kind: "sides"; rows: { label: string; text: string; gloss: string; shape: Shape | null }[] };
 
 const isTableLine = (l: string) => /^\s*\|.*\|\s*$/.test(l);
 const isRule = (l: string) => /^\s*\|[\s:|-]+\|\s*$/.test(l);
@@ -172,6 +177,21 @@ function toBlocks(text: string): Block[] {
       const [when = "", tense = "", en = ""] = line.replace(/^tl:\s*/, "").split(" | ").map((x) => x.trim());
       if (last?.kind === "timeline") last.rows.push({ when, tense, en });
       else out.push({ kind: "timeline", rows: [{ when, tense, en }] });
+    } else if (/^fork:\s*/.test(line)) {
+      // «fork: question | no label | then | yes label | then»: one question, two branches
+      const [ask = "", no = "", noThen = "", yes = "", yesThen = ""] = line.replace(/^fork:\s*/, "").split(" | ").map((x) => x.trim());
+      out.push({ kind: "fork", ask, no, noThen, yes, yesThen });
+    } else if (/^step:\s*/.test(line)) {
+      // «step: title | detail»: consecutive lines are the numbered steps of one method
+      const [title = "", detail = ""] = line.replace(/^step:\s*/, "").split(" | ").map((x) => x.trim());
+      if (last?.kind === "steps") last.rows.push({ title, detail });
+      else out.push({ kind: "steps", rows: [{ title, detail }] });
+    } else if (/^side:\s*/.test(line)) {
+      // «side: label | sentence | gloss | shape»: consecutive lines stand side by side, to compare
+      const [label = "", text = "", gloss = "", shape = ""] = line.replace(/^side:\s*/, "").split(" | ").map((x) => x.trim());
+      const row = { label, text, gloss, shape: (SHAPES as readonly string[]).includes(shape) ? (shape as Shape) : null };
+      if (last?.kind === "sides") last.rows.push(row);
+      else out.push({ kind: "sides", rows: [row] });
     } else if (/^!\s?/.test(line)) {
       out.push({ kind: "note", text: line.replace(/^!\s?/, "").trim() });
     } else if (last?.kind === "group") {
@@ -359,6 +379,9 @@ export function RichBlock({
             </blockquote>
           );
         }
+        if (b.kind === "fork") return <Fork key={i} block={b} />;
+        if (b.kind === "steps") return <Steps key={i} rows={b.rows} />;
+        if (b.kind === "sides") return <Sides key={i} rows={b.rows} />;
         if (b.kind === "note") {
           return (
             <div key={i} className="flex gap-2 rounded-[12px] bg-blue-soft px-3 py-2">
@@ -563,6 +586,175 @@ function MistakeRows({
           </summary>
           <ul className="space-y-2">{more.map((row, r) => one(row, r + MISTAKES_SHOWN))}</ul>
         </details>
+      )}
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ visual rule blocks --
+const SHAPES = ["repeat", "window", "span", "done", "point", "trace", "ended", "always"] as const;
+/** English only (no Vietnamese letters): a line the learner can tap to hear. */
+const isEnglish = (t: string) => /[a-z]/i.test(t) && !/[À-ỹđĐ]/.test(t.replace(/[`*=~]/g, ""));
+const plain = (t: string) => t.replace(/[`*=~]/g, "");
+
+/** One question and its two answers. The learner taps a branch to follow it; the other one dims. */
+function Fork({ block }: { block: Extract<Block, { kind: "fork" }> }) {
+  const [pick, setPick] = useState<"no" | "yes" | null>(null);
+  const branch = (key: "no" | "yes", label: string, then: string) => {
+    const on = pick === key;
+    const off = pick !== null && !on;
+    return (
+      <button
+        type="button"
+        aria-pressed={on}
+        onClick={() => {
+          tap();
+          setPick(on ? null : key);
+        }}
+        className={cn(
+          "flex min-h-[76px] min-w-0 flex-col items-start gap-1 rounded-[14px] border-2 px-3 py-2 text-left transition-all duration-300 active:scale-[0.98] motion-reduce:transition-none",
+          key === "yes" ? "border-green/40 bg-green-soft" : "border-line bg-card",
+          on && (key === "yes" ? "border-green shadow-elev-2" : "border-ink-2 shadow-elev-2"),
+          off && "opacity-45",
+        )}
+      >
+        <span
+          className={cn(
+            "rounded-full px-2 py-0.5 text-[11.5px] font-extrabold uppercase tracking-wide",
+            key === "yes" ? "bg-green text-white" : "bg-paper text-ink-2",
+          )}
+        >
+          {label}
+        </span>
+        <Rich text={then} className="text-[14.5px] font-semibold leading-5 text-ink" />
+      </button>
+    );
+  };
+  return (
+    <div className="rounded-[18px] border border-line bg-card/60 px-3 pb-3 pt-2.5">
+      <p className="flex items-start gap-2 text-[15px] font-bold leading-6 text-ink">
+        <span aria-hidden="true" className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue text-[13px] font-extrabold text-primary-foreground">
+          ?
+        </span>
+        <Rich text={block.ask} />
+      </p>
+      {/* the two branches leave the question like a Y */}
+      <svg aria-hidden="true" viewBox="0 0 200 18" preserveAspectRatio="none" className="my-0.5 block h-4 w-full">
+        <path d="M100 0v6M100 6C100 12 50 10 50 18M100 6c0 6 50 4 50 12" fill="none" strokeWidth="2" strokeLinecap="round"
+          className="stroke-line" />
+      </svg>
+      <div className="grid grid-cols-2 gap-2">
+        {branch("no", block.no, block.noThen)}
+        {branch("yes", block.yes, block.yesThen)}
+      </div>
+    </div>
+  );
+}
+
+/** A method in steps: numbered dots on one thread. Tap a step to bring it forward. */
+function Steps({ rows }: { rows: { title: string; detail: string }[] }) {
+  const [at, setAt] = useState<number | null>(null);
+  return (
+    <ol className="relative rounded-[18px] border border-line bg-card px-3 py-2.5">
+      <span aria-hidden="true" className="absolute bottom-7 left-[27px] top-7 w-0.5 rounded-full bg-blue/25" />
+      {rows.map((r, k) => {
+        const on = at === k;
+        const say = isEnglish(r.detail) ? plain(r.detail) : null;
+        return (
+          <li key={k}>
+            <button
+              type="button"
+              aria-pressed={on}
+              onClick={() => {
+                tap();
+                setAt(on ? null : k);
+                if (!on && say) speakKorean(say);
+              }}
+              className={cn(
+                "relative flex w-full items-start gap-3 rounded-[12px] px-1 py-1.5 text-left transition-colors duration-300",
+                on && "bg-blue-soft",
+              )}
+            >
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold ring-4 ring-card transition-colors duration-300",
+                  on ? "bg-blue text-primary-foreground" : "bg-blue-soft text-blue-deep",
+                )}
+              >
+                {k + 1}
+              </span>
+              <span className="min-w-0 flex-1 pt-0.5">
+                <Rich text={r.title} className="block text-[15px] font-bold leading-5 text-ink" />
+                {r.detail && (
+                  <span className="mt-0.5 flex items-start gap-1.5">
+                    <Rich text={r.detail} className={cn("min-w-0 flex-1 text-[13.5px] leading-5", say ? "font-semibold text-ink" : "text-ink-2")} />
+                    {say && <Volume2 size={14} strokeWidth={2.4} className="mt-0.5 shrink-0 text-blue-deep" aria-hidden="true" />}
+                  </span>
+                )}
+              </span>
+            </button>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/** Two (or three) cases side by side, to compare at a glance: a coloured label, the shape on the
+ * time axis, the sentence (tap to hear) and a two-word gloss. "VS" sits between two of them. */
+function Sides({ rows }: { rows: { label: string; text: string; gloss: string; shape: Shape | null }[] }) {
+  const [on, setOn] = useState<number | null>(null);
+  const tones = [
+    { card: "border-blue/35 bg-blue-soft/60", chip: "bg-blue text-primary-foreground" },
+    { card: "border-[oklch(0.8_0.1_75/0.5)] bg-yellow-soft", chip: "bg-[oklch(0.72_0.14_70)] text-white" },
+    { card: "border-green/40 bg-green-soft", chip: "bg-green text-white" },
+  ];
+  return (
+    <div className={cn("relative grid gap-3", rows.length === 3 ? "grid-cols-3" : "grid-cols-2")}>
+      {rows.map((r, k) => {
+        const t = tones[k % tones.length]!;
+        const say = isEnglish(r.text) ? plain(r.text) : null;
+        const active = on === k;
+        return (
+          <button
+            key={k}
+            type="button"
+            aria-pressed={active}
+            onClick={() => {
+              tap();
+              setOn(k);
+              if (say) speakKorean(say);
+            }}
+            className={cn(
+              "flex min-w-0 flex-col items-start gap-1 rounded-[16px] border-2 px-2.5 py-2 text-left transition-all duration-300 active:scale-[0.98] motion-reduce:transition-none",
+              t.card,
+              active && "shadow-elev-2 -translate-y-0.5",
+            )}
+          >
+            <span className={cn("max-w-full rounded-full px-2 py-0.5 text-[11px] font-extrabold leading-4", t.chip)}>
+              <Rich text={r.label} />
+            </span>
+            {r.shape && (
+              <span className="block w-full">
+                <Lane shape={r.shape} on={active || on === null} />
+              </span>
+            )}
+            <span className="flex w-full items-start gap-1">
+              <Rich text={r.text} className="min-w-0 flex-1 text-[14.5px] font-bold leading-5 text-ink" />
+              {say && <Volume2 size={14} strokeWidth={2.4} className="mt-0.5 shrink-0 text-blue-deep" aria-hidden="true" />}
+            </span>
+            {r.gloss && <Rich text={r.gloss} className="text-[12.5px] font-medium leading-4 text-ink-2" />}
+          </button>
+        );
+      })}
+      {rows.length === 2 && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 flex h-[22px] w-[22px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-paper text-[8.5px] font-black tracking-tight text-ink-2 shadow-elev-1 ring-2 ring-card"
+        >
+          VS
+        </span>
       )}
     </div>
   );
