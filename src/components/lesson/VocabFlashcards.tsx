@@ -1,3 +1,4 @@
+import { StoryIcon, storyIconForWord } from "./lecture/StoryArt";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -232,6 +233,11 @@ export function VocabFlashcards({
           aria-expanded={revealed}
           className="card-soft relative flex min-h-[200px] w-full flex-col items-center justify-center rounded-[24px] bg-card px-6 pb-9 pt-6 text-center transition-transform duration-150 active:scale-[0.98] motion-reduce:transition-none"
         >
+          {storyIconForWord(current.headword) && (
+            <span className="mb-2 grid size-[84px] place-items-center rounded-full bg-[#e6defa]">
+              <StoryIcon name={storyIconForWord(current.headword)!} on size={64} />
+            </span>
+          )}
           <span lang="ko" className="font-korean text-4xl font-semibold tracking-tight">
             {current.headword}
           </span>

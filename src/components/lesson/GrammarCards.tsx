@@ -16,7 +16,7 @@ import { BuiltFrom, BuiltInto, Revisits } from "./BuiltOn";
 import { GrammarBadge } from "./GrammarBadge";
 import { ImportanceChip } from "./ImportanceChip";
 import { LessonImage } from "./LessonImage";
-import { TIME_AXIS_ROWS, TimeAxis } from "./TimeAxis";
+import { MiniLane, TIME_AXIS_ROWS, TimeAxis, laneForExample } from "./TimeAxis";
 import { Ko, Rich, RichBlock } from "./Rich";
 
 /** Marks a card the learner answered right in the entry diagnostic. */
@@ -477,6 +477,7 @@ export function GrammarCards({
                       >
                         <div className="min-w-0 flex-1">
                           <Ko className="block text-[13.5px] font-semibold leading-6">{p.ko}</Ko>
+                          {laneForExample(p.ko) && <MiniLane shape={laneForExample(p.ko)!} />}
                           {p.vi && (
                             <ExampleMeaning
                               text={p.vi}

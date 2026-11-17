@@ -11,7 +11,7 @@ import { Ko } from "./Rich";
  * sample sentence. Tap a row to light it up and hear the sentence; "Xem lần lượt" walks through
  * all five. The sentences are the card's own examples, in this order. */
 
-type Shape = "repeat" | "window" | "span" | "done" | "point";
+export type Shape = "repeat" | "window" | "span" | "done" | "point" | "trace" | "ended";
 
 const ROWS: { shape: Shape; ask: string; tense: string }[] = [
   { shape: "repeat", ask: "Lặp lại quanh bây giờ?", tense: "Hiện tại đơn" },
@@ -24,7 +24,7 @@ const ROWS: { shape: Shape; ask: string; tense: string }[] = [
 export const TIME_AXIS_ROWS = ROWS.length;
 const NOW = 180; // x of "now" on a 300-wide axis
 
-function Lane({ shape, on }: { shape: Shape; on: boolean }) {
+export function Lane({ shape, on }: { shape: Shape; on: boolean }) {
   const c = "currentColor";
   return (
     <svg
@@ -60,6 +60,19 @@ function Lane({ shape, on }: { shape: Shape; on: boolean }) {
             ?
           </text>
           <path d={`m${NOW - 26} 15 5 5 9-10`} fill="none" stroke={c} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        </>
+      )}
+      {shape === "trace" && (
+        <>
+          <rect x="60" y="11" width={NOW - 78} height="8" rx="4" fill={c} />
+          <circle cx={NOW} cy="15" r="8" fill="none" stroke={c} strokeWidth="3" />
+          <circle cx={NOW} cy="15" r="2.5" fill={c} />
+        </>
+      )}
+      {shape === "ended" && (
+        <>
+          <rect x="40" y="11" width="80" height="8" rx="4" fill={c} />
+          <path d="m126 9 12 12m0-12-12 12" stroke={c} strokeWidth="3" strokeLinecap="round" />
         </>
       )}
       {shape === "point" && (
@@ -166,5 +179,49 @@ export function TimeAxis({ examples }: { examples: { ko: string; vi: string | nu
       </ol>
       <p className="mt-2 text-[12px] text-ink-2">Chạm vào một dòng để xem hình và nghe câu mẫu.</p>
     </div>
+  );
+}
+
+/** The picture that goes with an example sentence of the Day 3 cards, by the sentence itself. */
+const EXAMPLE_LANES: Record<string, Shape> = {
+  "I have lived here for six years.": "span",
+  "She has known him since she was a child.": "span",
+  "I studied the piano for two years.": "ended",
+  "I have often seen him at the library.": "span",
+  "Yes, I have bought some vegetables.": "done",
+  "Have you ever been to Italy?": "done",
+  "I went there two years ago.": "point",
+  "My parents have gone to Hue.": "span",
+  "I have been to Hue twice.": "done",
+  "I have been playing football for the last three hours.": "span",
+  "I'm out of breath because I have been running.": "trace",
+  "Have you been watching TV for the last four hours? Turn it off!": "span",
+  "I have been trying to call Lan all morning.": "span",
+  "I have read that book.": "done",
+  "I have been reading that book.": "span",
+  "I have written three essays this week.": "done",
+};
+export const laneForExample = (en: string): Shape | null => EXAMPLE_LANES[en.trim()] ?? null;
+
+/** The four answers of a "choose the timeline" question, as they are written in the exercise bank. */
+const OPTION_LANES: Record<string, { shape: Shape; label: string }> = {
+  "quá khứ ●━━━━━━▶ bây giờ (còn tiếp)": { shape: "span", label: "Bắt đầu từ trước, kéo tới bây giờ" },
+  "quá khứ ● (xong, không rõ lúc nào) ┄┄ bây giờ": { shape: "done", label: "Đã xong, không rõ lúc nào" },
+  "├─ bây giờ ─┤ (tạm thời, rồi hết)": { shape: "window", label: "Tạm thời quanh lúc này" },
+  "● ● ● ● lặp lại quanh bây giờ": { shape: "repeat", label: "Lặp lại quanh bây giờ" },
+};
+export const laneForOption = (text: string) => OPTION_LANES[text.trim()] ?? null;
+
+/** A small axis under one sentence: past, the dashed "now" line, future. */
+export function MiniLane({ shape, label }: { shape: Shape; label?: string }) {
+  return (
+    <span className="block">
+      {label && <span className="block text-[13.5px] font-semibold leading-5">{label}</span>}
+      <Lane shape={shape} on />
+      <span className="grid grid-cols-[60%_1fr] text-[9.5px] font-bold uppercase tracking-wide text-ink-2" aria-hidden="true">
+        <span>Quá khứ</span>
+        <span className="-translate-x-[18px]">Bây giờ</span>
+      </span>
+    </span>
   );
 }

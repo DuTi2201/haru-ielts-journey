@@ -1,3 +1,4 @@
+import { MiniLane, laneForOption } from "./TimeAxis";
 import { ReadingPassage, isEnglishPassage } from "./ReadingPassage";
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { Check, RotateCcw, X } from "lucide-react";
@@ -201,6 +202,8 @@ export type OptionState = "idle" | "chosen" | "correct" | "wrong" | "missed" | "
 function OptionBody({ option, compactVisual }: { option: PracticeOption; compactVisual: boolean }) {
   if (option.scene) return <SceneView scene={option.scene} compact={compactVisual} />;
   if (option.chart) return <ChartView chart={option.chart} small />;
+  const lane = option.text ? laneForOption(option.text) : null;
+  if (lane) return <MiniLane shape={lane.shape} label={lane.label} />; // a timeline is drawn, not typed
   return (
     <span lang="ko" className="font-korean text-[14.5px] leading-6">
       {option.text}

@@ -446,6 +446,9 @@ export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
 
 /** The picture that shows a Day 7 word on its own slide (a word not listed keeps its usual picture). */
 export const WORD_PICTURE: Record<string, string> = {
+  // Day 3: results of study
+  achieve: "star", reach: "roadmap", results: "checklist", degree: "cap", certificate: "mock_paper", measure: "ruler",
+  recognise: "eye", "primary school": "board", "secondary school": "book",
   assess: "scales", assume: "dotted_check", presume: "dotted_check", speculate: "crystal", estimate: "ruler", deduce: "magnifier",
   justify: "shield", reflect: "mirror", discriminate: "split", baffle: "dizzy",
   grasp: "grasp", plausible: "check_bubble", gather: "ear", reckon: "qmark", suppose: "qmark", ponder: "ripples",
