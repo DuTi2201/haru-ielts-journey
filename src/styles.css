@@ -688,3 +688,24 @@
 @keyframes haru-coin { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.15); } }
 @keyframes haru-pop { 0%, 100% { transform: scale(1); opacity: 0.55; } 25% { transform: scale(1.1); opacity: 1; } 60% { transform: scale(1); opacity: 1; } }
 @keyframes haru-write { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-5px, 4px); } }
+
+/* Lecture map of the four tenses: the bar of a continuous tense is striped (something going on);
+   the stripes drift while motion is allowed. */
+.haru-lane-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    oklch(1 0 0 / 0.55) 0 3px,
+    transparent 3px 7px
+  ) !important;
+  background-size: 20px 20px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .haru-lane-stripes {
+    animation: haru-lane-drift 1.2s linear infinite;
+  }
+}
+@keyframes haru-lane-drift {
+  to {
+    background-position: 20px 0;
+  }
+}

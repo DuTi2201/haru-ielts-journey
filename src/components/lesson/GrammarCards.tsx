@@ -16,7 +16,7 @@ import { BuiltFrom, BuiltInto, Revisits } from "./BuiltOn";
 import { GrammarBadge } from "./GrammarBadge";
 import { ImportanceChip } from "./ImportanceChip";
 import { LessonImage } from "./LessonImage";
-import { MiniLane, TIME_AXIS_ROWS, TimeAxis, laneForExample } from "./TimeAxis";
+import { MiniLane, TENSE_MAP_CELLS, TIME_AXIS_ROWS, TenseMap, TimeAxis, laneForExample } from "./TimeAxis";
 import { Ko, Rich, RichBlock } from "./Rich";
 
 /** Marks a card the learner answered right in the entry diagnostic. */
@@ -464,7 +464,14 @@ export function GrammarCards({
                 <TimeAxis examples={pairs} />
               )}
 
-              {pairs.length > 0 && !(g.pattern.startsWith("Trục thời gian") && pairs.length === TIME_AXIS_ROWS) && (
+              {/* the map of the four present tenses is a picture too: its four examples sit in their cells */}
+              {g.pattern.startsWith("Bốn thì hiện tại · bản đồ") && pairs.length === TENSE_MAP_CELLS && (
+                <TenseMap examples={pairs} />
+              )}
+
+              {pairs.length > 0 &&
+                !(g.pattern.startsWith("Trục thời gian") && pairs.length === TIME_AXIS_ROWS) &&
+                !(g.pattern.startsWith("Bốn thì hiện tại · bản đồ") && pairs.length === TENSE_MAP_CELLS) && (
                 <div className="mt-2.5">
                   <p className="text-[12px] font-semibold uppercase tracking-wide text-ink-2">
                     Ví dụ

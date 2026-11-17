@@ -53,6 +53,8 @@ export function Scene(p: SceneProps) {
       return <PictureCards {...p} />;
     case "para_filter":
       return <ParaFilter {...p} />;
+    case "tense_grid":
+      return <TenseGrid {...p} />;
     default:
       return null;
   }
@@ -375,18 +377,23 @@ function TruthCards({ data, has, latest, onReplay }: SceneProps) {
 }
 
 // ------------------------------------------------------------- one question, four tenses --
-type Answer = { icon?: string; key: string; at: "now" | "span" | "past" | "future" | "always" | "window" | "done" | "point" | "trace"; tense: string; en: string; vi: string };
+type Answer = { icon?: string; key: string; at: "now" | "span" | "past" | "future" | "always" | "window" | "done" | "point" | "trace" | "repeat"; tense: string; en: string; vi: string };
 
 /** One answer on the shared time axis: the same left-to-right scale in every lane (past on the
  * left, the present at the dashed line in the middle, the future on the right), so the four
  * answers can be compared by where they sit. */
-function Lane({ at, color }: { at: Answer["at"]; color: string }) {
-  const bar = "absolute top-1/2 h-[7px] -translate-y-1/2 rounded-full";
+function Lane({ at, color, striped = false }: { at: Answer["at"]; color: string; striped?: boolean }) {
+  const bar = cn("absolute top-1/2 h-[7px] -translate-y-1/2 rounded-full", striped && "haru-lane-stripes");
   const dot = "absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full";
   return (
     <span className="relative block h-5 w-full" style={{ color }} aria-hidden="true">
       <span className="absolute inset-x-0 top-1/2 h-px bg-current opacity-25" />
       {at === "now" && <span className={dot} style={{ left: "50%", background: "currentColor" }} />}
+      {/* repeat: the same thing again and again, around now */}
+      {at === "repeat" &&
+        [22, 36, 50, 64, 78].map((x) => (
+          <span key={x} className="absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ left: `${x}%`, background: "currentColor" }} />
+        ))}
       {at === "span" && (
         <>
           <span className={bar} style={{ left: "14%", width: "36%", background: "currentColor" }} />
@@ -961,6 +968,92 @@ function ParaFilter({ data, has, latest, onReplay }: SceneProps) {
             </Tap>
           ),
       )}
+    </div>
+  );
+}
+
+// ------------------------------------------------------- the map of the four present tenses --
+type Cell = { key: string; tense: string; form: string; at: Answer["at"]; en: string; vi: string };
+
+/** Two questions split the four present tenses into a 2 x 2 map. The row question (linked to the
+ * past?) and the column question (temporary or ongoing?) come in first as headings; then each cell
+ * with its tense, its shape on the time axis and the sample sentence that stands for it. The cells
+ * of the right-hand column draw their bar striped: something going on. */
+function TenseGrid({ data, has, latest, onReplay }: SceneProps) {
+  const cells = (data["cells"] as Cell[]) ?? [];
+  const rows = (data["row_heads"] as string[]) ?? [];
+  const cols = (data["col_heads"] as string[]) ?? [];
+  const question = str(data["question"]);
+  const head = "rounded-full px-2.5 py-1 text-[10.5px] font-bold uppercase leading-tight tracking-[0.08em]";
+  return (
+    <div className="flex flex-1 flex-col gap-2">
+      {question && (
+        <div className="min-h-[46px]">
+          {has("q") && (
+            <Tap k="q" onReplay={onReplay} className={enter}>
+              <span className="flex items-center justify-between gap-3 rounded-[16px] bg-[oklch(0.88_0.13_90)] px-3.5 py-2 text-[oklch(0.25_0.05_285)] shadow-elev-2">
+                <En className="text-[16px] font-extrabold leading-tight">{question}</En>
+                <span className="shrink-0 text-right text-[11.5px] font-semibold leading-tight opacity-75">{str(data["question_vi"])}</span>
+              </span>
+            </Tap>
+          )}
+        </div>
+      )}
+      <div className="grid min-h-[26px] grid-cols-2 gap-2">
+        {cols.map((c, i) => (
+          <span
+            key={c}
+            className={cn(
+              head,
+              "text-center transition-opacity duration-500",
+              has("cols") ? "opacity-100" : "opacity-0",
+              i === 1 ? "bg-[oklch(0.84_0.12_165/0.22)] text-[oklch(0.9_0.08_165)]" : "bg-white/12",
+            )}
+          >
+            {c}
+          </span>
+        ))}
+      </div>
+      {[0, 1].map((r) => (
+        <div key={r} className="space-y-1">
+          <p
+            className={cn(
+              "flex items-center gap-2 text-[10.5px] font-bold uppercase tracking-[0.1em] transition-opacity duration-500",
+              has("rows") ? "opacity-80" : "opacity-0",
+            )}
+          >
+            <span className={cn("h-px flex-1", r === 1 ? "bg-[oklch(0.88_0.13_90/0.6)]" : "bg-white/25")} />
+            <span style={r === 1 ? { color: AMBER } : undefined}>{rows[r]}</span>
+            <span className={cn("h-px flex-1", r === 1 ? "bg-[oklch(0.88_0.13_90/0.6)]" : "bg-white/25")} />
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {cells.slice(r * 2, r * 2 + 2).map((c, i) => {
+              if (!has(c.key))
+                return <span key={c.key} className="min-h-[118px] rounded-[16px] border border-dashed border-white/15" aria-hidden="true" />;
+              const now = latest === c.key;
+              return (
+                <Tap key={c.key} k={c.key} onReplay={onReplay} label={c.en} className={enter}>
+                  <span
+                    className={cn(
+                      "flex min-h-[118px] flex-col gap-1 rounded-[16px] px-2.5 py-2 transition-colors duration-500",
+                      now ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-white/10",
+                    )}
+                  >
+                    <span className="text-[12px] font-extrabold leading-tight">{c.tense}</span>
+                    <span className="text-[10.5px] font-semibold leading-tight opacity-70" lang={/[a-z]/.test(c.form) && !/[À-ỹ]/.test(c.form) ? "en" : undefined}>
+                      {c.form}
+                    </span>
+                    <Lane at={c.at} color={now ? "oklch(0.5 0.16 285)" : i === 1 ? MINT : AMBER} striped={i === 1} />
+                    <En className="text-[13.5px] font-extrabold leading-snug">{c.en}</En>
+                    <span className="text-[11px] font-medium leading-tight opacity-75">{c.vi}</span>
+                  </span>
+                </Tap>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+      <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
     </div>
   );
 }

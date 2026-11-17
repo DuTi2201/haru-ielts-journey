@@ -11,7 +11,7 @@ import { Ko } from "./Rich";
  * sample sentence. Tap a row to light it up and hear the sentence; "Xem lần lượt" walks through
  * all five. The sentences are the card's own examples, in this order. */
 
-export type Shape = "repeat" | "window" | "span" | "done" | "point" | "trace" | "ended";
+export type Shape = "repeat" | "window" | "span" | "done" | "point" | "trace" | "ended" | "always";
 
 const ROWS: { shape: Shape; ask: string; tense: string }[] = [
   { shape: "repeat", ask: "Lặp lại quanh bây giờ?", tense: "Hiện tại đơn" },
@@ -67,6 +67,12 @@ export function Lane({ shape, on }: { shape: Shape; on: boolean }) {
           <rect x="60" y="11" width={NOW - 78} height="8" rx="4" fill={c} />
           <circle cx={NOW} cy="15" r="8" fill="none" stroke={c} strokeWidth="3" />
           <circle cx={NOW} cy="15" r="2.5" fill={c} />
+        </>
+      )}
+      {shape === "always" && (
+        <>
+          <rect x="20" y="11" width="248" height="8" rx="4" fill={c} />
+          <path d="m266 7 10 8-10 8" fill="none" stroke={c} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
         </>
       )}
       {shape === "ended" && (
@@ -200,6 +206,20 @@ const EXAMPLE_LANES: Record<string, Shape> = {
   "I have read that book.": "done",
   "I have been reading that book.": "span",
   "I have written three essays this week.": "done",
+  // Day 4: the review of the four present tenses
+  "I get up at six every morning.": "repeat",
+  "Water boils at 100 degrees.": "always",
+  "He is always leaving his clothes on the floor!": "repeat",
+  "I have studied the piano since 2003.": "span",
+  "I have been playing football for three hours.": "span",
+  "I am very tired. I have been running for three hours.": "trace",
+  "My brother plays football almost every weekend.": "repeat",
+  "Mr Connors owns two houses and a villa.": "always",
+  "I'm studying harder this month.": "window",
+  "I work as an accountant in a small company.": "always",
+  "This month I'm also studying for an IELTS test.": "window",
+  "I have worked there since 2022, and my colleagues are very friendly.": "span",
+  "Recently I have been doing a lot of extra tasks, so I'm quite tired.": "trace",
 };
 export const laneForExample = (en: string): Shape | null => EXAMPLE_LANES[en.trim()] ?? null;
 
@@ -209,6 +229,7 @@ const OPTION_LANES: Record<string, { shape: Shape; label: string }> = {
   "quá khứ ● (xong, không rõ lúc nào) ┄┄ bây giờ": { shape: "done", label: "Đã xong, không rõ lúc nào" },
   "├─ bây giờ ─┤ (tạm thời, rồi hết)": { shape: "window", label: "Tạm thời quanh lúc này" },
   "● ● ● ● lặp lại quanh bây giờ": { shape: "repeat", label: "Lặp lại quanh bây giờ" },
+  "quá khứ ━━━━● vừa dừng, còn dấu vết": { shape: "trace", label: "Vừa dừng, còn dấu vết ở bây giờ" },
 };
 export const laneForOption = (text: string) => OPTION_LANES[text.trim()] ?? null;
 
@@ -223,5 +244,70 @@ export function MiniLane({ shape, label }: { shape: Shape; label?: string }) {
         <span className="-translate-x-[18px]">Bây giờ</span>
       </span>
     </span>
+  );
+}
+
+/** The map of the four present tenses (Day 4, first card) as a picture: two questions, four cells.
+ * Rows: linked to the past or not. Columns: temporary / ongoing or not. Each cell holds its tense,
+ * its form, its shape on the axis and the card's own sample sentence (the four examples, in the
+ * order simple, continuous, perfect, perfect continuous). Tap a cell to hear its sentence. */
+const MAP: { tense: string; form: string; shape: Shape }[] = [
+  { tense: "Hiện tại đơn", form: "V / V-s", shape: "always" },
+  { tense: "Hiện tại tiếp diễn", form: "am / is / are + V-ing", shape: "window" },
+  { tense: "Hiện tại hoàn thành", form: "have / has + V3", shape: "span" },
+  { tense: "Hoàn thành tiếp diễn", form: "have / has been + V-ing", shape: "span" },
+];
+export const TENSE_MAP_CELLS = MAP.length;
+
+export function TenseMap({ examples }: { examples: { ko: string; vi: string | null }[] }) {
+  const [active, setActive] = useState<number | null>(null);
+  const cell = (i: number) => {
+    const m = MAP[i];
+    const ex = examples[i];
+    const on = active === i;
+    return (
+      <button
+        key={i}
+        type="button"
+        aria-pressed={on}
+        onClick={() => {
+          tap();
+          setActive(i);
+          if (ex) speakKorean(ex.ko);
+        }}
+        className={cn(
+          "flex min-w-0 flex-col gap-0.5 rounded-[12px] border px-2.5 py-2 text-left transition-colors duration-300",
+          on ? "border-blue bg-blue-soft" : "border-line bg-paper",
+          i % 2 === 1 && !on && "bg-[oklch(0.97_0.03_165)]",
+        )}
+      >
+        <span className="text-[12.5px] font-extrabold leading-tight">{m.tense}</span>
+        <span lang="en" className="text-[11px] font-semibold leading-tight text-ink-2">{m.form}</span>
+        <Lane shape={m.shape} on={on} />
+        {ex && <Ko className="block text-[13px] font-semibold leading-5">{ex.ko}</Ko>}
+        {ex?.vi && <span className="block text-[11.5px] leading-4 text-ink-2">{ex.vi.replace(/\s*\(.*\)\s*$/, "")}</span>}
+      </button>
+    );
+  };
+  const rowHead = (text: string, strong: boolean) => (
+    <p className="mt-2 flex items-center gap-2 text-[10.5px] font-bold uppercase tracking-wide text-ink-2">
+      <span className={cn("h-px flex-1", strong ? "bg-blue" : "bg-line")} />
+      <span className={strong ? "text-blue-deep" : undefined}>{text}</span>
+      <span className={cn("h-px flex-1", strong ? "bg-blue" : "bg-line")} />
+    </p>
+  );
+  return (
+    <div className="mt-3 rounded-[14px] bg-card px-3 py-3">
+      <p className="text-[12px] font-semibold uppercase tracking-wide text-ink-2">Hai câu hỏi, bốn ô</p>
+      <div className="mt-2 grid grid-cols-2 gap-2 text-center text-[10.5px] font-bold uppercase leading-tight tracking-wide">
+        <span className="rounded-full bg-paper px-2 py-1 text-ink-2">Không nhấn tạm thời</span>
+        <span className="rounded-full bg-[oklch(0.95_0.05_165)] px-2 py-1 text-[oklch(0.42_0.1_165)]">Nhấn tạm thời, quá trình</span>
+      </div>
+      {rowHead("Chưa nối với quá khứ", false)}
+      <div className="mt-1 grid grid-cols-2 gap-2">{[0, 1].map(cell)}</div>
+      {rowHead("Nối từ quá khứ tới bây giờ · thêm have", true)}
+      <div className="mt-1 grid grid-cols-2 gap-2">{[2, 3].map(cell)}</div>
+      <p className="mt-2 text-[12px] text-ink-2">Cột phải thêm be + V-ing. Chạm vào một ô để nghe câu mẫu.</p>
+    </div>
   );
 }

@@ -435,13 +435,42 @@ const Ball = ({ on }: P) => (
   </g>
 );
 
+/** a kettle on the boil: a fact anyone can check (water boils at 100 degrees) */
+const Kettle = ({ on }: P) => (
+  <g>
+    <g className={a(on, "haru-a-steam")}>
+      <path d="M26 14c-3-3 3-5 0-9M34 14c-3-3 3-5 0-9" fill="none" {...line} strokeWidth="2.5" stroke={SKY} />
+    </g>
+    <path d="M14 52h32l-3-26H17Z" fill="#fff" {...line} />
+    <path d="M17 26c2-6 24-6 26 0" fill={LAV} {...line} />
+    <path d="M43 32c8-2 10 6 4 10l-4 2" fill="none" {...line} />
+    <path d="M16 40 6 34" {...line} />
+    <path d="M20 46h20" {...line} strokeWidth="2" stroke={CORAL} />
+    <path d="M10 56h40" {...line} strokeWidth="2" opacity="0.5" />
+  </g>
+);
+
+/** an eye that sees the sea red: what is true for the speaker (the colour-blind man's sea) */
+const RedSea = ({ on }: P) => (
+  <g>
+    <path d="M8 22c8-10 40-10 48 0-8 10-40 10-48 0Z" fill="#fff" {...line} />
+    <circle cx="32" cy="22" r="6" fill={INK} />
+    <g className={a(on, "haru-a-wave")}>
+      <path d="M6 44c5-4 9-4 13 0s9 4 13 0 9-4 13 0 9 4 13 0" fill="none" {...line} stroke={CORAL} strokeWidth="3.5" />
+    </g>
+    <g className={a(on, "haru-a-wave2")}>
+      <path d="M6 54c5-4 9-4 13 0s9 4 13 0 9-4 13 0 9 4 13 0" fill="none" {...line} stroke={CORAL} strokeWidth="3.5" />
+    </g>
+  </g>
+);
+
 export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
   scales: Scales, magnifier: Magnifier, dizzy: Dizzy, ruler: Ruler, gavel: Gavel, mirror: Mirror, crossroads: Crossroads,
   paradox: Paradox, bolt: Bolt, dice: Dice, check_bubble: CheckBubble, grasp: Grasp, ripples: Ripples, ear: Ear, qmark: Qmark,
   split: Split, crystal: Crystal, dotted_check: DottedCheck, shield: Shield, roadmap: Roadmap, coin: Coin, discuss: Discuss,
   pencil_sheet: PencilSheet, clock: Clock, mock_paper: MockPaper, checklist: Checklist, book: Book, copy: Copy, lamp: Lamp,
   cap: Cap, plus_heart: PlusHeart, board: Board, star: Star,
-  basket: Basket, piano: Piano, runner: Runner, ball: Ball,
+  basket: Basket, piano: Piano, runner: Runner, ball: Ball, kettle: Kettle, red_sea: RedSea,
 };
 
 /** The picture that shows a Day 7 word on its own slide (a word not listed keeps its usual picture). */
@@ -458,5 +487,8 @@ export const WORD_PICTURE: Record<string, string> = {
   "special needs": "plus_heart", conscientious: "checklist", cram: "clock", "mock exam": "mock_paper", knowledgeable: "book",
   curriculum: "roadmap", "give lessons in": "board", tuition: "coin", seminar: "discuss", tutorial: "pencil_sheet",
   plagiarise: "copy", "self-study": "lamp", graduate: "cap",
+  // Day 4: study and work, in pairs
+  study: "book", revise: "repeat", test: "pencil_sheet", exam: "mock_paper", classmate: "board",
+  colleague: "suitcase", task: "checklist", effort: "runner", qualifications: "cap", qualities: "heart",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
