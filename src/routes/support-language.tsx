@@ -150,7 +150,7 @@ function AuthForm({ onDone }: { onDone: () => void }) {
 function FeedbackSettings() {
   // Start from the defaults so the server/first render match, then load the
   // saved choice once the page is in the browser.
-  const [prefs, setPrefs] = useState<FeedbackPrefs>({ sound: false, haptics: true });
+  const [prefs, setPrefs] = useState<FeedbackPrefs>({ sound: false, haptics: true, journeySound: true });
   useEffect(() => {
     setPrefs(getFeedbackPrefs());
   }, []);

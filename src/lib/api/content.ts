@@ -140,7 +140,7 @@ export const getMyPlan = () => apiFetch<TodayPlanOut>(`/api/v1/me/plan`);
 
 /** Keep, on the account, what the learner has now been shown of the journey. */
 export const putJourneySeen = (seen: JourneySeen) =>
-  apiFetch<void>(`/api/v1/me/journey/seen`, { method: "PUT", body: seen });
+  apiFetch<void>(`/api/v1/me/journey/seen`, { method: "PUT", json: seen });
 
 export interface ReviewQueueParams {
   /** Most due cards in one sitting. */
