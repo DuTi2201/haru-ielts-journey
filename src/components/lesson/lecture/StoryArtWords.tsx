@@ -382,12 +382,66 @@ const Star = ({ on }: P) => (
   </g>
 );
 
+/** a shopping basket of vegetables: bought, and done with (the present perfect of a finished thing) */
+const Basket = ({ on }: P) => (
+  <g>
+    <g className={a(on, "haru-a-bob")}>
+      <path d="M24 26c-2-8 2-14 8-14" fill="none" {...line} stroke="#5aa86b" />
+      <path d="M22 28c2-9 8-11 10-4" fill={MINT} {...line} />
+      <path d="M36 28c0-8 6-12 9-6" fill={CORAL} {...line} />
+      <circle cx="30" cy="24" r="5" fill={SUN} {...line} />
+    </g>
+    <path d="M10 30h44l-5 24H15Z" fill={WOOD} {...line} />
+    <path d="M22 34v16M32 34v16M42 34v16" {...line} strokeWidth="2" />
+    <path d="M18 30c0-12 28-12 28 0" fill="none" {...line} />
+  </g>
+);
+
+/** a piano keyboard: something started long ago and still going */
+const Piano = ({ on }: P) => (
+  <g>
+    <rect x="6" y="20" width="52" height="30" rx="4" fill="#fff" {...line} />
+    <path d="M16 20v30M26 20v30M36 20v30M46 20v30" {...line} strokeWidth="2" />
+    <path d="M13 20v17h6V20M23 20v17h6V20M43 20v17h6V20" fill={INK} stroke={INK} strokeWidth="1" />
+    <g className={a(on, "haru-a-bob")}>
+      <path d="M34 14V4l10-2v9" fill="none" {...line} strokeWidth="2.5" />
+      <circle cx="31.5" cy="14" r="3" fill={CORAL} stroke={INK} strokeWidth="2" />
+      <circle cx="41.5" cy="11" r="3" fill={CORAL} stroke={INK} strokeWidth="2" />
+    </g>
+  </g>
+);
+
+/** someone who has just stopped running: the trace is still there */
+const Runner = ({ on }: P) => (
+  <g>
+    <circle cx="36" cy="12" r="6" fill={SUN} {...line} />
+    <path d="M34 20 26 36l10 6-4 14M26 36l-10 6M30 26l12 4 6-6" fill="none" {...line} />
+    <g className={a(on, "haru-a-steam")}>
+      <path d="M48 8c3 2 3 5 0 7M54 4c4 3 4 8 0 11" fill="none" {...line} strokeWidth="2.5" stroke={SKY} />
+    </g>
+    <path d="M6 58h52" {...line} strokeWidth="2" />
+  </g>
+);
+
+/** a ball still in play */
+const Ball = ({ on }: P) => (
+  <g>
+    <g className={a(on, "haru-a-bob")}>
+      <circle cx="32" cy="30" r="18" fill="#fff" {...line} />
+      <path d="M32 20l8 6-3 10H27l-3-10Z" fill={INK} stroke={INK} strokeWidth="1" />
+      <path d="M32 12v8M40 26l8-3M37 36l5 8M27 36l-5 8M24 26l-8-3" {...line} strokeWidth="2" />
+    </g>
+    <path d="M14 58h36" {...line} strokeWidth="2" opacity="0.5" />
+  </g>
+);
+
 export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
   scales: Scales, magnifier: Magnifier, dizzy: Dizzy, ruler: Ruler, gavel: Gavel, mirror: Mirror, crossroads: Crossroads,
   paradox: Paradox, bolt: Bolt, dice: Dice, check_bubble: CheckBubble, grasp: Grasp, ripples: Ripples, ear: Ear, qmark: Qmark,
   split: Split, crystal: Crystal, dotted_check: DottedCheck, shield: Shield, roadmap: Roadmap, coin: Coin, discuss: Discuss,
   pencil_sheet: PencilSheet, clock: Clock, mock_paper: MockPaper, checklist: Checklist, book: Book, copy: Copy, lamp: Lamp,
   cap: Cap, plus_heart: PlusHeart, board: Board, star: Star,
+  basket: Basket, piano: Piano, runner: Runner, ball: Ball,
 };
 
 /** The picture that shows a Day 7 word on its own slide (a word not listed keeps its usual picture). */

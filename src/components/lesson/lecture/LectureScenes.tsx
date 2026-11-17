@@ -375,7 +375,7 @@ function TruthCards({ data, has, latest, onReplay }: SceneProps) {
 }
 
 // ------------------------------------------------------------- one question, four tenses --
-type Answer = { icon?: string; key: string; at: "now" | "span" | "past" | "future" | "always" | "window"; tense: string; en: string; vi: string };
+type Answer = { icon?: string; key: string; at: "now" | "span" | "past" | "future" | "always" | "window" | "done" | "point" | "trace"; tense: string; en: string; vi: string };
 
 /** One answer on the shared time axis: the same left-to-right scale in every lane (past on the
  * left, the present at the dashed line in the middle, the future on the right), so the four
@@ -414,6 +414,35 @@ function Lane({ at, color }: { at: Answer["at"]; color: string }) {
           <svg className="absolute top-1/2 -translate-y-1/2" style={{ left: "33%" }} width="14" height="14" viewBox="0 0 14 14">
             <path d="m2 2 10 10m0-10L2 12" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
           </svg>
+        </>
+      )}
+      {/* done: finished at some time the speaker does not name (a faint stretch with a question mark) */}
+      {at === "done" && (
+        <>
+          <span className={bar} style={{ left: "8%", width: "34%", background: "currentColor", opacity: 0.22 }} />
+          <span
+            className="absolute top-1/2 flex h-[18px] w-[18px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-[11px] font-black text-white"
+            style={{ left: "25%", background: "currentColor" }}
+          >
+            <span style={{ color: "#fff" }}>?</span>
+          </span>
+          <svg className="absolute top-1/2 -translate-y-1/2" style={{ left: "44%" }} width="14" height="14" viewBox="0 0 14 14">
+            <path d="m2 7 3.5 3.5L12 3" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </>
+      )}
+      {/* point: one moment in the past that the speaker can name */}
+      {at === "point" && (
+        <>
+          <span className="absolute top-1/2 h-5 w-[3px] -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ left: "25%", background: "currentColor" }} />
+          <span className={dot} style={{ left: "25%", background: "currentColor" }} />
+        </>
+      )}
+      {/* trace: it went on, has just stopped, and what it left is still here now */}
+      {at === "trace" && (
+        <>
+          <span className={bar} style={{ left: "14%", width: "30%", background: "currentColor" }} />
+          <span className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px]" style={{ left: "50%", borderColor: "currentColor" }} />
         </>
       )}
       {at === "future" && (
