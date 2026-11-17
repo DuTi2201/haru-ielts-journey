@@ -140,3 +140,15 @@ export const STAGES: Record<
     glow: "var(--yellow-strong)",
   },
 };
+
+/* Smaller copies of the wide pictures (960 and 1280 px beside the 1920 px original), so a phone
+ * does not download the desktop file. `srcSetOf(url)` gives the srcset of a picture that has them. */
+const FILES = import.meta.glob("../../assets/journey/*.webp", { eager: true, import: "default" }) as Record<string, string>;
+const SRCSET = new Map<string, string>();
+for (const [path, url] of Object.entries(FILES)) {
+  if (/-(960|1280)\.webp$/.test(path)) continue;
+  const small = FILES[path.replace(/\.webp$/, "-960.webp")];
+  const mid = FILES[path.replace(/\.webp$/, "-1280.webp")];
+  if (small && mid) SRCSET.set(url, `${small} 960w, ${mid} 1280w, ${url} 1920w`);
+}
+export const srcSetOf = (url: string): string | undefined => SRCSET.get(url);

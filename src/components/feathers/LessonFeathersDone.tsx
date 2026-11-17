@@ -1,4 +1,5 @@
 import { useEffect, type CSSProperties } from "react";
+import { playJourneySound } from "@/lib/journey-sound";
 import { useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 
@@ -25,6 +26,9 @@ export function LessonFeathersDone({
   const plan = useQuery({ queryKey: ["me", "plan"], queryFn: getMyPlan, staleTime: 0 });
   const j = plan.data?.journey;
   const ch = j?.chapters?.find((c) => c.n === chapter) ?? null;
+  useEffect(() => {
+    playJourneySound("feather");
+  }, []);
   useEffect(() => {
     const t = window.setTimeout(onClose, 5200);
     const esc = (e: KeyboardEvent) => e.key === "Escape" && onClose();

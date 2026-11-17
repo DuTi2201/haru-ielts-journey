@@ -1361,6 +1361,18 @@ export interface TodayPlanTask {
 }
 
 /** Hành trình Thiên Nga (backend app/services/journey.py). */
+/** What the learner was last shown of the journey; `at` is the device clock in ms. */
+export interface JourneySeen {
+  stage: number;
+  missed: number;
+  cursed?: boolean;
+  shield?: string | null;
+  station?: boolean;
+  sparkle?: number;
+  relics?: string[];
+  at?: number;
+}
+
 export interface JourneyOut {
   /** 1–5 reached; only goes up */
   stage: number;
@@ -1394,6 +1406,8 @@ export interface JourneyOut {
   /** codes of the relics earned, kept for good */
   relics?: string[];
   constellations?: ConstellationOut[];
+  /** The moments already shown to this account (null: none yet). */
+  seen?: JourneySeen | null;
 }
 
 export interface JourneyChapterOut {

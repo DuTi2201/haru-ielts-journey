@@ -27,6 +27,7 @@ import type {
   PlacementSummaryOut,
   ReviewOnlyOut,
   ReviewQueueOut,
+  JourneySeen,
   TodayPlanOut,
 } from "./types";
 
@@ -136,6 +137,10 @@ export const setReviewOnly = (on: boolean) =>
 /** Login required — real streak/readiness/task data derived from the
  * learner's own ItemState history and confirmed content, never a mock. */
 export const getMyPlan = () => apiFetch<TodayPlanOut>(`/api/v1/me/plan`);
+
+/** Keep, on the account, what the learner has now been shown of the journey. */
+export const putJourneySeen = (seen: JourneySeen) =>
+  apiFetch<void>(`/api/v1/me/journey/seen`, { method: "PUT", body: seen });
 
 export interface ReviewQueueParams {
   /** Most due cards in one sitting. */

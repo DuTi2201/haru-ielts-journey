@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { prefersReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-import { HERO_JOURNEY, STAGES, type Stage } from "./assets";
+import { HERO_JOURNEY, STAGES, srcSetOf, type Stage } from "./assets";
 import { ROMAN, SwanFigure } from "./Journey";
 
 const ALL: Stage[] = [1, 2, 3, 4, 5];
@@ -46,6 +46,8 @@ export function JourneyShowcase({ className }: { className?: string }) {
       >
         <img
           src={HERO_JOURNEY}
+          srcSet={srcSetOf(HERO_JOURNEY)}
+          sizes="100vw"
           alt=""
           loading="lazy"
           decoding="async"

@@ -22,9 +22,11 @@ const PREFS_KEY = "haru.feedback.v1";
 export interface FeedbackPrefs {
   sound: boolean;
   haptics: boolean;
+  /** The sounds of Hành trình Thiên Nga (lib/journey-sound.ts): on unless turned off. */
+  journeySound: boolean;
 }
 
-const DEFAULT_PREFS: FeedbackPrefs = { sound: false, haptics: true };
+const DEFAULT_PREFS: FeedbackPrefs = { sound: false, haptics: true, journeySound: true };
 
 let cached: FeedbackPrefs | null = null;
 
@@ -38,6 +40,8 @@ export function getFeedbackPrefs(): FeedbackPrefs {
       next = {
         sound: typeof parsed.sound === "boolean" ? parsed.sound : DEFAULT_PREFS.sound,
         haptics: typeof parsed.haptics === "boolean" ? parsed.haptics : DEFAULT_PREFS.haptics,
+        journeySound:
+          typeof parsed.journeySound === "boolean" ? parsed.journeySound : DEFAULT_PREFS.journeySound,
       };
     }
   } catch {

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
-import type { JourneyOut } from "@/lib/api/types";
+import { putJourneySeen } from "@/lib/api/content";
+import type { JourneyOut, JourneySeen } from "@/lib/api/types";
+import { playJourneySound, type JourneySound } from "@/lib/journey-sound";
 import { prefersReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -23,17 +25,9 @@ import { EnchantedRose, PETALS, restingSpot } from "./Relics";
 
 const KEY = "haru.journey.v1";
 
-interface Seen {
-  stage: number;
-  missed: number;
-  cursed?: boolean;
-  shield?: string | null;
-  station?: boolean;
-  sparkle?: number;
-  relics?: string[];
-}
+type Seen = JourneySeen;
 
-function read(): Seen | null {
+function readLocal(): Seen | null {
   try {
     const raw = window.localStorage.getItem(KEY);
     return raw ? (JSON.parse(raw) as Seen) : null;
@@ -42,13 +36,38 @@ function read(): Seen | null {
   }
 }
 
-function write(v: Seen) {
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(v));
-  } catch {
-    /* storage blocked: the moment may play again next time */
-  }
+/** What this learner was last shown: the newer of the account's snapshot and this browser's (the
+ * browser's is ahead between a moment and the next reload of the plan; the account's is ahead on a
+ * device that was not used for a while). A browser with a snapshot from before accounts kept one
+ * hands it over as it is. */
+function read(server: Seen | null | undefined): Seen | null {
+  const local = readLocal();
+  if (!server) return local;
+  if (!local) return server;
+  return (local.at ?? 0) >= (server.at ?? 0) ? local : server;
 }
+
+function write(v: Seen) {
+  const stamped = { ...v, at: Date.now() };
+  try {
+    window.localStorage.setItem(KEY, JSON.stringify(stamped));
+  } catch {
+    /* storage blocked: the account still keeps it */
+  }
+  void putJourneySeen(stamped).catch(() => undefined); // offline or signed out: this browser has it
+}
+
+const SOUND: Record<NonNullable<Moment>["kind"], JourneySound> = {
+  intro: "stage",
+  stage: "stage",
+  station: "relic",
+  relic: "relic",
+  sparkle: "sparkle",
+  fall: "fall",
+  reborn: "reborn",
+  crows: "crows",
+  shield: "shield",
+};
 
 type Moment =
   | { kind: "intro" | "stage"; stage: number; from?: number; becomes?: string | undefined }
@@ -68,7 +87,7 @@ export function JourneyMoments({ journey }: { journey: JourneyOut | null | undef
 
   useEffect(() => {
     if (!journey || busy.current) return;
-    const seen = read();
+    const seen = read(journey.seen);
     const now: Seen = {
       stage: journey.stage,
       missed: journey.missed_days,
@@ -108,19 +127,28 @@ export function JourneyMoments({ journey }: { journey: JourneyOut | null | undef
     if (m) {
       busy.current = true;
       setMoment(m);
+      playJourneySound(SOUND[m.kind]);
     }
     // the achievements wait their turn: only the one shown is marked as seen (a first visit sees
     // the story and starts from now)
-    write(
-      seen
-        ? {
-            ...now,
-            station: m?.kind === "station" ? true : (seen.station ?? false),
-            sparkle: m?.kind === "sparkle" ? m.level : (seen.sparkle ?? 0),
-            relics: m?.kind === "relic" ? [...(seen.relics ?? []), m.code] : (seen.relics ?? []),
-          }
-        : now,
-    );
+    const next: Seen = seen
+      ? {
+          ...now,
+          station: m?.kind === "station" ? true : (seen.station ?? false),
+          sparkle: m?.kind === "sparkle" ? m.level : (seen.sparkle ?? 0),
+          relics: m?.kind === "relic" ? [...(seen.relics ?? []), m.code] : (seen.relics ?? []),
+        }
+      : now;
+    // kept only when it moved (or the account has none yet): a visit that shows nothing writes nothing
+    const same = (a: Seen, b: Seen) =>
+      a.stage === b.stage &&
+      a.missed === b.missed &&
+      !!a.cursed === !!b.cursed &&
+      (a.shield ?? null) === (b.shield ?? null) &&
+      !!a.station === !!b.station &&
+      (a.sparkle ?? 0) === (b.sparkle ?? 0) &&
+      (a.relics ?? []).join() === (b.relics ?? []).join();
+    if (!seen || !journey.seen || !same(next, seen)) write(next);
   }, [journey, turn]);
 
   if (!moment) return null;

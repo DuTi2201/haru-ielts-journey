@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 
 import { useTyped } from "@/components/haru/cinema";
 import type { JourneyOut } from "@/lib/api/types";
@@ -14,6 +14,7 @@ import {
   SWAN,
   SWAN_CURSED,
   VINES,
+  srcSetOf,
   type Stage,
 } from "./assets";
 import { currentChapter } from "./feather-data";
@@ -85,7 +86,10 @@ export function SwanFigure({
   useEffect(() => {
     setI(0);
     if (still || prefersReducedMotion() || frames.length < 2) return;
-    const t = window.setInterval(() => setI((x) => (x + 1) % frames.length), beat);
+    // a hidden tab draws nothing: the frames wait until it is seen again
+    const t = window.setInterval(() => {
+      if (!document.hidden) setI((x) => (x + 1) % frames.length);
+    }, beat);
     return () => window.clearInterval(t);
   }, [frames, beat, still]);
   const tap = () => {
@@ -266,6 +270,42 @@ export function CastleScene({
   const base = (time === "night" || time === "dusk") && castle.night ? castle.night : castle.day;
   const darkOpacity = journey.cursed ? 1 : ([0, 0.45, 0.78, 1][away] ?? 1);
   const crows = journey.cursed ? 8 : ([0, 2, 5, 8][away] ?? 0);
+  // The scene rests when nobody can see it (scrolled away, or the tab hidden): its animations are
+  // paused in CSS by data-paused. Its size feeds two things: the distance the crows fly (a
+  // transform in pixels, so their flight never asks for a new layout) and the width the browser
+  // should pick a picture for (the picture covers the scene, so a tall scene needs a wider file).
+  const ref = useRef<HTMLElement | null>(null);
+  const [paused, setPaused] = useState(false);
+  const [sizes, setSizes] = useState("100vw");
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let onScreen = true;
+    const sync = () => setPaused(!onScreen || document.hidden);
+    const io =
+      typeof IntersectionObserver === "undefined"
+        ? null
+        : new IntersectionObserver(([e]) => {
+            onScreen = e ? e.isIntersecting : true;
+            sync();
+          });
+    io?.observe(el);
+    document.addEventListener("visibilitychange", sync);
+    const measure = () => {
+      const { width, height } = el.getBoundingClientRect();
+      if (!width) return;
+      el.style.setProperty("--sw", `${Math.round(width)}px`);
+      setSizes(`${Math.ceil(Math.max(width, (height * 1920) / 1072) * 1.06)}px`);
+    };
+    measure();
+    const ro = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    ro?.observe(el);
+    return () => {
+      io?.disconnect();
+      ro?.disconnect();
+      document.removeEventListener("visibilitychange", sync);
+    };
+  }, []);
   const move = (e: PointerEvent<HTMLElement>) => {
     if (e.pointerType !== "mouse" || prefersReducedMotion()) return;
     const r = e.currentTarget.getBoundingClientRect();
@@ -281,17 +321,29 @@ export function CastleScene({
 
   return (
     <section
+      ref={ref}
       aria-label={ariaLabel}
+      data-paused={paused || undefined}
       data-away={away}
       data-time={time}
       onPointerMove={move}
       className={cn("jr-scene", className)}
       style={{ "--away": away } as CSSProperties}
     >
-      <img src={base} alt="" className="jr-layer jr-castle" decoding="async" />
+      <img
+        src={base}
+        srcSet={srcSetOf(base)}
+        sizes={sizes}
+        alt=""
+        className="jr-layer jr-castle"
+        decoding="async"
+        fetchPriority="high"
+      />
       {darkOpacity > 0 && (
         <img
           src={castle.dark}
+          srcSet={srcSetOf(castle.dark)}
+          sizes={sizes}
           alt=""
           className="jr-layer jr-castle-dark"
           decoding="async"

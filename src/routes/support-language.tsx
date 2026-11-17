@@ -199,6 +199,22 @@ function FeedbackSettings() {
             onCheckedChange={(on) => update({ sound: on })}
           />
         </label>
+        <label
+          htmlFor="pref-journey-sound"
+          className="flex min-h-[52px] cursor-pointer items-center justify-between gap-3 py-1.5"
+        >
+          <span className="min-w-0">
+            <span className="block text-[13px] font-semibold">Âm thanh của Hành trình Thiên Nga</span>
+            <span className="block text-[12px] font-medium leading-4 text-ink-2">
+              Tiếng ngắn khi nhận lông vũ, lên chặng, khiên chắn. Tự im khi bài học đang phát tiếng.
+            </span>
+          </span>
+          <Switch
+            id="pref-journey-sound"
+            checked={prefs.journeySound}
+            onCheckedChange={(on) => update({ journeySound: on })}
+          />
+        </label>
       </div>
     </section>
   );

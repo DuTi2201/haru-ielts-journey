@@ -945,6 +945,14 @@
     }
     .jr-crow {
       animation: jr-cross var(--dur, 16s) linear var(--delay, 0s) infinite;
+      will-change: transform;
+    }
+    /* out of sight (scrolled away or the tab hidden): everything in the scene holds still */
+    .jr-scene[data-paused],
+    .jr-scene[data-paused] *,
+    .jr-scene[data-paused] *::before,
+    .jr-scene[data-paused] *::after {
+      animation-play-state: paused !important;
     }
     .jr-crow img {
       animation: jr-flap-a 0.5s steps(1, end) infinite;
@@ -1062,19 +1070,19 @@
   }
 
   @keyframes jr-cross {
+    /* the flight is a transform (the distance in pixels comes from the scene: --sw), so a crow
+       crossing the sky never asks the browser for a new layout */
     0% {
-      left: -12%;
-      transform: translateY(0) scale(var(--s, 1));
+      transform: translate3d(calc(var(--sw, 100vw) * -0.12), 0, 0) scale(var(--s, 1));
     }
     30% {
-      transform: translateY(-14px) scale(var(--s, 1));
+      transform: translate3d(calc(var(--sw, 100vw) * 0.246), -14px, 0) scale(var(--s, 1));
     }
     65% {
-      transform: translateY(8px) scale(var(--s, 1));
+      transform: translate3d(calc(var(--sw, 100vw) * 0.673), 8px, 0) scale(var(--s, 1));
     }
     100% {
-      left: 110%;
-      transform: translateY(-6px) scale(var(--s, 1));
+      transform: translate3d(calc(var(--sw, 100vw) * 1.1), -6px, 0) scale(var(--s, 1));
     }
   }
   @keyframes jr-flap-a {
@@ -1226,12 +1234,10 @@
     from {
       opacity: 0;
       transform: translateY(18px) scale(0.96);
-      filter: blur(6px);
     }
     to {
       opacity: 1;
       transform: none;
-      filter: none;
     }
   }
   @keyframes jr-flee {
