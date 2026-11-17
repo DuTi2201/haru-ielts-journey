@@ -16,6 +16,7 @@ import { BuiltFrom, BuiltInto, Revisits } from "./BuiltOn";
 import { GrammarBadge } from "./GrammarBadge";
 import { ImportanceChip } from "./ImportanceChip";
 import { LessonImage } from "./LessonImage";
+import { TIME_AXIS_ROWS, TimeAxis } from "./TimeAxis";
 import { Ko, Rich, RichBlock } from "./Rich";
 
 /** Marks a card the learner answered right in the entry diagnostic. */
@@ -458,7 +459,12 @@ export function GrammarCards({
               {/* the situation the examples are about, right above them */}
               <LessonImage src={g.image_url} className="mt-3 aspect-[4/3] w-full max-w-[260px]" />
 
-              {pairs.length > 0 && (
+              {/* the time-axis card is a picture: its five examples sit on the axis, not in a list */}
+              {g.pattern.startsWith("Trục thời gian") && pairs.length === TIME_AXIS_ROWS && (
+                <TimeAxis examples={pairs} />
+              )}
+
+              {pairs.length > 0 && !(g.pattern.startsWith("Trục thời gian") && pairs.length === TIME_AXIS_ROWS) && (
                 <div className="mt-2.5">
                   <p className="text-[12px] font-semibold uppercase tracking-wide text-ink-2">
                     Ví dụ
