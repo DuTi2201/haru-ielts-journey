@@ -265,6 +265,7 @@ export function TenseMap({ examples }: { examples: { ko: string; vi: string | nu
     const m = MAP[i];
     const ex = examples[i];
     const on = active === i;
+    if (!m) return null;
     return (
       <button
         key={i}
