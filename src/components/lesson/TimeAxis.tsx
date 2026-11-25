@@ -220,6 +220,15 @@ const EXAMPLE_LANES: Record<string, Shape> = {
   "This month I'm also studying for an IELTS test.": "window",
   "I have worked there since 2022, and my colleagues are very friendly.": "span",
   "Recently I have been doing a lot of extra tasks, so I'm quite tired.": "trace",
+  // Week 2 · Day 1: the past simple and its line with the present perfect
+  "My grandfather bought his first phone in 1998.": "point",
+  "The first mobile phones appeared in the 1980s.": "point",
+  "Yes, I have bought some.": "done",
+  "Have you ever been to Italy?": "done",
+  "Yes, I went there with my family two years ago.": "point",
+  "I studied the piano in 2003.": "point",
+  "I have studied the piano for two years.": "span",
+  "I studied the piano for two years, then I stopped.": "ended",
 };
 export const laneForExample = (en: string): Shape | null => EXAMPLE_LANES[en.trim()] ?? null;
 
@@ -230,6 +239,8 @@ const OPTION_LANES: Record<string, { shape: Shape; label: string }> = {
   "├─ bây giờ ─┤ (tạm thời, rồi hết)": { shape: "window", label: "Tạm thời quanh lúc này" },
   "● ● ● ● lặp lại quanh bây giờ": { shape: "repeat", label: "Lặp lại quanh bây giờ" },
   "quá khứ ━━━━● vừa dừng, còn dấu vết": { shape: "trace", label: "Vừa dừng, còn dấu vết ở bây giờ" },
+  "quá khứ ● (một mốc nói được) ┄┄ bây giờ": { shape: "point", label: "Một mốc đã qua, nói được lúc nào" },
+  "quá khứ ●━━━● (đã dừng) ┄┄ bây giờ": { shape: "ended", label: "Kéo dài một thời gian, rồi đã dừng" },
 };
 export const laneForOption = (text: string) => OPTION_LANES[text.trim()] ?? null;
 

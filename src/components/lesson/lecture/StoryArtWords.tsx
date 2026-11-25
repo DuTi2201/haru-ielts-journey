@@ -464,13 +464,89 @@ const RedSea = ({ on }: P) => (
   </g>
 );
 
+/** a cup with steam: going out for a drink */
+const Cup = ({ on }: P) => (
+  <g>
+    <g className={a(on, "haru-a-steam")}>
+      <path d="M24 14c-3-3 3-5 0-9M33 14c-3-3 3-5 0-9" fill="none" {...line} strokeWidth="2.5" stroke={SKY} />
+    </g>
+    <path d="M12 22h34v14a17 17 0 0 1-34 0Z" fill="#fff" {...line} />
+    <path d="M46 26h3a7 7 0 0 1 0 14h-4" fill="none" {...line} />
+    <path d="M16 30h26" {...line} strokeWidth="2" stroke={WOOD} />
+    <path d="M8 58h44" {...line} strokeWidth="2" opacity="0.5" />
+  </g>
+);
+
+/** a smartphone whose screen lights up: a device */
+const Phone = ({ on }: P) => (
+  <g className={a(on, "haru-a-bob")}>
+    <rect x="18" y="6" width="28" height="52" rx="6" fill={NAVY} {...line} />
+    <rect x="22" y="13" width="20" height="34" rx="2" fill={SKY} {...line} className={a(on, "haru-a-flicker")} />
+    <path d="M26 21h12M26 28h8M26 35h10" {...line} strokeWidth="2" stroke="#fff" />
+    <circle cx="32" cy="52" r="2" fill="#fff" />
+  </g>
+);
+
+/** two arrows swapping an old thing for a new one: replace */
+const Swap = ({ on }: P) => (
+  <g>
+    <rect x="6" y="20" width="18" height="24" rx="4" fill="#cfd6f2" {...line} />
+    <rect x="40" y="20" width="18" height="24" rx="4" fill={MINT} {...line} />
+    <g className={a(on, "haru-a-slide")}>
+      <path d="M22 14h20m-5-5 5 5-5 5" fill="none" {...line} stroke={CORAL} />
+    </g>
+    <g className={a(on, "haru-a-slide2")}>
+      <path d="M42 50H22m5 5-5-5 5-5" fill="none" {...line} stroke={CORAL} />
+    </g>
+  </g>
+);
+
+/** a turning gear: an engine */
+const Gear = ({ on }: P) => (
+  <g className={a(on, "haru-a-spin")} style={box}>
+    <path
+      d="M32 8l4 6 7-2 1 7 7 2-2 7 6 4-6 4 2 7-7 2-1 7-7-2-4 6-4-6-7 2-1-7-7-2 2-7-6-4 6-4-2-7 7-2 1-7 7 2Z"
+      fill={SUN}
+      {...line}
+    />
+    <circle cx="32" cy="32" r="8" fill="#fff" {...line} />
+  </g>
+);
+
+/** a small car driving along: a vehicle */
+const Car = ({ on }: P) => (
+  <g>
+    <g className={a(on, "haru-a-bob")}>
+      <path d="M8 40v-8l8-12h26l10 12h4v8Z" fill={CORAL} {...line} />
+      <path d="M20 22h9v10H14ZM33 22h7l7 10H33Z" fill={SKY} {...line} />
+    </g>
+    <circle cx="19" cy="42" r="6" fill="#fff" {...line} className={a(on, "haru-a-spin")} style={box} />
+    <circle cx="46" cy="42" r="6" fill="#fff" {...line} className={a(on, "haru-a-spin")} style={box} />
+    <path d="M4 54h56" {...line} strokeWidth="2" opacity="0.5" />
+  </g>
+);
+
+/** a blueprint with a pencil drawing the first model: a prototype */
+const Blueprint = ({ on }: P) => (
+  <g>
+    <rect x="6" y="10" width="44" height="40" rx="3" fill={SKY} {...line} />
+    <path d="M12 18h32M12 42h32" {...line} strokeWidth="1.5" stroke="#fff" opacity="0.8" />
+    <path d="M14 36l6-10h14l6 10Z" fill="none" {...line} stroke="#fff" className={a(on, "haru-a-draw")} />
+    <circle cx="20" cy="38" r="3" fill="none" {...line} stroke="#fff" />
+    <circle cx="34" cy="38" r="3" fill="none" {...line} stroke="#fff" />
+    <g className={a(on, "haru-a-write")}>
+      <path d="M44 30l12-12 4 4-12 12-6 2Z" fill={SUN} {...line} />
+    </g>
+  </g>
+);
+
 export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
   scales: Scales, magnifier: Magnifier, dizzy: Dizzy, ruler: Ruler, gavel: Gavel, mirror: Mirror, crossroads: Crossroads,
   paradox: Paradox, bolt: Bolt, dice: Dice, check_bubble: CheckBubble, grasp: Grasp, ripples: Ripples, ear: Ear, qmark: Qmark,
   split: Split, crystal: Crystal, dotted_check: DottedCheck, shield: Shield, roadmap: Roadmap, coin: Coin, discuss: Discuss,
   pencil_sheet: PencilSheet, clock: Clock, mock_paper: MockPaper, checklist: Checklist, book: Book, copy: Copy, lamp: Lamp,
   cap: Cap, plus_heart: PlusHeart, board: Board, star: Star,
-  basket: Basket, piano: Piano, runner: Runner, ball: Ball, kettle: Kettle, red_sea: RedSea,
+  basket: Basket, piano: Piano, runner: Runner, ball: Ball, kettle: Kettle, red_sea: RedSea, cup: Cup, phone: Phone, swap: Swap, gear: Gear, car: Car, blueprint: Blueprint,
 };
 
 /** The picture that shows a Day 7 word on its own slide (a word not listed keeps its usual picture). */
@@ -490,5 +566,8 @@ export const WORD_PICTURE: Record<string, string> = {
   // Day 4: study and work, in pairs
   study: "book", revise: "repeat", test: "pencil_sheet", exam: "mock_paper", classmate: "board",
   colleague: "suitcase", task: "checklist", effort: "runner", qualifications: "cap", qualities: "heart",
+  // Week 2 · Day 1: technology words
+  invent: "bulb", invention: "lamp", design: "pencil_sheet", develop: "trend", improve: "star", replace: "swap",
+  device: "phone", engine: "gear", vehicle: "car", prototype: "blueprint",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
