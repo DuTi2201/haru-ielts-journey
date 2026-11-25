@@ -540,13 +540,57 @@ const Blueprint = ({ on }: P) => (
   </g>
 );
 
+/** three bars rising with an arrow: something made better than before (improve) */
+const Upgrade = ({ on }: P) => (
+  <g>
+    <rect x="8" y="38" width="12" height="16" rx="2" fill="#cfd6f2" {...line} />
+    <rect x="26" y="28" width="12" height="26" rx="2" fill={SKY} {...line} />
+    <rect x="44" y="16" width="12" height="38" rx="2" fill={MINT} {...line} className={a(on, "haru-a-pop")} style={box} />
+    <g className={a(on, "haru-a-bob")}>
+      <path d="M10 26 30 14l8 6 14-12m-8 0h8v8" fill="none" {...line} stroke={CORAL} />
+    </g>
+  </g>
+);
+
+/** a model car on a stand with a "v1" tag: the first version, a prototype */
+const Model = ({ on }: P) => (
+  <g>
+    <g className={a(on, "haru-a-tilt")} style={box}>
+      <path d="M10 36v-6l7-9h22l9 9h4v6Z" fill="#fff" {...line} strokeDasharray="4 3" />
+      <circle cx="19" cy="38" r="4" fill="#fff" {...line} />
+      <circle cx="42" cy="38" r="4" fill="#fff" {...line} />
+    </g>
+    <path d="M14 48h36M32 44v4" {...line} />
+    <path d="M22 52h20" {...line} strokeWidth="4" />
+    <g className={a(on, "haru-a-pop")} style={box}>
+      <rect x="40" y="6" width="18" height="12" rx="3" fill={SUN} {...line} />
+      <path d="M44 10l2 4 2-4M51 10v4" fill="none" {...line} strokeWidth="2" />
+    </g>
+  </g>
+);
+
+/** an engine block with two pistons moving: an engine */
+const Engine = ({ on }: P) => (
+  <g>
+    <rect x="12" y="26" width="40" height="26" rx="4" fill={NAVY} {...line} />
+    <path d="M52 34h6v10h-6M12 34H6v10h6" fill="none" {...line} />
+    <g className={a(on, "haru-a-bob")}>
+      <rect x="18" y="12" width="10" height="16" rx="2" fill={SUN} {...line} />
+    </g>
+    <g className={a(on, "haru-a-slide")}>
+      <rect x="36" y="14" width="10" height="14" rx="2" fill={SUN} {...line} />
+    </g>
+    <path d="M18 40h28" {...line} stroke="#fff" strokeWidth="2" />
+  </g>
+);
+
 export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
   scales: Scales, magnifier: Magnifier, dizzy: Dizzy, ruler: Ruler, gavel: Gavel, mirror: Mirror, crossroads: Crossroads,
   paradox: Paradox, bolt: Bolt, dice: Dice, check_bubble: CheckBubble, grasp: Grasp, ripples: Ripples, ear: Ear, qmark: Qmark,
   split: Split, crystal: Crystal, dotted_check: DottedCheck, shield: Shield, roadmap: Roadmap, coin: Coin, discuss: Discuss,
   pencil_sheet: PencilSheet, clock: Clock, mock_paper: MockPaper, checklist: Checklist, book: Book, copy: Copy, lamp: Lamp,
   cap: Cap, plus_heart: PlusHeart, board: Board, star: Star,
-  basket: Basket, piano: Piano, runner: Runner, ball: Ball, kettle: Kettle, red_sea: RedSea, cup: Cup, phone: Phone, swap: Swap, gear: Gear, car: Car, blueprint: Blueprint,
+  basket: Basket, piano: Piano, runner: Runner, ball: Ball, kettle: Kettle, red_sea: RedSea, cup: Cup, phone: Phone, swap: Swap, gear: Gear, car: Car, blueprint: Blueprint, upgrade: Upgrade, model: Model, engine_block: Engine,
 };
 
 /** The picture that shows a Day 7 word on its own slide (a word not listed keeps its usual picture). */
@@ -567,7 +611,7 @@ export const WORD_PICTURE: Record<string, string> = {
   study: "book", revise: "repeat", test: "pencil_sheet", exam: "mock_paper", classmate: "board",
   colleague: "suitcase", task: "checklist", effort: "runner", qualifications: "cap", qualities: "heart",
   // Week 2 · Day 1: technology words
-  invent: "bulb", invention: "lamp", design: "pencil_sheet", develop: "trend", improve: "star", replace: "swap",
-  device: "phone", engine: "gear", vehicle: "car", prototype: "blueprint",
+  invent: "bulb", invention: "lamp", design: "blueprint", develop: "trend", improve: "upgrade", replace: "swap",
+  device: "phone", engine: "engine_block", vehicle: "car", prototype: "model",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
