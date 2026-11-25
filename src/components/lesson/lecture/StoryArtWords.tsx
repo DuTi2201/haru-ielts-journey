@@ -1213,5 +1213,6 @@ export const WORD_PICTURE: Record<string, string> = {
   innovation: "bulb", potential: "seed",
   primitive: "stone_tool", technique: "blueprint", resource: "drop", breakthrough: "rocket", network: "share_nodes", data: "database",
   console: "gamepad", craft: "chisel",
+  "make progress": "roadmap", "have an influence on": "ripples", "natural resource": "drop",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
