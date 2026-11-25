@@ -55,6 +55,12 @@ export function Scene(p: SceneProps) {
       return <ParaFilter {...p} />;
     case "tense_grid":
       return <TenseGrid {...p} />;
+    case "chat_dialogue":
+      return <ChatDialogue {...p} />;
+    case "story_strip":
+      return <StoryStrip {...p} />;
+    case "decision_flow":
+      return <DecisionFlow {...p} />;
     default:
       return null;
   }
@@ -1115,3 +1121,264 @@ function TenseGrid({ data, has, latest, onReplay }: SceneProps) {
     </div>
   );
 }
+
+// ------------------------------------------------------------------ Week 2: dialogue, story, steps --
+type Turn = { key: string; who: "A" | "B"; en: string; vi?: string; tag?: string; mark?: "anchor" | "before" | "wrong" };
+
+/** A conversation as chat bubbles, A on the left and B on the right. A bubble can be the anchor (the past
+ * simple that sets the moment: amber ring and a "mốc" badge), the line that looks back before it (an arrow
+ * badge), or a wrong line (struck through, rose). The current bubble is in full contrast. */
+function ChatDialogue({ data, has, latest, onReplay }: SceneProps) {
+  const turns = (data["turns"] as Turn[]) ?? [];
+  const names = (data["names"] as Record<string, string>) ?? { A: "A", B: "B" };
+  return (
+    <div className="flex flex-1 flex-col gap-1.5">
+      <ol className="space-y-2">
+        {turns.map((t) => {
+          const right = t.who === "B";
+          if (!has(t.key))
+            return (
+              <li key={t.key} className={cn("flex", right ? "justify-end" : "justify-start")} aria-hidden="true">
+                <span className="h-[40px] w-[62%] rounded-[16px] border border-dashed border-white/12" />
+              </li>
+            );
+          const now = latest === t.key;
+          const wrong = t.mark === "wrong";
+          return (
+            <li key={t.key} className={cn("flex items-end gap-2", right ? "flex-row-reverse" : "flex-row", enter)}>
+              <span
+                className={cn(
+                  "mb-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-extrabold",
+                  right ? "bg-[oklch(0.84_0.12_165)] text-[oklch(0.25_0.05_285)]" : "bg-[oklch(0.88_0.13_90)] text-[oklch(0.25_0.05_285)]",
+                )}
+                aria-hidden="true"
+              >
+                {(names[t.who] ?? t.who).slice(0, 1)}
+              </span>
+              <Tap k={t.key} onReplay={onReplay} label={t.en} className="w-auto max-w-[82%]">
+                <span
+                  className={cn(
+                    "relative block rounded-[18px] px-3 py-2 transition-colors duration-500",
+                    right ? "rounded-br-[6px]" : "rounded-bl-[6px]",
+                    now ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-white/12",
+                    t.mark === "anchor" && "ring-[3px] ring-[oklch(0.88_0.13_90)]",
+                    wrong && (now ? "bg-[oklch(0.95_0.04_20)]" : "bg-[oklch(0.78_0.13_20/0.25)]"),
+                  )}
+                >
+                  {(t.tag || t.mark) && (
+                    <span className="mb-0.5 flex flex-wrap items-center gap-1.5">
+                      {t.mark === "anchor" && (
+                        <span className="rounded-full bg-[oklch(0.88_0.13_90)] px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-[0.1em] text-[oklch(0.25_0.05_285)]">
+                          mốc
+                        </span>
+                      )}
+                      {t.mark === "before" && (
+                        <span className="rounded-full bg-[oklch(0.84_0.12_165)] px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-[0.1em] text-[oklch(0.25_0.05_285)]">
+                          ↶ trước mốc
+                        </span>
+                      )}
+                      {wrong && (
+                        <span className="rounded-full bg-[oklch(0.78_0.13_20)] px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-[0.1em] text-white">
+                          sai
+                        </span>
+                      )}
+                      {t.tag && <span className="text-[10px] font-bold uppercase tracking-[0.08em] opacity-70">{t.tag}</span>}
+                    </span>
+                  )}
+                  <En className={cn("block text-[15px] font-extrabold leading-snug", wrong && "line-through decoration-2")}>{t.en}</En>
+                  {t.vi && <span className="block text-[11.5px] font-medium opacity-75">{t.vi}</span>}
+                </span>
+              </Tap>
+            </li>
+          );
+        })}
+      </ol>
+      <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
+    </div>
+  );
+}
+
+type Panel = { key: string; icon?: string; label: string; en: string; vi?: string; kind?: "bg" | "event" | "before" | "chain"; wrong?: string };
+
+const PANEL_TONE: Record<string, string> = {
+  bg: "oklch(0.84 0.12 165)",
+  event: "oklch(0.88 0.13 90)",
+  before: "oklch(0.78 0.13 20)",
+  chain: "oklch(0.82 0.08 250)",
+};
+
+/** A short story told in panels. `frame: "strip"` draws comic frames (a picture, a coloured label for its
+ * part in the story: scene, main event, looking back, next step); `frame: "letter"` draws a sheet of paper,
+ * one line per panel, the current line highlighted. A panel with `wrong` shows the tempting wrong form
+ * struck through above the right one. */
+function StoryStrip({ data, has, latest, onReplay }: SceneProps) {
+  const panels = (data["panels"] as Panel[]) ?? [];
+  const letter = data["frame"] === "letter";
+  const title = str(data["heading"]);
+  if (letter)
+    return (
+      <div className="flex flex-1 flex-col gap-2">
+        <div className="rounded-[16px] border-l-[6px] border-[oklch(0.82_0.15_85)] bg-[oklch(0.985_0.01_90)] px-3.5 py-3 text-[oklch(0.25_0.05_285)] shadow-elev-2">
+          {title && <p className="mb-1.5 font-serif text-[13px] italic opacity-70">{title}</p>}
+          <ol className="space-y-1.5">
+            {panels.map((p) => {
+              if (!has(p.key)) return <li key={p.key} className="h-[34px] rounded-[8px] bg-[oklch(0.93_0.01_90)]" aria-hidden="true" />;
+              const now = latest === p.key;
+              return (
+                <li key={p.key} className={enter}>
+                  <Tap k={p.key} onReplay={onReplay} label={p.en}>
+                    <span className={cn("block rounded-[10px] px-2 py-1 transition-colors duration-500", now && "bg-[oklch(0.94_0.06_90)]")}>
+                      <span className="mb-0.5 flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full" style={{ background: PANEL_TONE[p.kind ?? "chain"] }} aria-hidden="true" />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-70">{p.label}</span>
+                      </span>
+                      {p.wrong && <En className="block text-[13px] font-semibold text-[oklch(0.5_0.16_20)] line-through decoration-2">{p.wrong}</En>}
+                      <En className="block font-serif text-[15px] font-semibold leading-snug">{p.en}</En>
+                      {p.vi && <span className="block text-[11px] opacity-70">{p.vi}</span>}
+                    </span>
+                  </Tap>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+        <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
+      </div>
+    );
+  return (
+    <div className="flex flex-1 flex-col gap-2">
+      <ol className="grid grid-cols-2 gap-2">
+        {panels.map((p, i) => {
+          if (!has(p.key)) return <li key={p.key} className="min-h-[150px] rounded-[16px] border border-dashed border-white/12" aria-hidden="true" />;
+          const now = latest === p.key;
+          return (
+            <li key={p.key} className={enter}>
+              <Tap k={p.key} onReplay={onReplay} label={p.en} className="h-full">
+                <span
+                  className={cn(
+                    "relative flex h-full min-h-[150px] flex-col gap-1 rounded-[16px] border-2 px-2.5 pb-2 pt-1.5 transition-colors duration-500",
+                    now ? "border-white bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "border-white/20 bg-white/8",
+                  )}
+                >
+                  <span className="flex items-center justify-between">
+                    <span
+                      className="rounded-full px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-[0.08em] text-[oklch(0.25_0.05_285)]"
+                      style={{ background: PANEL_TONE[p.kind ?? "chain"] }}
+                    >
+                      {p.label}
+                    </span>
+                    <span className="text-[11px] font-bold opacity-60">{i + 1}</span>
+                  </span>
+                  {p.icon && (
+                    <span className="mx-auto flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#e6defa]">
+                      <StoryIcon name={p.icon} on={now} size={44} />
+                    </span>
+                  )}
+                  {p.wrong && <En className="block text-[12px] font-semibold line-through decoration-2 opacity-70">{p.wrong}</En>}
+                  <En className="block text-[13.5px] font-extrabold leading-snug">{p.en}</En>
+                  {p.vi && <span className="block text-[10.5px] font-medium leading-tight opacity-75">{p.vi}</span>}
+                </span>
+              </Tap>
+            </li>
+          );
+        })}
+      </ol>
+      <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
+    </div>
+  );
+}
+
+type FlowStep = { key: string; q: string; yes: string; form?: string };
+type FlowWalk = { key: string; en: string; vi?: string; path: ("yes" | "no")[]; answer: string };
+
+/** The three steps as a flow: each step is a yes / no question; "Có" leads to its tense on the right,
+ * "Không" goes down to the next step, and the last "Không" ends at the past simple. A worked sentence
+ * (`walk`) can then run down the flow: each step it passes gets a ✓ or ✕ and the answer lights up. */
+function DecisionFlow({ data, has, latest, onReplay }: SceneProps) {
+  const steps = (data["steps"] as FlowStep[]) ?? [];
+  const fb = (data["fallback"] as { key: string; label: string; form?: string } | undefined) ?? undefined;
+  const walk = (data["walk"] as FlowWalk | undefined) ?? undefined;
+  const walking = !!walk && has(walk.key);
+  const stop = walking ? walk!.path.indexOf("yes") : -1;
+  return (
+    <div className="flex flex-1 flex-col gap-1.5">
+      {walk && (
+        <div className={cn("min-h-[52px]", walking && enter)}>
+          {walking ? (
+            <Tap k={walk.key} onReplay={onReplay} label={walk.en}>
+              <span className={cn("block rounded-[14px] px-3 py-2", latest === walk.key ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-white/12")}>
+                <span className="block text-[10px] font-bold uppercase tracking-[0.1em] opacity-70">Thử một câu</span>
+                <En className="block text-[14.5px] font-extrabold leading-snug">{walk.en}</En>
+                {walk.vi && <span className="block text-[11px] opacity-75">{walk.vi}</span>}
+              </span>
+            </Tap>
+          ) : (
+            <span className="block h-[52px] rounded-[14px] border border-dashed border-white/12" aria-hidden="true" />
+          )}
+        </div>
+      )}
+      <ol className="space-y-0">
+        {steps.map((st, i) => {
+          if (!has(st.key)) return <li key={st.key} className="mb-1.5 h-[58px] rounded-[14px] border border-dashed border-white/12" aria-hidden="true" />;
+          const now = latest === st.key;
+          const passed = walking && (stop === -1 || i <= stop);
+          const yes = walking && walk!.path[i] === "yes";
+          return (
+            <li key={st.key} className={enter}>
+              <Tap k={st.key} onReplay={onReplay} label={st.q}>
+                <span
+                  className={cn(
+                    "grid min-h-[58px] grid-cols-[1fr_auto] items-center gap-2 rounded-[14px] px-3 py-2 transition-colors duration-500",
+                    now ? "bg-white text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-white/10",
+                    passed && !yes && "opacity-60",
+                  )}
+                >
+                  <span className="min-w-0">
+                    <span className="block text-[10px] font-bold uppercase tracking-[0.1em] opacity-70">Bước {i + 1}</span>
+                    <span className="block text-[13px] font-bold leading-snug">{st.q}</span>
+                  </span>
+                  <span
+                    className={cn(
+                      "flex min-w-[96px] flex-col items-center rounded-[12px] px-2 py-1 text-center text-[oklch(0.25_0.05_285)]",
+                      yes ? "bg-[oklch(0.84_0.12_165)] ring-[3px] ring-white" : "bg-[oklch(0.84_0.12_165/0.75)]",
+                    )}
+                  >
+                    <span className="text-[9.5px] font-extrabold uppercase tracking-[0.1em]">{passed ? (yes ? "✓ Có" : "✕ Không") : "Có →"}</span>
+                    <span className="text-[12px] font-extrabold leading-tight">{st.yes}</span>
+                    {st.form && <En className="text-[10.5px] font-semibold opacity-80">{st.form}</En>}
+                  </span>
+                </span>
+              </Tap>
+              {i < steps.length - 1 && (
+                <span className="ml-5 block h-3 w-0 border-l-2 border-dashed border-white/40" aria-hidden="true" />
+              )}
+            </li>
+          );
+        })}
+      </ol>
+      {fb && (
+        <div className="min-h-[44px]">
+          {has(fb.key) ? (
+            <Tap k={fb.key} onReplay={onReplay} label={fb.label} className={enter}>
+              <span
+                className={cn(
+                  "mt-1.5 flex min-h-[44px] items-center justify-between gap-2 rounded-[14px] px-3 py-1.5",
+                  latest === fb.key || (walking && stop === -1) ? "bg-[oklch(0.88_0.13_90)] text-[oklch(0.25_0.05_285)] shadow-elev-2" : "bg-white/10",
+                )}
+              >
+                <span className="text-[12px] font-bold">Không khớp bước nào</span>
+                <span className="text-[13px] font-extrabold">
+                  → {fb.label} {fb.form && <En className="text-[11px] font-semibold opacity-80">{fb.form}</En>}
+                </span>
+              </span>
+            </Tap>
+          ) : (
+            <span className="mt-1.5 block h-[44px] rounded-[14px] border border-dashed border-white/12" aria-hidden="true" />
+          )}
+        </div>
+      )}
+      <Foot data={data} has={has} latest={latest} onReplay={onReplay} />
+    </div>
+  );
+}
+
