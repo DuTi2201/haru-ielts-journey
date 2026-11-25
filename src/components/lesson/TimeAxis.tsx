@@ -411,7 +411,7 @@ const PAST_MAP: { tense: string; form: string; shape: Shape }[] = [
   { tense: "Quá khứ đơn", form: "V2 / V-ed", shape: "point" },
   { tense: "Quá khứ tiếp diễn", form: "was / were + V-ing", shape: "pwin" },
   { tense: "Quá khứ hoàn thành", form: "had + V3", shape: "before" },
-  { tense: "QK hoàn thành tiếp diễn", form: "had been + V-ing", shape: "upto" },
+  { tense: "Hoàn thành tiếp diễn", form: "had been + V-ing", shape: "upto" },
 ];
 export const EIGHT_MAP_CELLS = MAP.length + PAST_MAP.length;
 
@@ -488,7 +488,7 @@ export function EightMap({ examples }: { examples: { ko: string; vi: string | nu
       {rowHead(past ? "Nối với việc trước · thêm had" : "Nối với việc trước · thêm have", true)}
       <div className="mt-1 grid grid-cols-2 gap-2">{[2, 3].map(cell)}</div>
       <p className="mt-2 text-[12px] text-ink-2">
-        {past ? "Từ một mốc quá khứ: lùi trợ động từ đầu tiên (am → was, have → had)." : "Cột phải thêm be + V-ing. Chạm vào một ô để nghe câu mẫu."}
+        {past ? "Từ một mốc quá khứ: lùi động từ chia đầu tiên (lives → lived, am → was, have → had)." : "Cột phải thêm be + V-ing. Chạm vào một ô để nghe câu mẫu."}
       </p>
     </div>
   );

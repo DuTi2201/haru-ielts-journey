@@ -847,13 +847,15 @@ const Database = ({ on }: P) => (
   </g>
 );
 
-/** a key going into an open lock: access */
+/** a key turning in a door, which swings open: access */
 const LockKey = ({ on }: P) => (
   <g>
-    <path d="M22 28v-8a10 10 0 0 1 20 0" fill="none" {...line} strokeWidth="4" className={a(on, "haru-a-bob")} />
-    <rect x="14" y="28" width="36" height="28" rx="5" fill={SUN} {...line} />
-    <circle cx="32" cy="40" r="4" fill={INK} />
-    <path d="M32 44v6" {...line} />
+    <rect x="30" y="6" width="26" height="52" rx="3" fill={WOOD} {...line} />
+    <path d="M30 6 18 12v40l12 6" fill={SKY} {...line} className={a(on, "haru-a-tilt")} style={{ transformOrigin: "30px 32px" }} />
+    <g className={a(on, "haru-a-slide")}>
+      <circle cx="10" cy="32" r="6" fill={SUN} {...line} />
+      <path d="M16 32h12M24 32v5M28 32v4" {...line} />
+    </g>
   </g>
 );
 
@@ -904,13 +906,15 @@ const PassLock = ({ on }: P) => (
   </g>
 );
 
-/** a bar almost full: storage */
+/** a phone whose storage bar is almost full, with a warning dot: storage */
 const StorageBar = ({ on }: P) => (
   <g>
-    <rect x="6" y="24" width="52" height="16" rx="8" fill="#fff" {...line} />
-    <rect x="9" y="27" width="38" height="10" rx="5" fill={CORAL} className={a(on, "haru-a-slide")} />
-    <path d="M14 50h36" {...line} strokeWidth="2.5" stroke="#9aa3c7" />
-    <path d="M14 14h20" {...line} strokeWidth="2.5" stroke="#9aa3c7" />
+    <rect x="16" y="4" width="32" height="56" rx="6" fill={NAVY} {...line} />
+    <rect x="20" y="10" width="24" height="40" rx="2" fill="#fff" />
+    <path d="M24 18h16M24 24h12" {...line} strokeWidth="2" stroke="#9aa3c7" />
+    <rect x="23" y="34" width="18" height="7" rx="3.5" fill="#fff" {...line} strokeWidth="2" />
+    <rect x="23" y="34" width="15" height="7" rx="3.5" fill={CORAL} className={a(on, "haru-a-slide")} />
+    <circle cx="44" cy="8" r="5" fill={CORAL} {...line} strokeWidth="2" className={a(on, "haru-a-pulse")} style={box} />
   </g>
 );
 
