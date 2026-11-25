@@ -1214,5 +1214,9 @@ export const WORD_PICTURE: Record<string, string> = {
   primitive: "stone_tool", technique: "blueprint", resource: "drop", breakthrough: "rocket", network: "share_nodes", data: "database",
   console: "gamepad", craft: "chisel",
   "make progress": "roadmap", "have an influence on": "ripples", "natural resource": "drop",
+  // Week 2 Day 6: the words of the steam car passage (prototype is already a model)
+  inherit: "root", shortcoming: "fail_x", "phase out": "slider", rekindle: "lamp", comprise: "layers", feat: "star", accelerate: "rocket",
+  investment: "coin", enhancement: "upgrade", deposit: "account_card", glitch: "bug", viable: "check_bubble", emission: "kettle", fold: "fail",
+  maintenance: "wrench",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
