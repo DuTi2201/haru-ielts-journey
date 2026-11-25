@@ -377,7 +377,7 @@ function TruthCards({ data, has, latest, onReplay }: SceneProps) {
 }
 
 // ------------------------------------------------------------- one question, four tenses --
-type Answer = { icon?: string; key: string; at: "now" | "span" | "past" | "future" | "always" | "window" | "done" | "point" | "trace" | "repeat" | "pwin" | "cut" | "pair"; tense: string; en: string; vi: string };
+type Answer = { icon?: string; key: string; at: "now" | "span" | "past" | "future" | "always" | "window" | "done" | "point" | "trace" | "repeat" | "pwin" | "cut" | "pair" | "two"; tense: string; en: string; vi: string };
 
 /** One answer on the shared time axis: the same left-to-right scale in every lane (past on the
  * left, the present at the dashed line in the middle, the future on the right), so the four
@@ -444,7 +444,7 @@ function Lane({ at, color, striped = false }: { at: Answer["at"]; color: string;
           <span className={bar} style={{ left: "14%", width: "22%", background: "currentColor" }} />
           <span className="absolute top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full" style={{ left: "14%", background: "currentColor" }} />
           <span className="absolute top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full" style={{ left: "36%", background: "currentColor" }} />
-          <span className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] bg-white" style={{ left: "25%", borderColor: "currentColor" }} />
+          <span className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px]" style={{ left: "25%", borderColor: "currentColor", background: "oklch(0.3 0.06 285)" }} />
         </>
       )}
       {/* cut: an action in progress, cut into by a short one (the bolt) */}
@@ -464,6 +464,11 @@ function Lane({ at, color, striped = false }: { at: Answer["at"]; color: string;
           <span className="absolute h-[5px] rounded-full opacity-60" style={{ left: "10%", width: "32%", bottom: "4px", background: "currentColor" }} />
         </>
       )}
+      {/* two: two separate past events, told one after the other (no overlap is said) */}
+      {at === "two" &&
+        [14, 36].map((x) => (
+          <span key={x} className={dot} style={{ left: `${x}%`, background: "currentColor" }} />
+        ))}
       {/* point: one moment in the past that the speaker can name */}
       {at === "point" && (
         <>

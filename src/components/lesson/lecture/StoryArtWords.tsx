@@ -594,27 +594,27 @@ const Crash = ({ on }: P) => (
   </g>
 );
 
-/** a screen with a snowflake and a stuck cursor: freeze */
+/** a screen stuck on one frame: a still snowflake, a cursor that cannot move, a cross on the mouse: freeze */
 const Frozen = ({ on }: P) => (
   <g>
     <rect x="8" y="10" width="48" height="34" rx="4" fill={NAVY} {...line} />
     <rect x="12" y="14" width="40" height="26" rx="2" fill="#e8f4ff" />
-    <g className={a(on, "haru-a-spin")} style={box}>
-      <path d="M32 18v18M24 22l16 10M40 22 24 32" {...line} stroke={SKY} strokeWidth="3.5" />
+    <path d="M26 20v14M20 23l12 8M32 23l-12 8" {...line} stroke={SKY} strokeWidth="3" />
+    <g className={a(on, "haru-a-shake")} style={box}>
+      <path d="m38 24 0 12 3-3 3 5 2-1-3-5h4Z" fill="#fff" {...line} strokeWidth="2" />
     </g>
     <path d="M24 52h16M32 44v8" {...line} />
   </g>
 );
 
-/** an app box dropping into a phone: install */
+/** a phone with an app icon and a progress bar filling up: install */
 const Install = ({ on }: P) => (
   <g>
-    <rect x="18" y="22" width="28" height="38" rx="5" fill={NAVY} {...line} />
-    <rect x="22" y="28" width="20" height="24" rx="2" fill={SKY} />
-    <g className={a(on, "haru-a-bob")}>
-      <rect x="25" y="2" width="14" height="14" rx="3" fill={MINT} {...line} />
-      <path d="M32 18v10m-4-4 4 4 4-4" fill="none" {...line} stroke={CORAL} />
-    </g>
+    <rect x="16" y="4" width="32" height="56" rx="6" fill={NAVY} {...line} />
+    <rect x="20" y="10" width="24" height="40" rx="2" fill={SKY} />
+    <rect x="25" y="16" width="14" height="14" rx="3" fill={MINT} {...line} strokeWidth="2" />
+    <rect x="23" y="38" width="18" height="5" rx="2.5" fill="#fff" {...line} strokeWidth="2" />
+    <rect x="23" y="38" width="10" height="5" rx="2.5" fill={CORAL} className={a(on, "haru-a-slide")} />
   </g>
 );
 
@@ -683,13 +683,26 @@ const CodeWindow = ({ on }: P) => (
   </g>
 );
 
-/** two arrows chasing each other in a circle: an update */
+/** a phone with a badge holding an upward arrow: a new version, an update */
 const Refresh = ({ on }: P) => (
-  <g className={a(on, "haru-a-spin")} style={box}>
-    <path d="M48 24a18 18 0 0 0-31-4" fill="none" {...line} stroke={NAVY} strokeWidth="4" />
-    <path d="M16 12v9h9" fill="none" {...line} stroke={NAVY} strokeWidth="4" />
-    <path d="M16 40a18 18 0 0 0 31 4" fill="none" {...line} stroke={MINT} strokeWidth="4" />
-    <path d="M48 52v-9h-9" fill="none" {...line} stroke={MINT} strokeWidth="4" />
+  <g>
+    <rect x="12" y="8" width="30" height="50" rx="6" fill={NAVY} {...line} />
+    <rect x="16" y="14" width="22" height="36" rx="2" fill={SKY} />
+    <g className={a(on, "haru-a-pop")} style={box}>
+      <circle cx="44" cy="16" r="12" fill={MINT} {...line} />
+      <path d="M44 23v-13m-5 5 5-5 5 5" fill="none" {...line} strokeWidth="3" />
+    </g>
+  </g>
+);
+
+/** a light bulb that has gone out (grey, with a small puff): the lights went out */
+const BulbOff = ({ on }: P) => (
+  <g>
+    <path d="M32 8a16 16 0 0 0-9 29c2 2 3 4 3 7h12c0-3 1-5 3-7a16 16 0 0 0-9-29Z" fill="#cfd6f2" {...line} />
+    <path d="M26 50h12M28 56h8" {...line} />
+    <g className={a(on, "haru-a-steam")}>
+      <path d="M48 10c3 2 3 5 0 7M52 4c3 2 3 5 0 7" fill="none" {...line} stroke="#9aa3c7" strokeWidth="2.5" />
+    </g>
   </g>
 );
 
@@ -711,7 +724,7 @@ export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
   cap: Cap, plus_heart: PlusHeart, board: Board, star: Star,
   basket: Basket, piano: Piano, runner: Runner, ball: Ball, kettle: Kettle, red_sea: RedSea, cup: Cup, phone: Phone, swap: Swap, gear: Gear, car: Car, blueprint: Blueprint, upgrade: Upgrade, model: Model, engine_block: Engine,
   crash: Crash, frozen: Frozen, install: Install, download: Download, plug: Plug, battery: Battery, monitor: Monitor, signal: Signal,
-  code_window: CodeWindow, refresh: Refresh, rain: Rain,
+  code_window: CodeWindow, refresh: Refresh, rain: Rain, bulb_off: BulbOff,
 };
 
 /** The picture that shows a Day 7 word on its own slide (a word not listed keeps its usual picture). */

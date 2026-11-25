@@ -87,7 +87,7 @@ export function Lane({ shape, on }: { shape: Shape; on: boolean }) {
           <rect x="52" y="11" width="68" height="8" rx="4" fill={c} opacity="0.85" />
           <rect x="50" y="5" width="4" height="20" rx="2" fill={c} />
           <rect x="118" y="5" width="4" height="20" rx="2" fill={c} />
-          <circle cx="86" cy="15" r="6" fill="#fff" stroke={c} strokeWidth="3" />
+          <circle cx="86" cy="15" r="6" fill="none" stroke={c} strokeWidth="3" />
         </>
       )}
       {/* cut: an action in progress, cut into by a short one */}
@@ -274,7 +274,7 @@ const OPTION_LANES: Record<string, { shape: Shape; label: string }> = {
   "quá khứ ● (một mốc nói được) ┄┄ bây giờ": { shape: "point", label: "Một mốc đã qua, nói được lúc nào" },
   "quá khứ ●━━━● (đã dừng) ┄┄ bây giờ": { shape: "ended", label: "Kéo dài một thời gian, rồi đã dừng" },
   "quá khứ ├●┤ (đang diễn ra quanh một mốc) ┄┄ bây giờ": { shape: "pwin", label: "Đang diễn ra quanh một mốc đã qua" },
-  "quá khứ ━━✕━━ (đang diễn ra thì bị cắt ngang) ┄┄ bây giờ": { shape: "cut", label: "Đang diễn ra thì bị một việc ngắn cắt ngang" },
+  "quá khứ ━━ϟ┄┄ (đang diễn ra thì bị cắt ngang) ┄┄ bây giờ": { shape: "cut", label: "Đang diễn ra thì bị một việc ngắn cắt ngang" },
   "quá khứ ══ (hai việc cùng diễn ra) ┄┄ bây giờ": { shape: "pair", label: "Hai việc cùng diễn ra một lúc" },
 };
 export const laneForOption = (text: string) => OPTION_LANES[text.trim()] ?? null;
