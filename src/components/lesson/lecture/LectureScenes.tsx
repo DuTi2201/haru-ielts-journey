@@ -377,7 +377,7 @@ function TruthCards({ data, has, latest, onReplay }: SceneProps) {
 }
 
 // ------------------------------------------------------------- one question, four tenses --
-type Answer = { icon?: string; key: string; at: "now" | "span" | "past" | "future" | "always" | "window" | "done" | "point" | "trace" | "repeat" | "pwin" | "cut" | "pair" | "two" | "before" | "upto" | "ptrace"; tense: string; en: string; vi: string };
+type Answer = { icon?: string; key: string; at: "now" | "span" | "past" | "future" | "always" | "window" | "done" | "point" | "trace" | "repeat" | "pwin" | "cut" | "pair" | "two" | "before" | "upto" | "ptrace" | "pointat"; tense: string; en: string; vi: string };
 
 /** One answer on the shared time axis: the same left-to-right scale in every lane (past on the
  * left, the present at the dashed line in the middle, the future on the right), so the four
@@ -470,6 +470,13 @@ function Lane({ at, color, striped = false }: { at: Answer["at"]; color: string;
           <span className={dot} style={{ left: "14%", background: "currentColor" }} />
           <span className="absolute top-1/2 -translate-y-1/2 border-t-[3px] border-dotted" style={{ left: "18%", width: "19%", borderColor: "currentColor" }} />
           <span className="absolute top-1/2 h-5 w-[3px] -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ left: "40%", background: "currentColor" }} />
+        </>
+      )}
+      {/* pointat: something that happens at the past moment itself (the same tick as before / upto) */}
+      {at === "pointat" && (
+        <>
+          <span className="absolute top-1/2 h-5 w-[3px] -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ left: "40%", background: "currentColor" }} />
+          <span className={dot} style={{ left: "40%", background: "currentColor" }} />
         </>
       )}
       {at === "upto" && (

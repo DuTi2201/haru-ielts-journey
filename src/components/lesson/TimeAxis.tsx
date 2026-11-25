@@ -129,7 +129,8 @@ export function Lane({ shape, on }: { shape: Shape; on: boolean }) {
       {/* ptrace: it went on, stopped just before a past moment, and left a trace at that moment */}
       {shape === "ptrace" && (
         <>
-          <rect x="36" y="11" width="70" height="8" rx="4" fill={c} />
+          <rect x="36" y="11" width="62" height="8" rx="4" fill={c} />
+          <path d="m124 0 6 5 6-5Z" fill={c} />
           <circle cx="130" cy="15" r="8" fill="none" stroke={c} strokeWidth="3" />
           <circle cx="130" cy="15" r="2.5" fill={c} />
         </>
@@ -298,7 +299,7 @@ const EXAMPLE_LANES: Record<string, Shape> = {
   "We had been waiting for over an hour when the bus finally came.": "upto",
   "Her eyes were red because she had been crying.": "ptrace",
   "The engineers had been testing the app for six months before they launched it.": "upto",
-  "Before I met Nga, I had been running for two hours.": "upto",
+  "Before I met Anna, I had been running for two hours.": "upto",
   "By 2020, the company had sold a million phones.": "before",
   "I had known Lan for ten years when we started the company.": "upto",
 };
