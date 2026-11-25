@@ -224,7 +224,6 @@ const EXAMPLE_LANES: Record<string, Shape> = {
   "My grandfather bought his first phone in 1998.": "point",
   "The first mobile phones appeared in the 1980s.": "point",
   "Yes, I have bought some.": "done",
-  "Have you ever been to Italy?": "done",
   "Yes, I went there with my family two years ago.": "point",
   "I studied the piano in 2003.": "point",
   "I have studied the piano for two years.": "span",
