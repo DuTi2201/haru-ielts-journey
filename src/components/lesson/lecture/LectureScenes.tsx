@@ -377,7 +377,7 @@ function TruthCards({ data, has, latest, onReplay }: SceneProps) {
 }
 
 // ------------------------------------------------------------- one question, four tenses --
-type Answer = { icon?: string; key: string; at: "now" | "span" | "past" | "future" | "always" | "window" | "done" | "point" | "trace" | "repeat"; tense: string; en: string; vi: string };
+type Answer = { icon?: string; key: string; at: "now" | "span" | "past" | "future" | "always" | "window" | "done" | "point" | "trace" | "repeat" | "pwin" | "cut" | "pair"; tense: string; en: string; vi: string };
 
 /** One answer on the shared time axis: the same left-to-right scale in every lane (past on the
  * left, the present at the dashed line in the middle, the future on the right), so the four
@@ -436,6 +436,32 @@ function Lane({ at, color, striped = false }: { at: Answer["at"]; color: string;
           <svg className="absolute top-1/2 -translate-y-1/2" style={{ left: "44%" }} width="14" height="14" viewBox="0 0 14 14">
             <path d="m2 7 3.5 3.5L12 3" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
+        </>
+      )}
+      {/* pwin: a temporary stretch in the past around one moment (the past continuous) */}
+      {at === "pwin" && (
+        <>
+          <span className={bar} style={{ left: "14%", width: "22%", background: "currentColor" }} />
+          <span className="absolute top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full" style={{ left: "14%", background: "currentColor" }} />
+          <span className="absolute top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full" style={{ left: "36%", background: "currentColor" }} />
+          <span className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] bg-white" style={{ left: "25%", borderColor: "currentColor" }} />
+        </>
+      )}
+      {/* cut: an action in progress, cut into by a short one (the bolt) */}
+      {at === "cut" && (
+        <>
+          <span className={bar} style={{ left: "8%", width: "24%", background: "currentColor" }} />
+          <span className="absolute top-1/2 -translate-y-1/2 border-t-[3px] border-dashed opacity-40" style={{ left: "36%", width: "10%", borderColor: "currentColor" }} />
+          <svg className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ left: "33%" }} width="14" height="20" viewBox="0 0 14 20">
+            <path d="M9 0 1 11h5l-3 9 10-12H8l3-8Z" fill="currentColor" />
+          </svg>
+        </>
+      )}
+      {/* pair: two actions in progress at the same time */}
+      {at === "pair" && (
+        <>
+          <span className="absolute h-[5px] rounded-full" style={{ left: "10%", width: "32%", top: "4px", background: "currentColor" }} />
+          <span className="absolute h-[5px] rounded-full opacity-60" style={{ left: "10%", width: "32%", bottom: "4px", background: "currentColor" }} />
         </>
       )}
       {/* point: one moment in the past that the speaker can name */}

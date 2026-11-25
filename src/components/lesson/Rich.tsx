@@ -592,7 +592,7 @@ function MistakeRows({
 }
 
 // ------------------------------------------------------------------ visual rule blocks --
-const SHAPES = ["repeat", "window", "span", "done", "point", "trace", "ended", "always"] as const;
+const SHAPES = ["repeat", "window", "span", "done", "point", "trace", "ended", "always", "pwin", "cut", "pair"] as const;
 /** English only (no Vietnamese letters): a line the learner can tap to hear. */
 const isEnglish = (t: string) => /[a-z]/i.test(t) && !/[À-ỹđĐ]/.test(t.replace(/[`*=~]/g, ""));
 const plain = (t: string) => t.replace(/[`*=~]/g, "");

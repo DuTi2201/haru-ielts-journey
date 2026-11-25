@@ -11,7 +11,7 @@ import { Ko } from "./Rich";
  * sample sentence. Tap a row to light it up and hear the sentence; "Xem lần lượt" walks through
  * all five. The sentences are the card's own examples, in this order. */
 
-export type Shape = "repeat" | "window" | "span" | "done" | "point" | "trace" | "ended" | "always";
+export type Shape = "repeat" | "window" | "span" | "done" | "point" | "trace" | "ended" | "always" | "pwin" | "cut" | "pair";
 
 const ROWS: { shape: Shape; ask: string; tense: string }[] = [
   { shape: "repeat", ask: "Lặp lại quanh bây giờ?", tense: "Hiện tại đơn" },
@@ -79,6 +79,30 @@ export function Lane({ shape, on }: { shape: Shape; on: boolean }) {
         <>
           <rect x="40" y="11" width="80" height="8" rx="4" fill={c} />
           <path d="m126 9 12 12m0-12-12 12" stroke={c} strokeWidth="3" strokeLinecap="round" />
+        </>
+      )}
+      {/* pwin: a temporary stretch in the past, around one moment (the past continuous) */}
+      {shape === "pwin" && (
+        <>
+          <rect x="52" y="11" width="68" height="8" rx="4" fill={c} opacity="0.85" />
+          <rect x="50" y="5" width="4" height="20" rx="2" fill={c} />
+          <rect x="118" y="5" width="4" height="20" rx="2" fill={c} />
+          <circle cx="86" cy="15" r="6" fill="#fff" stroke={c} strokeWidth="3" />
+        </>
+      )}
+      {/* cut: an action in progress, cut into by a short one */}
+      {shape === "cut" && (
+        <>
+          <rect x="34" y="11" width="70" height="8" rx="4" fill={c} />
+          <line x1="112" y1="15" x2="146" y2="15" stroke={c} strokeWidth="3" strokeDasharray="4 4" opacity="0.45" />
+          <path d="m110 2-8 12h7l-6 14 13-17h-7l6-9Z" fill={c} />
+        </>
+      )}
+      {/* pair: two actions in progress at the same time */}
+      {shape === "pair" && (
+        <>
+          <rect x="44" y="5" width="96" height="7" rx="3.5" fill={c} />
+          <rect x="44" y="18" width="96" height="7" rx="3.5" fill={c} opacity="0.6" />
         </>
       )}
       {shape === "point" && (
@@ -228,6 +252,15 @@ const EXAMPLE_LANES: Record<string, Shape> = {
   "I studied the piano in 2003.": "point",
   "I have studied the piano for two years.": "span",
   "I studied the piano for two years, then I stopped.": "ended",
+  // Week 2 · Day 2: the past continuous
+  "Yesterday I was playing football at seven.": "pwin",
+  "At five o'clock, I was reading a book.": "pwin",
+  "In 2019, my brother was living in Da Nang.": "pwin",
+  "I was watching TV at eight o'clock.": "pwin",
+  "Richard was watching TV when the phone rang.": "cut",
+  "My cousin and I were playing on the computer when there was a power cut.": "cut",
+  "I was playing football while my friends were playing badminton.": "pair",
+  "I charged my phone as soon as I got home.": "point",
 };
 export const laneForExample = (en: string): Shape | null => EXAMPLE_LANES[en.trim()] ?? null;
 
@@ -240,6 +273,9 @@ const OPTION_LANES: Record<string, { shape: Shape; label: string }> = {
   "quá khứ ━━━━● vừa dừng, còn dấu vết": { shape: "trace", label: "Vừa dừng, còn dấu vết ở bây giờ" },
   "quá khứ ● (một mốc nói được) ┄┄ bây giờ": { shape: "point", label: "Một mốc đã qua, nói được lúc nào" },
   "quá khứ ●━━━● (đã dừng) ┄┄ bây giờ": { shape: "ended", label: "Kéo dài một thời gian, rồi đã dừng" },
+  "quá khứ ├●┤ (đang diễn ra quanh một mốc) ┄┄ bây giờ": { shape: "pwin", label: "Đang diễn ra quanh một mốc đã qua" },
+  "quá khứ ━━✕━━ (đang diễn ra thì bị cắt ngang) ┄┄ bây giờ": { shape: "cut", label: "Đang diễn ra thì bị một việc ngắn cắt ngang" },
+  "quá khứ ══ (hai việc cùng diễn ra) ┄┄ bây giờ": { shape: "pair", label: "Hai việc cùng diễn ra một lúc" },
 };
 export const laneForOption = (text: string) => OPTION_LANES[text.trim()] ?? null;
 

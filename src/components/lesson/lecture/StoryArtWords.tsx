@@ -584,6 +584,125 @@ const Engine = ({ on }: P) => (
   </g>
 );
 
+/** a laptop whose screen breaks with a jagged flash: crash */
+const Crash = ({ on }: P) => (
+  <g className={a(on, "haru-a-shake")} style={box}>
+    <rect x="10" y="12" width="44" height="30" rx="3" fill={NAVY} {...line} />
+    <rect x="14" y="16" width="36" height="22" rx="1" fill={SKY} />
+    <path d="m34 16-6 9h6l-5 13" fill="none" {...line} stroke={CORAL} strokeWidth="3.5" />
+    <path d="M4 48h56l-4-6H8Z" fill="#cfd6f2" {...line} />
+  </g>
+);
+
+/** a screen with a snowflake and a stuck cursor: freeze */
+const Frozen = ({ on }: P) => (
+  <g>
+    <rect x="8" y="10" width="48" height="34" rx="4" fill={NAVY} {...line} />
+    <rect x="12" y="14" width="40" height="26" rx="2" fill="#e8f4ff" />
+    <g className={a(on, "haru-a-spin")} style={box}>
+      <path d="M32 18v18M24 22l16 10M40 22 24 32" {...line} stroke={SKY} strokeWidth="3.5" />
+    </g>
+    <path d="M24 52h16M32 44v8" {...line} />
+  </g>
+);
+
+/** an app box dropping into a phone: install */
+const Install = ({ on }: P) => (
+  <g>
+    <rect x="18" y="22" width="28" height="38" rx="5" fill={NAVY} {...line} />
+    <rect x="22" y="28" width="20" height="24" rx="2" fill={SKY} />
+    <g className={a(on, "haru-a-bob")}>
+      <rect x="25" y="2" width="14" height="14" rx="3" fill={MINT} {...line} />
+      <path d="M32 18v10m-4-4 4 4 4-4" fill="none" {...line} stroke={CORAL} />
+    </g>
+  </g>
+);
+
+/** a cloud with an arrow coming down: download */
+const Download = ({ on }: P) => (
+  <g>
+    <path d="M18 34a10 10 0 0 1 2-20 14 14 0 0 1 26 4 8 8 0 0 1 0 16Z" fill="#fff" {...line} />
+    <g className={a(on, "haru-a-bob")}>
+      <path d="M32 24v26m-8-8 8 8 8-8" fill="none" {...line} stroke={CORAL} strokeWidth="3.5" />
+    </g>
+    <path d="M18 58h28" {...line} />
+  </g>
+);
+
+/** two plugs meeting: connect */
+const Plug = ({ on }: P) => (
+  <g>
+    <g className={a(on, "haru-a-slide")}>
+      <rect x="6" y="24" width="18" height="16" rx="4" fill={SUN} {...line} />
+      <path d="M24 28h6M24 36h6" {...line} />
+    </g>
+    <rect x="34" y="24" width="18" height="16" rx="4" fill={MINT} {...line} />
+    <path d="M52 32h8M4 32H2" {...line} />
+    <circle cx="32" cy="14" r="3" fill={CORAL} className={a(on, "haru-a-pulse")} style={box} />
+  </g>
+);
+
+/** a battery running low: battery */
+const Battery = ({ on }: P) => (
+  <g>
+    <rect x="8" y="20" width="44" height="24" rx="5" fill="#fff" {...line} />
+    <rect x="52" y="27" width="5" height="10" rx="2" fill={INK} />
+    <rect x="12" y="24" width="10" height="16" rx="2" fill={CORAL} className={a(on, "haru-a-flicker")} />
+  </g>
+);
+
+/** a monitor on a stand: screen */
+const Monitor = ({ on }: P) => (
+  <g>
+    <rect x="6" y="10" width="52" height="34" rx="4" fill={NAVY} {...line} />
+    <rect x="10" y="14" width="44" height="26" rx="2" fill={SKY} className={a(on, "haru-a-flicker")} />
+    <path d="M24 54h16M32 44v10" {...line} />
+  </g>
+);
+
+/** four bars, the last ones empty: signal */
+const Signal = ({ on }: P) => (
+  <g>
+    <rect x="8" y="42" width="8" height="12" rx="2" fill={MINT} {...line} />
+    <rect x="22" y="32" width="8" height="22" rx="2" fill={MINT} {...line} className={a(on, "haru-a-pulse")} style={box} />
+    <rect x="36" y="22" width="8" height="32" rx="2" fill="#fff" {...line} />
+    <rect x="50" y="10" width="8" height="44" rx="2" fill="#fff" {...line} />
+  </g>
+);
+
+/** a program window with code brackets: software */
+const CodeWindow = ({ on }: P) => (
+  <g>
+    <rect x="6" y="10" width="52" height="44" rx="5" fill="#fff" {...line} />
+    <path d="M6 20h52" {...line} />
+    <circle cx="12" cy="15" r="1.6" fill={CORAL} />
+    <circle cx="18" cy="15" r="1.6" fill={SUN} />
+    <g className={a(on, "haru-a-pop")} style={box}>
+      <path d="m24 30-7 7 7 7M40 30l7 7-7 7M35 28l-6 18" fill="none" {...line} stroke={NAVY} />
+    </g>
+  </g>
+);
+
+/** two arrows chasing each other in a circle: an update */
+const Refresh = ({ on }: P) => (
+  <g className={a(on, "haru-a-spin")} style={box}>
+    <path d="M48 24a18 18 0 0 0-31-4" fill="none" {...line} stroke={NAVY} strokeWidth="4" />
+    <path d="M16 12v9h9" fill="none" {...line} stroke={NAVY} strokeWidth="4" />
+    <path d="M16 40a18 18 0 0 0 31 4" fill="none" {...line} stroke={MINT} strokeWidth="4" />
+    <path d="M48 52v-9h-9" fill="none" {...line} stroke={MINT} strokeWidth="4" />
+  </g>
+);
+
+/** a cloud with falling drops: the scene of a story (it was raining) */
+const Rain = ({ on }: P) => (
+  <g>
+    <path d="M16 32a10 10 0 0 1 2-20 14 14 0 0 1 26 4 8 8 0 0 1 0 16Z" fill="#cfd6f2" {...line} />
+    <g className={a(on, "haru-a-fly")}>
+      <path d="M20 40l-3 8M32 40l-3 8M44 40l-3 8M26 50l-3 8M38 50l-3 8" {...line} stroke={SKY} strokeWidth="3.5" />
+    </g>
+  </g>
+);
+
 export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
   scales: Scales, magnifier: Magnifier, dizzy: Dizzy, ruler: Ruler, gavel: Gavel, mirror: Mirror, crossroads: Crossroads,
   paradox: Paradox, bolt: Bolt, dice: Dice, check_bubble: CheckBubble, grasp: Grasp, ripples: Ripples, ear: Ear, qmark: Qmark,
@@ -591,6 +710,8 @@ export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
   pencil_sheet: PencilSheet, clock: Clock, mock_paper: MockPaper, checklist: Checklist, book: Book, copy: Copy, lamp: Lamp,
   cap: Cap, plus_heart: PlusHeart, board: Board, star: Star,
   basket: Basket, piano: Piano, runner: Runner, ball: Ball, kettle: Kettle, red_sea: RedSea, cup: Cup, phone: Phone, swap: Swap, gear: Gear, car: Car, blueprint: Blueprint, upgrade: Upgrade, model: Model, engine_block: Engine,
+  crash: Crash, frozen: Frozen, install: Install, download: Download, plug: Plug, battery: Battery, monitor: Monitor, signal: Signal,
+  code_window: CodeWindow, refresh: Refresh, rain: Rain,
 };
 
 /** The picture that shows a Day 7 word on its own slide (a word not listed keeps its usual picture). */
@@ -613,5 +734,8 @@ export const WORD_PICTURE: Record<string, string> = {
   // Week 2 · Day 1: technology words
   invent: "bulb", invention: "lamp", design: "blueprint", develop: "trend", improve: "upgrade", replace: "swap",
   device: "phone", engine: "engine_block", vehicle: "car", prototype: "model",
+  // Week 2 · Day 2: when technology goes wrong
+  crash: "crash", freeze: "frozen", install: "install", download: "download", connect: "plug",
+  battery: "battery", screen: "monitor", signal: "signal", software: "code_window", update: "refresh",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
