@@ -576,12 +576,10 @@ function TenseTimeline({ data, has, latest, onReplay }: SceneProps) {
                         </span>
                       )}
                       <span className="min-w-0 flex-1">
-                        <span className="flex items-baseline justify-between gap-2">
-                          <En className="text-[14.5px] font-extrabold leading-tight">{a.en}</En>
-                          <span className="shrink-0 text-[10.5px] font-bold uppercase tracking-[0.08em] opacity-70">{a.tense}</span>
-                        </span>
+                        <span className="block text-[10px] font-bold uppercase leading-tight tracking-[0.08em] opacity-70">{a.tense}</span>
+                        <En className="block text-[14.5px] font-extrabold leading-tight">{a.en}</En>
                         <Lane at={a.at} color={now ? "oklch(0.5 0.16 285)" : AMBER} />
-                        <span className="block text-[11px] font-semibold opacity-70">{a.vi}</span>
+                        {now && a.vi && <span className="block text-[11px] font-semibold opacity-70">{a.vi}</span>}
                       </span>
                     </span>
                   </span>
@@ -720,10 +718,8 @@ function SpeakingAnswer({ data, has, latest, onReplay }: SceneProps) {
           <Tap k="q" onReplay={onReplay} className={enter}>
             <span className="block rounded-[16px] bg-white/12 px-3.5 py-2">
               <span className="block text-[10px] font-bold uppercase tracking-[0.14em] opacity-70">Giám khảo hỏi</span>
-              <span className="flex items-baseline justify-between gap-3">
-                <En className="text-[16px] font-extrabold">{str(data["question"])}</En>
-                <span className="shrink-0 text-[11.5px] font-semibold opacity-70">{str(data["question_vi"])}</span>
-              </span>
+              <En className="block text-[16px] font-extrabold leading-snug">{str(data["question"])}</En>
+              <span className="block text-[11.5px] font-semibold opacity-70">{str(data["question_vi"])}</span>
             </span>
           </Tap>
         )}
@@ -760,7 +756,7 @@ function SpeakingAnswer({ data, has, latest, onReplay }: SceneProps) {
                       {it.role} · {it.tense}
                     </span>
                     <En className="block text-[15px] font-extrabold leading-snug">{it.en}</En>
-                    <span className="block text-[11.5px] font-medium opacity-75">{it.vi}</span>
+                    {now && <span className="block text-[11.5px] font-medium opacity-75">{it.vi}</span>}
                   </span>
                 </span>
               </Tap>
@@ -1234,7 +1230,7 @@ function StoryStrip({ data, has, latest, onReplay }: SceneProps) {
                       </span>
                       {p.wrong && <En className="block text-[13px] font-semibold text-[oklch(0.5_0.16_20)] line-through decoration-2">{p.wrong}</En>}
                       <En className="block font-serif text-[15px] font-semibold leading-snug">{p.en}</En>
-                      {p.vi && <span className="block text-[11px] opacity-70">{p.vi}</span>}
+                      {now && p.vi && <span className="block text-[11px] opacity-70">{p.vi}</span>}
                     </span>
                   </Tap>
                 </li>
