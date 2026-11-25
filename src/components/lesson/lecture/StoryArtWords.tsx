@@ -940,6 +940,223 @@ const PrivacyEye = ({ on }: P) => (
   </g>
 );
 
+
+// ---------------------------------------------------------------- Week 2 · Day 5: change and technology
+/** an old oak through the seasons: endure */
+const Oak = ({ on }: P) => (
+  <g>
+    <path d="M28 58V36M36 58V36" {...line} />
+    <path d="M26 58h12" {...line} />
+    <g className={a(on, "haru-a-pulse")} style={box}>
+      <circle cx="32" cy="22" r="16" fill={MINT} {...line} />
+      <circle cx="22" cy="28" r="9" fill={MINT} {...line} />
+      <circle cx="42" cy="28" r="9" fill={MINT} {...line} />
+    </g>
+  </g>
+);
+
+/** a calm face breathing slowly: remain calm */
+const CalmFace = ({ on }: P) => (
+  <g className={a(on, "haru-a-pulse")} style={box}>
+    <circle cx="32" cy="32" r="22" fill={SKY} {...line} />
+    <path d="M21 29q4-3 8 0M35 29q4-3 8 0" fill="none" {...line} />
+    <path d="M25 40q7 4 14 0" fill="none" {...line} />
+  </g>
+);
+
+/** an arrow bending to a new direction: a shift */
+const ShiftArrow = ({ on }: P) => (
+  <g>
+    <path d="M8 46h20" {...line} stroke={NAVY} />
+    <g className={a(on, "haru-a-tilt")} style={{ transformOrigin: "28px 46px" }}>
+      <path d="M28 46q10 0 18-18" fill="none" {...line} stroke={CORAL} strokeWidth="4" />
+      <path d="M40 26l7 1 1 7" fill="none" {...line} stroke={CORAL} strokeWidth="4" />
+    </g>
+  </g>
+);
+
+/** a caterpillar and the butterfly it becomes: transform */
+const Butterfly = ({ on }: P) => (
+  <g>
+    <g opacity="0.5">
+      <circle cx="8" cy="52" r="3.5" fill={MINT} {...line} strokeWidth="2" />
+      <circle cx="15" cy="52" r="3.5" fill={MINT} {...line} strokeWidth="2" />
+      <circle cx="22" cy="52" r="3.5" fill={MINT} {...line} strokeWidth="2" />
+    </g>
+    <g className={a(on, "haru-a-fly")} style={box}>
+      <path d="M40 14v28" {...line} />
+      <path d="M40 22C30 8 18 14 24 26c3 5 10 4 16-2Z" fill={CORAL} {...line} />
+      <path d="M40 22c10-14 22-8 16 4-3 5-10 4-16-2Z" fill={SUN} {...line} />
+      <path d="M40 30c-8 4-10 12-4 14 3 1 4-4 4-8ZM40 30c8 4 10 12 4 14-3 1-4-4-4-8Z" fill={LAV} {...line} />
+    </g>
+  </g>
+);
+
+/** a slider whose knob moves a little: adjust */
+const Slider = ({ on }: P) => (
+  <g>
+    <path d="M8 22h48M8 42h48" {...line} stroke={NAVY} />
+    <g className={a(on, "haru-a-slide")} style={box}>
+      <circle cx="24" cy="22" r="7" fill={SUN} {...line} />
+    </g>
+    <g className={a(on, "haru-a-slide2")} style={box}>
+      <circle cx="40" cy="42" r="7" fill={MINT} {...line} />
+    </g>
+  </g>
+);
+
+/** a funhouse mirror stretching a figure: distort */
+const WarpMirror = ({ on }: P) => (
+  <g>
+    <path d="M18 4h28c-6 14 6 26 0 40s6 10 0 14H18c6-6-6-12 0-26s-6-20 0-28Z" fill={LAV} {...line} />
+    <g className={a(on, "haru-a-wave")}>
+      <ellipse cx="32" cy="18" rx="5" ry="8" fill={SUN} {...line} strokeWidth="2.5" />
+      <path d="M32 26c-8 10 8 16 0 28" fill="none" {...line} strokeWidth="2.5" />
+    </g>
+  </g>
+);
+
+/** three shapes, each bigger than the last: evolve into */
+const EvolveSteps = ({ on }: P) => (
+  <g>
+    <rect x="4" y="40" width="10" height="16" rx="2" fill={NAVY} {...line} />
+    <path d="M16 46h4" {...line} />
+    <rect x="22" y="30" width="13" height="26" rx="3" fill={SKY} {...line} />
+    <path d="M37 42h4" {...line} />
+    <g className={a(on, "haru-a-pop")} style={box}>
+      <rect x="43" y="14" width="17" height="42" rx="4" fill={MINT} {...line} />
+    </g>
+  </g>
+);
+
+/** a sprout growing into a young tree: mature */
+const SproutTree = ({ on }: P) => (
+  <g>
+    <path d="M10 58h44" {...line} />
+    <path d="M16 58v-8M16 50q-6-2-6-8 6 0 6 8M16 50q6-2 6-8-6 0-6 8" fill={MINT} {...line} strokeWidth="2.5" />
+    <g className={a(on, "haru-a-pop")} style={box}>
+      <path d="M42 58V34" {...line} />
+      <circle cx="42" cy="24" r="13" fill={MINT} {...line} />
+    </g>
+  </g>
+);
+
+/** a sun sinking behind a storm cloud: deteriorate */
+const CloudDown = ({ on }: P) => (
+  <g>
+    <circle cx="20" cy="18" r="9" fill={SUN} {...line} />
+    <path d="M18 44h30a9 9 0 0 0 0-18 13 13 0 0 0-25 3 8 8 0 0 0-5 15Z" fill="#c9d2e3" {...line} />
+    <g className={a(on, "haru-a-bob")}>
+      <path d="M50 46v12M45 53l5 5 5-5" fill="none" {...line} stroke={CORAL} strokeWidth="3.5" />
+    </g>
+  </g>
+);
+
+/** a leaf going brown at the edges: decay */
+const LeafDecay = ({ on }: P) => (
+  <g className={a(on, "haru-a-shake")} style={box}>
+    <path d="M10 54C10 26 26 10 54 10c0 28-16 44-44 44Z" fill={WOOD} {...line} />
+    <path d="M10 54 44 20" {...line} />
+    <circle cx="38" cy="36" r="3" fill="#a0703a" />
+    <circle cx="26" cy="26" r="2.5" fill="#a0703a" />
+    <circle cx="46" cy="24" r="2" fill="#a0703a" />
+  </g>
+);
+
+/** a substitution board: one player in, one out */
+const SubBoard = ({ on }: P) => (
+  <g>
+    <rect x="8" y="10" width="48" height="30" rx="4" fill={NAVY} {...line} />
+    <path d="M32 40v16M24 58h16" {...line} />
+    <g className={a(on, "haru-a-bob")}>
+      <path d="M16 20h12M24 16l4 4-4 4" fill="none" {...line} stroke={MINT} strokeWidth="3.5" />
+    </g>
+    <g className={a(on, "haru-a-away")}>
+      <path d="M48 32H36M40 28l-4 4 4 4" fill="none" {...line} stroke={CORAL} strokeWidth="3.5" />
+    </g>
+  </g>
+);
+
+/** a row of identical houses: uniform */
+const SameHouses = ({ on }: P) => (
+  <g className={a(on, "haru-a-bob")}>
+    {[4, 24, 44].map((x) => (
+      <g key={x}>
+        <path d={`M${x} 34l8-10 8 10v20H${x}Z`} fill={SKY} {...line} strokeWidth="2.5" />
+        <rect x={x + 6} y="44" width="4" height="10" fill={NAVY} />
+      </g>
+    ))}
+  </g>
+);
+
+/** an anchor holding still: conservative */
+const Anchor = ({ on }: P) => (
+  <g className={a(on, "haru-a-shake")} style={{ transformOrigin: "32px 10px" }}>
+    <circle cx="32" cy="12" r="5" fill="none" {...line} />
+    <path d="M32 17v38M22 26h20" {...line} />
+    <path d="M12 40c2 10 10 15 20 15s18-5 20-15" fill="none" {...line} />
+    <path d="M8 42l4-4 4 4M48 42l4-4 4 4" fill="none" {...line} />
+  </g>
+);
+
+/** roots under the ground: radical, to the root */
+const Root = ({ on }: P) => (
+  <g>
+    <path d="M4 24h56" {...line} stroke={WOOD} />
+    <path d="M32 8v16" {...line} />
+    <path d="M26 12q6-6 6 0M38 12q-6-6-6 0" fill={MINT} {...line} strokeWidth="2.5" />
+    <path pathLength={1} d="M32 24v32M32 34l-12 10M32 40l12 12M32 30l10 6M20 44l-6 10" fill="none" {...line} stroke="#a0703a" className={a(on, "haru-a-draw")} />
+  </g>
+);
+
+/** a seed with the plant it may become, drawn in dots: potential */
+const Seed = ({ on }: P) => (
+  <g>
+    <path d="M6 56h52" {...line} />
+    <ellipse cx="32" cy="50" rx="8" ry="5" fill={WOOD} {...line} />
+    <g className={a(on, "haru-a-wave")}>
+      <path d="M32 44V16M32 26q-12-2-12-12 12 0 12 12M32 22q12-2 12-12-12 0-12 12" fill="none" {...line} strokeDasharray="3 4" />
+    </g>
+  </g>
+);
+
+/** a stone axe: primitive */
+const StoneTool = ({ on }: P) => (
+  <g className={a(on, "haru-a-hit")} style={{ transformOrigin: "18px 54px" }}>
+    <path d="M18 56 40 14" {...line} stroke={WOOD} strokeWidth="5" />
+    <path d="M34 8c10-2 20 4 20 12s-10 10-18 6Z" fill="#b8b8c8" {...line} />
+  </g>
+);
+
+/** a water drop: a natural resource */
+const Drop = ({ on }: P) => (
+  <g className={a(on, "haru-a-bob")}>
+    <path d="M32 6C24 20 14 30 14 40a18 18 0 0 0 36 0c0-10-10-20-18-34Z" fill={SKY} {...line} />
+    <path d="M24 42a8 8 0 0 0 8 8" fill="none" {...line} stroke="#fff" />
+  </g>
+);
+
+/** a games console controller: console */
+const Gamepad = ({ on }: P) => (
+  <g className={a(on, "haru-a-wiggle")} style={box}>
+    <path d="M14 22h36c8 0 12 12 10 22-1 6-8 8-12 2l-4-6H20l-4 6c-4 6-11 4-12-2-2-10 2-22 10-22Z" fill={NAVY} {...line} />
+    <path d="M18 32h8M22 28v8" {...line} stroke="#fff" />
+    <circle cx="42" cy="30" r="2.5" fill={SUN} />
+    <circle cx="48" cy="34" r="2.5" fill={CORAL} />
+  </g>
+);
+
+/** a chisel shaping wood: craft */
+const Chisel = ({ on }: P) => (
+  <g>
+    <path d="M6 52h40l8-10H14Z" fill={WOOD} {...line} />
+    <g className={a(on, "haru-a-write")} style={box}>
+      <path d="M44 6 30 34" {...line} stroke={NAVY} strokeWidth="6" />
+      <path d="M30 34l-3 8 6-5Z" fill="#b8b8c8" {...line} strokeWidth="2" />
+    </g>
+  </g>
+);
+
 export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
   scales: Scales, magnifier: Magnifier, dizzy: Dizzy, ruler: Ruler, gavel: Gavel, mirror: Mirror, crossroads: Crossroads,
   paradox: Paradox, bolt: Bolt, dice: Dice, check_bubble: CheckBubble, grasp: Grasp, ripples: Ripples, ear: Ear, qmark: Qmark,
@@ -953,6 +1170,9 @@ export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
   sparkle: Sparkle, doc: Doc,
   share_nodes: ShareNodes, database: Database, lock_key: LockKey, upload: Upload, browser_win: BrowserWin, account_card: AccountCard,
   pass_lock: PassLock, storage_bar: StorageBar, user_icon: UserIcon, privacy_eye: PrivacyEye,
+  oak: Oak, calm_face: CalmFace, shift_arrow: ShiftArrow, butterfly: Butterfly, slider: Slider, warp_mirror: WarpMirror,
+  evolve_steps: EvolveSteps, sprout_tree: SproutTree, cloud_down: CloudDown, leaf_decay: LeafDecay, sub_board: SubBoard,
+  same_houses: SameHouses, anchor: Anchor, root: Root, seed: Seed, stone_tool: StoneTool, drop: Drop, gamepad: Gamepad, chisel: Chisel,
 };
 
 /** The picture that shows a Day 7 word on its own slide (a word not listed keeps its usual picture). */
@@ -984,5 +1204,14 @@ export const WORD_PICTURE: Record<string, string> = {
   // Week 2 · Day 4: everyday life online
   share: "share_nodes", store: "database", access: "lock_key", upload: "upload", browse: "browser_win",
   account: "account_card", password: "pass_lock", storage: "storage_bar", user: "user_icon", privacy: "privacy_eye",
+  // Week 2 · Day 5: change and technology
+  endure: "oak", last: "hourglass", maintain: "scales", remain: "calm_face", sustain: "trend", persist: "repeat",
+  shift: "shift_arrow", modify: "gear", transform: "butterfly", reform: "gavel", adjust: "slider", distort: "warp_mirror",
+  evolve: "evolve_steps", progress: "roadmap", mature: "sprout_tree", deteriorate: "cloud_down", decay: "leaf_decay",
+  substitute: "sub_board", switch: "swap",
+  radical: "root", dynamic: "bolt", uniform: "same_houses", conservative: "anchor", novel: "sparkle", influence: "ripples",
+  innovation: "bulb", potential: "seed",
+  primitive: "stone_tool", technique: "blueprint", resource: "drop", breakthrough: "rocket", network: "share_nodes", data: "database",
+  console: "gamepad", craft: "chisel",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
