@@ -716,6 +716,113 @@ const Rain = ({ on }: P) => (
   </g>
 );
 
+/** a rocket lifting off: launch */
+const Rocket = ({ on }: P) => (
+  <g className={a(on, "haru-a-bob")}>
+    <path d="M32 4c9 7 12 18 9 32H23C20 22 23 11 32 4Z" fill="#fff" {...line} />
+    <circle cx="32" cy="20" r="4.5" fill={SKY} {...line} strokeWidth="2.5" />
+    <path d="M23 30l-7 9h8M41 30l7 9h-8" fill={CORAL} {...line} />
+    <path d="M27 42c0 6 2 10 5 14 3-4 5-8 5-14" fill={SUN} {...line} className={a(on, "haru-a-flicker")} />
+  </g>
+);
+
+/** a floppy disk with a tick: save */
+const SaveDisk = ({ on }: P) => (
+  <g>
+    <path d="M10 8h36l8 8v40H10Z" fill={NAVY} {...line} />
+    <rect x="18" y="8" width="24" height="14" rx="1" fill="#fff" {...line} strokeWidth="2.5" />
+    <rect x="17" y="32" width="30" height="20" rx="2" fill="#fff" {...line} strokeWidth="2.5" />
+    <g className={a(on, "haru-a-pop")} style={box}>
+      <path d="m24 42 5 5 10-10" fill="none" {...line} stroke={MINT} strokeWidth="3.5" />
+    </g>
+  </g>
+);
+
+/** a window with a red cross: fail */
+const FailX = ({ on }: P) => (
+  <g>
+    <rect x="6" y="10" width="52" height="40" rx="5" fill="#fff" {...line} />
+    <path d="M6 20h52" {...line} />
+    <g className={a(on, "haru-a-shake")} style={box}>
+      <circle cx="32" cy="36" r="10" fill={CORAL} {...line} />
+      <path d="m27 31 10 10m0-10-10 10" {...line} stroke="#fff" />
+    </g>
+  </g>
+);
+
+/** a wrench turning: fix */
+const Wrench = ({ on }: P) => (
+  <g className={a(on, "haru-a-tilt")} style={{ transformOrigin: "32px 32px" }}>
+    <path d="M40 8a12 12 0 0 0-11 16L10 43a5 5 0 0 0 7 7l19-19a12 12 0 0 0 16-11l-7 5-6-2-2-6 7-5a12 12 0 0 0-4-4Z" fill={SUN} {...line} />
+  </g>
+);
+
+/** a bin with its lid lifting: delete */
+const Trash = ({ on }: P) => (
+  <g>
+    <g className={a(on, "haru-a-bob")}>
+      <path d="M14 16h36M26 16v-5h12v5" fill="none" {...line} />
+    </g>
+    <path d="M17 22h30l-3 34H20Z" fill="#cfd6f2" {...line} />
+    <path d="M27 30v18M37 30v18" {...line} strokeWidth="2.5" />
+  </g>
+);
+
+/** a small beetle: a bug in software */
+const BugIcon = ({ on }: P) => (
+  <g className={a(on, "haru-a-wiggle")} style={box}>
+    <path d="M22 26 12 20M42 26l10-6M20 38H8M44 38h12M22 50l-9 6M42 50l9 6" {...line} />
+    <ellipse cx="32" cy="40" rx="13" ry="16" fill={CORAL} {...line} />
+    <circle cx="32" cy="20" r="7" fill={NAVY} {...line} />
+    <path d="M32 26v29" {...line} strokeWidth="2.5" />
+  </g>
+);
+
+/** stacked screens with a "v2" tag on top: a version */
+const Layers = ({ on }: P) => (
+  <g>
+    <rect x="16" y="30" width="38" height="26" rx="4" fill="#cfd6f2" {...line} />
+    <rect x="12" y="20" width="38" height="26" rx="4" fill={SKY} {...line} />
+    <g className={a(on, "haru-a-pop")} style={box}>
+      <rect x="8" y="8" width="38" height="26" rx="4" fill="#fff" {...line} />
+      <path d="m18 16 4 10 4-10M31 18c0-3 6-3 6 0 0 3-6 5-6 8h6" fill="none" {...line} strokeWidth="2.5" />
+    </g>
+  </g>
+);
+
+/** a file copied into a safe box: a backup */
+const BackupBox = ({ on }: P) => (
+  <g>
+    <rect x="8" y="34" width="48" height="22" rx="4" fill={NAVY} {...line} />
+    <circle cx="46" cy="45" r="3" fill={MINT} />
+    <g className={a(on, "haru-a-bob")}>
+      <path d="M20 6h16l8 8v16H20Z" fill="#fff" {...line} />
+      <path d="M36 6v8h8" fill="none" {...line} />
+      <path d="M32 18v12m-4-4 4 4 4-4" fill="none" {...line} stroke={CORAL} strokeWidth="2.5" />
+    </g>
+  </g>
+);
+
+/** a phone with a sparkle next to it: a feature */
+const Sparkle = ({ on }: P) => (
+  <g>
+    <rect x="10" y="8" width="28" height="50" rx="6" fill={NAVY} {...line} />
+    <rect x="14" y="14" width="20" height="36" rx="2" fill={SKY} />
+    <g className={a(on, "haru-a-pop")} style={box}>
+      <path d="M48 12l3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill={SUN} {...line} strokeWidth="2.5" />
+    </g>
+  </g>
+);
+
+/** a document with a folded corner: a file */
+const Doc = ({ on }: P) => (
+  <g className={a(on, "haru-a-bob")}>
+    <path d="M14 4h26l12 12v44H14Z" fill="#fff" {...line} />
+    <path d="M40 4v12h12" fill="none" {...line} />
+    <path d="M22 28h22M22 36h22M22 44h14" {...line} strokeWidth="2.5" stroke={NAVY} />
+  </g>
+);
+
 export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
   scales: Scales, magnifier: Magnifier, dizzy: Dizzy, ruler: Ruler, gavel: Gavel, mirror: Mirror, crossroads: Crossroads,
   paradox: Paradox, bolt: Bolt, dice: Dice, check_bubble: CheckBubble, grasp: Grasp, ripples: Ripples, ear: Ear, qmark: Qmark,
@@ -725,6 +832,8 @@ export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
   basket: Basket, piano: Piano, runner: Runner, ball: Ball, kettle: Kettle, red_sea: RedSea, cup: Cup, phone: Phone, swap: Swap, gear: Gear, car: Car, blueprint: Blueprint, upgrade: Upgrade, model: Model, engine_block: Engine,
   crash: Crash, frozen: Frozen, install: Install, download: Download, plug: Plug, battery: Battery, monitor: Monitor, signal: Signal,
   code_window: CodeWindow, refresh: Refresh, rain: Rain, bulb_off: BulbOff,
+  rocket: Rocket, save_disk: SaveDisk, fail_x: FailX, wrench: Wrench, trash: Trash, bug: BugIcon, layers: Layers, backup_box: BackupBox,
+  sparkle: Sparkle, doc: Doc,
 };
 
 /** The picture that shows a Day 7 word on its own slide (a word not listed keeps its usual picture). */
@@ -750,5 +859,8 @@ export const WORD_PICTURE: Record<string, string> = {
   // Week 2 · Day 2: when technology goes wrong
   crash: "crash", freeze: "frozen", install: "install", download: "download", connect: "plug",
   battery: "battery", screen: "monitor", signal: "signal", software: "code_window", update: "refresh",
+  // Week 2 · Day 3: the life of a product
+  launch: "rocket", save: "save_disk", fail: "fail_x", fix: "wrench", delete: "trash",
+  bug: "bug", version: "layers", backup: "backup_box", feature: "sparkle", file: "doc",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };

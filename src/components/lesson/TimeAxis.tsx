@@ -11,7 +11,7 @@ import { Ko } from "./Rich";
  * sample sentence. Tap a row to light it up and hear the sentence; "Xem lần lượt" walks through
  * all five. The sentences are the card's own examples, in this order. */
 
-export type Shape = "repeat" | "window" | "span" | "done" | "point" | "trace" | "ended" | "always" | "pwin" | "cut" | "pair";
+export type Shape = "repeat" | "window" | "span" | "done" | "point" | "trace" | "ended" | "always" | "pwin" | "cut" | "pair" | "before" | "upto" | "ptrace";
 
 const ROWS: { shape: Shape; ask: string; tense: string }[] = [
   { shape: "repeat", ask: "Lặp lại quanh bây giờ?", tense: "Hiện tại đơn" },
@@ -103,6 +103,35 @@ export function Lane({ shape, on }: { shape: Shape; on: boolean }) {
         <>
           <rect x="44" y="5" width="96" height="7" rx="3.5" fill={c} />
           <rect x="44" y="18" width="96" height="7" rx="3.5" fill={c} opacity="0.6" />
+        </>
+      )}
+      {/* before: one action finished before a past moment (the marked tick): the past perfect */}
+      {shape === "before" && (
+        <>
+          <circle cx="58" cy="15" r="7" fill={c} />
+          <line x1="68" y1="15" x2="122" y2="15" stroke={c} strokeWidth="3" strokeDasharray="2 5" strokeLinecap="round" />
+          <g>
+            <rect x="128" y="3" width="4" height="24" rx="2" fill={c} />
+            <path d="m124 3 6 6 6-6Z" fill={c} />
+          </g>
+        </>
+      )}
+      {/* upto: an action going on up to a past moment: the past perfect continuous */}
+      {shape === "upto" && (
+        <>
+          <rect x="36" y="11" width="90" height="8" rx="4" fill={c} />
+          <g>
+            <rect x="128" y="3" width="4" height="24" rx="2" fill={c} />
+            <path d="m124 3 6 6 6-6Z" fill={c} />
+          </g>
+        </>
+      )}
+      {/* ptrace: it went on, stopped just before a past moment, and left a trace at that moment */}
+      {shape === "ptrace" && (
+        <>
+          <rect x="36" y="11" width="70" height="8" rx="4" fill={c} />
+          <circle cx="130" cy="15" r="8" fill="none" stroke={c} strokeWidth="3" />
+          <circle cx="130" cy="15" r="2.5" fill={c} />
         </>
       )}
       {shape === "point" && (
@@ -261,6 +290,17 @@ const EXAMPLE_LANES: Record<string, Shape> = {
   "My cousin and I were playing on the computer when there was a power cut.": "cut",
   "I was playing football while my friends were playing badminton.": "pair",
   "I charged my phone as soon as I got home.": "point",
+  // Week 2 · Day 3: the past perfect and the past perfect continuous
+  "When I got to the station, the train had left.": "before",
+  "I had already bought the phone when I saw it was cheaper online.": "before",
+  "When I got home, my brother had eaten all the pizza.": "before",
+  "I was late because I had left my judo suit at home.": "before",
+  "We had been waiting for over an hour when the bus finally came.": "upto",
+  "Her eyes were red because she had been crying.": "ptrace",
+  "The engineers had been testing the app for six months before they launched it.": "upto",
+  "Before I met Nga, I had been running for two hours.": "upto",
+  "By 2020, the company had sold a million phones.": "before",
+  "I had known Lan for ten years when we started the company.": "upto",
 };
 export const laneForExample = (en: string): Shape | null => EXAMPLE_LANES[en.trim()] ?? null;
 
@@ -276,6 +316,9 @@ const OPTION_LANES: Record<string, { shape: Shape; label: string }> = {
   "quá khứ ├●┤ (đang diễn ra quanh một mốc) ┄┄ bây giờ": { shape: "pwin", label: "Đang diễn ra quanh một mốc đã qua" },
   "quá khứ ━━ϟ┄┄ (đang diễn ra thì bị cắt ngang) ┄┄ bây giờ": { shape: "cut", label: "Đang diễn ra thì bị một việc ngắn cắt ngang" },
   "quá khứ ══ (hai việc cùng diễn ra) ┄┄ bây giờ": { shape: "pair", label: "Hai việc cùng diễn ra một lúc" },
+  "quá khứ ●┄▲ (xong trước một mốc quá khứ) ┄┄ bây giờ": { shape: "before", label: "Xong trước một mốc trong quá khứ" },
+  "quá khứ ━━▲ (kéo dài tới một mốc quá khứ) ┄┄ bây giờ": { shape: "upto", label: "Kéo dài tới một mốc trong quá khứ" },
+  "quá khứ ━━◯ (vừa dừng trước mốc, còn dấu vết) ┄┄ bây giờ": { shape: "ptrace", label: "Vừa dừng trước mốc, còn dấu vết lúc đó" },
 };
 export const laneForOption = (text: string) => OPTION_LANES[text.trim()] ?? null;
 

@@ -377,7 +377,7 @@ function TruthCards({ data, has, latest, onReplay }: SceneProps) {
 }
 
 // ------------------------------------------------------------- one question, four tenses --
-type Answer = { icon?: string; key: string; at: "now" | "span" | "past" | "future" | "always" | "window" | "done" | "point" | "trace" | "repeat" | "pwin" | "cut" | "pair" | "two"; tense: string; en: string; vi: string };
+type Answer = { icon?: string; key: string; at: "now" | "span" | "past" | "future" | "always" | "window" | "done" | "point" | "trace" | "repeat" | "pwin" | "cut" | "pair" | "two" | "before" | "upto" | "ptrace"; tense: string; en: string; vi: string };
 
 /** One answer on the shared time axis: the same left-to-right scale in every lane (past on the
  * left, the present at the dashed line in the middle, the future on the right), so the four
@@ -462,6 +462,26 @@ function Lane({ at, color, striped = false }: { at: Answer["at"]; color: string;
         <>
           <span className="absolute h-[5px] rounded-full" style={{ left: "10%", width: "32%", top: "4px", background: "currentColor" }} />
           <span className="absolute h-[5px] rounded-full opacity-60" style={{ left: "10%", width: "32%", bottom: "4px", background: "currentColor" }} />
+        </>
+      )}
+      {/* before / upto / ptrace look back from a past moment (the tick at 40%) */}
+      {at === "before" && (
+        <>
+          <span className={dot} style={{ left: "14%", background: "currentColor" }} />
+          <span className="absolute top-1/2 -translate-y-1/2 border-t-[3px] border-dotted" style={{ left: "18%", width: "19%", borderColor: "currentColor" }} />
+          <span className="absolute top-1/2 h-5 w-[3px] -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ left: "40%", background: "currentColor" }} />
+        </>
+      )}
+      {at === "upto" && (
+        <>
+          <span className={bar} style={{ left: "8%", width: "32%", background: "currentColor" }} />
+          <span className="absolute top-1/2 h-5 w-[3px] -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ left: "40%", background: "currentColor" }} />
+        </>
+      )}
+      {at === "ptrace" && (
+        <>
+          <span className={bar} style={{ left: "8%", width: "24%", background: "currentColor" }} />
+          <span className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px]" style={{ left: "40%", borderColor: "currentColor" }} />
         </>
       )}
       {/* two: two separate past events, told one after the other (no overlap is said) */}
