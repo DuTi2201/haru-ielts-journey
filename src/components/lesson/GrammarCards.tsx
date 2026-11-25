@@ -16,7 +16,7 @@ import { BuiltFrom, BuiltInto, Revisits } from "./BuiltOn";
 import { GrammarBadge } from "./GrammarBadge";
 import { ImportanceChip } from "./ImportanceChip";
 import { LessonImage } from "./LessonImage";
-import { MiniLane, TENSE_MAP_CELLS, TIME_AXIS_ROWS, TenseMap, TimeAxis, laneForExample } from "./TimeAxis";
+import { EIGHT_MAP_CELLS, EightMap, MiniLane, TENSE_MAP_CELLS, TIME_AXIS_ROWS, TenseMap, TimeAxis, laneForExample } from "./TimeAxis";
 import { Ko, Rich, RichBlock } from "./Rich";
 
 /** Marks a card the learner answered right in the entry diagnostic. */
@@ -469,9 +469,15 @@ export function GrammarCards({
                 <TenseMap examples={pairs} />
               )}
 
+              {/* the map of eight tenses: the same four cells, switched between now and a past moment */}
+              {g.pattern.startsWith("Tám thì · bản đồ") && pairs.length === EIGHT_MAP_CELLS && (
+                <EightMap examples={pairs} />
+              )}
+
               {pairs.length > 0 &&
                 !(g.pattern.startsWith("Trục thời gian") && pairs.length === TIME_AXIS_ROWS) &&
-                !(g.pattern.startsWith("Bốn thì hiện tại · bản đồ") && pairs.length === TENSE_MAP_CELLS) && (
+                !(g.pattern.startsWith("Bốn thì hiện tại · bản đồ") && pairs.length === TENSE_MAP_CELLS) &&
+                !(g.pattern.startsWith("Tám thì · bản đồ") && pairs.length === EIGHT_MAP_CELLS) && (
                 <div className="mt-2.5">
                   <p className="text-[12px] font-semibold uppercase tracking-wide text-ink-2">
                     Ví dụ

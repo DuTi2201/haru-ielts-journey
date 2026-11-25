@@ -402,3 +402,94 @@ export function TenseMap({ examples }: { examples: { ko: string; vi: string | nu
     </div>
   );
 }
+
+/** The map of eight tenses (Week 2 · Day 4, first card): the Week 1 map of four cells, plus the third question,
+ * "seen from now or from a past moment?", as a two-way switch. The same four cells show the present tense or its
+ * past pair; the card's eight examples are in the order simple, continuous, perfect, perfect continuous for the
+ * present, then the same for the past. Tap a cell to hear its sentence. */
+const PAST_MAP: { tense: string; form: string; shape: Shape }[] = [
+  { tense: "Quá khứ đơn", form: "V2 / V-ed", shape: "point" },
+  { tense: "Quá khứ tiếp diễn", form: "was / were + V-ing", shape: "pwin" },
+  { tense: "Quá khứ hoàn thành", form: "had + V3", shape: "before" },
+  { tense: "QK hoàn thành tiếp diễn", form: "had been + V-ing", shape: "upto" },
+];
+export const EIGHT_MAP_CELLS = MAP.length + PAST_MAP.length;
+
+export function EightMap({ examples }: { examples: { ko: string; vi: string | null }[] }) {
+  const [past, setPast] = useState(false);
+  const [active, setActive] = useState<number | null>(null);
+  const map = past ? PAST_MAP : MAP;
+  const cell = (i: number) => {
+    const m = map[i];
+    const ex = examples[i + (past ? 4 : 0)];
+    const on = active === i;
+    if (!m) return null;
+    return (
+      <button
+        key={`${past ? "p" : "n"}${i}`}
+        type="button"
+        aria-pressed={on}
+        onClick={() => {
+          tap();
+          setActive(i);
+          if (ex) speakKorean(ex.ko);
+        }}
+        className={cn(
+          "flex min-w-0 flex-col gap-0.5 rounded-[12px] border px-2.5 py-2 text-left transition-colors duration-300",
+          on ? "border-blue bg-blue-soft" : "border-line bg-paper",
+          i % 2 === 1 && !on && "bg-[oklch(0.97_0.03_165)]",
+        )}
+      >
+        <span className="text-[12.5px] font-extrabold leading-tight">{m.tense}</span>
+        <span lang="en" className="text-[11px] font-semibold leading-tight text-ink-2">{m.form}</span>
+        <Lane shape={m.shape} on={on} />
+        {ex && <Ko className="block text-[13px] font-semibold leading-5">{ex.ko}</Ko>}
+        {ex?.vi && <span className="block text-[11.5px] leading-4 text-ink-2">{ex.vi.replace(/\s*\(.*\)\s*$/, "")}</span>}
+      </button>
+    );
+  };
+  const rowHead = (text: string, strong: boolean) => (
+    <p className="mt-2 flex items-center gap-2 text-[10.5px] font-bold uppercase tracking-wide text-ink-2">
+      <span className={cn("h-px flex-1", strong ? "bg-blue" : "bg-line")} />
+      <span className={strong ? "text-blue-deep" : undefined}>{text}</span>
+      <span className={cn("h-px flex-1", strong ? "bg-blue" : "bg-line")} />
+    </p>
+  );
+  const seg = (label: string, value: boolean) => (
+    <button
+      type="button"
+      aria-pressed={past === value}
+      onClick={() => {
+        tap();
+        setPast(value);
+        setActive(null);
+      }}
+      className={cn(
+        "hit-area min-h-9 flex-1 rounded-full px-3 text-[12.5px] font-bold transition-colors duration-200",
+        past === value ? "bg-blue text-primary-foreground shadow-elev-1" : "text-ink-2",
+      )}
+    >
+      {label}
+    </button>
+  );
+  return (
+    <div className="mt-3 rounded-[14px] bg-card px-3 py-3">
+      <p className="text-[12px] font-semibold uppercase tracking-wide text-ink-2">Ba câu hỏi, tám thì</p>
+      <div className="mt-2 flex gap-1 rounded-full bg-paper p-1" role="group" aria-label="Nhìn từ bây giờ hay từ một mốc quá khứ">
+        {seg("Nhìn từ bây giờ", false)}
+        {seg("Từ một mốc quá khứ", true)}
+      </div>
+      <div className="mt-2 grid grid-cols-2 gap-2 text-center text-[10.5px] font-bold uppercase leading-tight tracking-wide">
+        <span className="rounded-full bg-paper px-2 py-1 text-ink-2">Không nhấn tạm thời</span>
+        <span className="rounded-full bg-[oklch(0.95_0.05_165)] px-2 py-1 text-[oklch(0.42_0.1_165)]">Nhấn tạm thời, quá trình</span>
+      </div>
+      {rowHead("Chưa nối với việc trước", false)}
+      <div className="mt-1 grid grid-cols-2 gap-2">{[0, 1].map(cell)}</div>
+      {rowHead(past ? "Nối với việc trước · thêm had" : "Nối với việc trước · thêm have", true)}
+      <div className="mt-1 grid grid-cols-2 gap-2">{[2, 3].map(cell)}</div>
+      <p className="mt-2 text-[12px] text-ink-2">
+        {past ? "Từ một mốc quá khứ: lùi trợ động từ đầu tiên (am → was, have → had)." : "Cột phải thêm be + V-ing. Chạm vào một ô để nghe câu mẫu."}
+      </p>
+    </div>
+  );
+}

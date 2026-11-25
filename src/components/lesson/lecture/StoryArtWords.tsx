@@ -823,6 +823,119 @@ const Doc = ({ on }: P) => (
   </g>
 );
 
+/** three dots joined, one sending to two: share */
+const ShareNodes = ({ on }: P) => (
+  <g>
+    <path d="M20 32 44 18M20 32l24 14" {...line} />
+    <circle cx="18" cy="32" r="8" fill={SUN} {...line} />
+    <g className={a(on, "haru-a-pop")} style={box}>
+      <circle cx="46" cy="16" r="8" fill={MINT} {...line} />
+    </g>
+    <g className={a(on, "haru-a-pop2")} style={box}>
+      <circle cx="46" cy="48" r="8" fill={SKY} {...line} />
+    </g>
+  </g>
+);
+
+/** a stack of disks: store */
+const Database = ({ on }: P) => (
+  <g>
+    <path d="M14 14v36c0 4 8 7 18 7s18-3 18-7V14" fill={NAVY} {...line} />
+    <ellipse cx="32" cy="14" rx="18" ry="7" fill={SKY} {...line} />
+    <path d="M14 26c0 4 8 7 18 7s18-3 18-7M14 38c0 4 8 7 18 7s18-3 18-7" fill="none" {...line} stroke="#fff" strokeWidth="2" />
+    <circle cx="42" cy="44" r="2" fill={MINT} className={a(on, "haru-a-flicker")} />
+  </g>
+);
+
+/** a key going into an open lock: access */
+const LockKey = ({ on }: P) => (
+  <g>
+    <path d="M22 28v-8a10 10 0 0 1 20 0" fill="none" {...line} strokeWidth="4" className={a(on, "haru-a-bob")} />
+    <rect x="14" y="28" width="36" height="28" rx="5" fill={SUN} {...line} />
+    <circle cx="32" cy="40" r="4" fill={INK} />
+    <path d="M32 44v6" {...line} />
+  </g>
+);
+
+/** a cloud with an arrow going up: upload */
+const Upload = ({ on }: P) => (
+  <g>
+    <path d="M18 34a10 10 0 0 1 2-20 14 14 0 0 1 26 4 8 8 0 0 1 0 16Z" fill="#fff" {...line} />
+    <g className={a(on, "haru-a-bob")}>
+      <path d="M32 56V28m-8 8 8-8 8 8" fill="none" {...line} stroke={MINT} strokeWidth="3.5" />
+    </g>
+  </g>
+);
+
+/** a browser window with tabs and a page that scrolls: browse */
+const BrowserWin = ({ on }: P) => (
+  <g>
+    <rect x="6" y="8" width="52" height="46" rx="5" fill="#fff" {...line} />
+    <path d="M6 18h52" {...line} />
+    <rect x="12" y="11" width="12" height="5" rx="2" fill={SKY} />
+    <g className={a(on, "haru-a-slide")}>
+      <path d="M14 26h28M14 33h22M14 40h26M14 47h18" {...line} strokeWidth="2.5" stroke={NAVY} />
+    </g>
+    <rect x="50" y="24" width="4" height="12" rx="2" fill={CORAL} />
+  </g>
+);
+
+/** a profile card: an account */
+const AccountCard = ({ on }: P) => (
+  <g>
+    <rect x="6" y="12" width="52" height="40" rx="6" fill="#fff" {...line} />
+    <circle cx="22" cy="28" r="6" fill={SUN} {...line} />
+    <path d="M12 44c2-6 18-6 20 0" fill={SUN} {...line} />
+    <g className={a(on, "haru-a-pop")} style={box}>
+      <path d="M38 26h14M38 34h10M38 42h12" {...line} strokeWidth="2.5" stroke={NAVY} />
+    </g>
+  </g>
+);
+
+/** a field of hidden characters with a padlock: a password */
+const PassLock = ({ on }: P) => (
+  <g>
+    <rect x="4" y="22" width="56" height="20" rx="6" fill="#fff" {...line} />
+    <g className={a(on, "haru-a-pulse")} style={box}>
+      {[14, 24, 34, 44].map((x) => <circle key={x} cx={x} cy="32" r="3" fill={INK} />)}
+    </g>
+    <path d="M26 16v-4a6 6 0 0 1 12 0v4" fill="none" {...line} />
+    <rect x="22" y="14" width="20" height="8" rx="2" fill={SUN} {...line} strokeWidth="2.5" />
+  </g>
+);
+
+/** a bar almost full: storage */
+const StorageBar = ({ on }: P) => (
+  <g>
+    <rect x="6" y="24" width="52" height="16" rx="8" fill="#fff" {...line} />
+    <rect x="9" y="27" width="38" height="10" rx="5" fill={CORAL} className={a(on, "haru-a-slide")} />
+    <path d="M14 50h36" {...line} strokeWidth="2.5" stroke="#9aa3c7" />
+    <path d="M14 14h20" {...line} strokeWidth="2.5" stroke="#9aa3c7" />
+  </g>
+);
+
+/** a person using a phone: a user */
+const UserIcon = ({ on }: P) => (
+  <g>
+    <circle cx="26" cy="16" r="9" fill={SUN} {...line} />
+    <path d="M10 56c0-14 7-22 16-22s16 8 16 22Z" fill={SKY} {...line} />
+    <g className={a(on, "haru-a-bob")}>
+      <rect x="40" y="30" width="14" height="22" rx="3" fill={NAVY} {...line} />
+    </g>
+  </g>
+);
+
+/** a shield with a closed eye: privacy */
+const PrivacyEye = ({ on }: P) => (
+  <g>
+    <path d="M32 4 52 12v16c0 14-9 24-20 30C21 52 12 42 12 28V12Z" fill={MINT} {...line} />
+    <g className={a(on, "haru-a-pulse")} style={box}>
+      <path d="M22 30c6 6 14 6 20 0" fill="none" {...line} />
+      <path d="M26 34l-2 4M32 36v4M38 34l2 4" {...line} strokeWidth="2.5" />
+    </g>
+  </g>
+);
+
 export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
   scales: Scales, magnifier: Magnifier, dizzy: Dizzy, ruler: Ruler, gavel: Gavel, mirror: Mirror, crossroads: Crossroads,
   paradox: Paradox, bolt: Bolt, dice: Dice, check_bubble: CheckBubble, grasp: Grasp, ripples: Ripples, ear: Ear, qmark: Qmark,
@@ -834,6 +947,8 @@ export const WORD_ICONS: Record<string, (p: P) => ReactNode> = {
   code_window: CodeWindow, refresh: Refresh, rain: Rain, bulb_off: BulbOff,
   rocket: Rocket, save_disk: SaveDisk, fail_x: FailX, wrench: Wrench, trash: Trash, bug: BugIcon, layers: Layers, backup_box: BackupBox,
   sparkle: Sparkle, doc: Doc,
+  share_nodes: ShareNodes, database: Database, lock_key: LockKey, upload: Upload, browser_win: BrowserWin, account_card: AccountCard,
+  pass_lock: PassLock, storage_bar: StorageBar, user_icon: UserIcon, privacy_eye: PrivacyEye,
 };
 
 /** The picture that shows a Day 7 word on its own slide (a word not listed keeps its usual picture). */
@@ -862,5 +977,8 @@ export const WORD_PICTURE: Record<string, string> = {
   // Week 2 · Day 3: the life of a product
   launch: "rocket", save: "save_disk", fail: "fail_x", fix: "wrench", delete: "trash",
   bug: "bug", version: "layers", backup: "backup_box", feature: "sparkle", file: "doc",
+  // Week 2 · Day 4: everyday life online
+  share: "share_nodes", store: "database", access: "lock_key", upload: "upload", browse: "browser_win",
+  account: "account_card", password: "pass_lock", storage: "storage_bar", user: "user_icon", privacy: "privacy_eye",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
