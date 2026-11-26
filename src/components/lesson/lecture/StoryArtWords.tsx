@@ -1227,5 +1227,8 @@ export const WORD_PICTURE: Record<string, string> = {
   // Week 3 Day 2: offers, requests and meetings
   arrange: "slider", cancel: "fail_x", remind: "thought", deliver: "suitcase", sign: "pencil_sheet",
   schedule: "calendar", document: "doc", request: "qmark", contract: "gavel", agenda: "checklist",
+  // Week 3 Day 3: appointments and the workplace
+  book: "calendar", confirm: "check_bubble", attend: "discuss", commute: "car", negotiate: "scales",
+  reservation: "steak", conference: "board", overtime: "clock", branch: "share_nodes", receptionist: "user_icon",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
