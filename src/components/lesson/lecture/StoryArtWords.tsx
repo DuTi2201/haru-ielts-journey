@@ -1224,5 +1224,8 @@ export const WORD_PICTURE: Record<string, string> = {
   // Week 3 Day 1: work words of the future simple
   apply: "doc", hire: "user_icon", earn: "coin", promote: "upgrade", resign: "shift_arrow",
   career: "roadmap", salary: "coin", interview: "discuss", employer: "account_card", deadline: "clock",
+  // Week 3 Day 2: offers, requests and meetings
+  arrange: "slider", cancel: "fail_x", remind: "thought", deliver: "suitcase", sign: "pencil_sheet",
+  schedule: "calendar", document: "doc", request: "qmark", contract: "gavel", agenda: "checklist",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
