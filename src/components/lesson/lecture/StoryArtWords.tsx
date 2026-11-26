@@ -1218,5 +1218,8 @@ export const WORD_PICTURE: Record<string, string> = {
   inherit: "root", shortcoming: "fail_x", "phase out": "slider", rekindle: "lamp", comprise: "layers", feat: "star", accelerate: "rocket",
   investment: "coin", enhancement: "upgrade", deposit: "account_card", glitch: "bug", viable: "check_bubble", emission: "kettle", fold: "fail",
   maintenance: "wrench",
+  // Week 2 Day 7: the words of The Luddites
+  automation: "gear", textile: "layers", threaten: "shield", repetitive: "repeat", leisure: "suitcase", unemployment: "fail_x",
+  retire: "clock", productivity: "trend", qualification: "cap", census: "checklist", lifespan: "hourglass", redundant: "trash",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
