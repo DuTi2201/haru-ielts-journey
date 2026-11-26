@@ -1230,5 +1230,8 @@ export const WORD_PICTURE: Record<string, string> = {
   // Week 3 Day 3: appointments and the workplace
   book: "calendar", confirm: "check_bubble", attend: "discuss", commute: "car", negotiate: "scales",
   reservation: "steak", conference: "board", overtime: "clock", branch: "share_nodes", receptionist: "user_icon",
+  // Week 3 Day 4: projects and targets
+  complete: "check_bubble", submit: "upload", expand: "share_nodes", manage: "user_icon", train: "board",
+  project: "roadmap", target: "star", quarter: "calendar", milestone: "roadmap", trainee: "cap",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
