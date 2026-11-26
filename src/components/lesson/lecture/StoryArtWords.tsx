@@ -1221,5 +1221,8 @@ export const WORD_PICTURE: Record<string, string> = {
   // Week 2 Day 7: the words of The Luddites
   automation: "gear", textile: "layers", threaten: "shield", repetitive: "repeat", leisure: "suitcase", unemployment: "fail_x",
   retire: "clock", productivity: "trend", qualification: "cap", census: "checklist", lifespan: "hourglass", redundant: "trash",
+  // Week 3 Day 1: work words of the future simple
+  apply: "doc", hire: "user_icon", earn: "coin", promote: "upgrade", resign: "shift_arrow",
+  career: "roadmap", salary: "coin", interview: "discuss", employer: "account_card", deadline: "clock",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
