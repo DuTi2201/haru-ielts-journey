@@ -1234,6 +1234,7 @@ export const WORD_PICTURE: Record<string, string> = {
   complete: "check_bubble", submit: "upload", expand: "share_nodes", manage: "user_icon", train: "board",
   project: "roadmap", target: "star", quarter: "calendar", milestone: "roadmap", trainee: "cap",
   // Week 3 Day 5: time and work
+  temporary: "hourglass", permanent: "house", frequency: "repeat",
   provisional: "doc", "long-standing": "house", obsolete: "fail_x", overdue: "clock", expire: "calendar",
   timely: "check_bubble", punctual: "clock", "on time": "clock", "in time": "car", prompt: "upload",
   simultaneous: "repeat", instantaneous: "rocket", subsequent: "roadmap", era: "hourglass", period: "calendar",
