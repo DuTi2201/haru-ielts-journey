@@ -1233,5 +1233,13 @@ export const WORD_PICTURE: Record<string, string> = {
   // Week 3 Day 4: projects and targets
   complete: "check_bubble", submit: "upload", expand: "share_nodes", manage: "user_icon", train: "board",
   project: "roadmap", target: "star", quarter: "calendar", milestone: "roadmap", trainee: "cap",
+  // Week 3 Day 5: time and work
+  provisional: "doc", "long-standing": "house", obsolete: "fail_x", overdue: "clock", expire: "calendar",
+  timely: "check_bubble", punctual: "clock", "on time": "clock", "in time": "car", prompt: "upload",
+  simultaneous: "repeat", instantaneous: "rocket", subsequent: "roadmap", era: "hourglass", period: "calendar",
+  span: "hourglass", phase: "roadmap", annual: "calendar", elapse: "hourglass", chronological: "checklist",
+  "multinational corporation": "share_nodes", "marketing campaign": "upgrade", consultant: "discuss",
+  "senior executive": "user_icon", effective: "check_bubble", efficient: "gear", "make someone redundant": "fail_x",
+  "on leave": "suitcase", strike: "angry", headhunt: "star",
   "take into consideration": "scales", "strike a balance": "scales", "cross your mind": "thought", "figure out": "magnifier", "come up with": "bulb",
 };
